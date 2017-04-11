@@ -6,80 +6,82 @@ import net.demilich.metastone.game.entities.Entity;
 import net.demilich.metastone.game.targeting.EntityReference;
 import net.demilich.metastone.game.targeting.TargetSelection;
 
-public abstract class GameAction implements Cloneable {
+import java.io.Serializable;
 
-	private TargetSelection targetRequirement = TargetSelection.NONE;
-	private ActionType actionType = ActionType.SYSTEM;
-	private EntityReference source;
-	private EntityReference targetKey;
-	private String actionSuffix;
+public abstract class GameAction implements Cloneable, Serializable {
 
-	public boolean canBeExecutedOn(GameContext gameContext, Player player, Entity entity) {
-		return true;
-	}
+    private TargetSelection targetRequirement = TargetSelection.NONE;
+    private ActionType actionType = ActionType.SYSTEM;
+    private EntityReference source;
+    private EntityReference targetKey;
+    private String actionSuffix;
 
-	@Override
-	public GameAction clone() {
-		try {
-			return (GameAction) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public boolean canBeExecutedOn(GameContext gameContext, Player player, Entity entity) {
+        return true;
+    }
 
-	public abstract void execute(GameContext context, int playerId);
+    @Override
+    public GameAction clone() {
+        try {
+            return (GameAction) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-	public String getActionSuffix() {
-		return actionSuffix;
-	}
+    public abstract void execute(GameContext context, int playerId);
 
-	public ActionType getActionType() {
-		return actionType;
-	}
+    public String getActionSuffix() {
+        return actionSuffix;
+    }
 
-	public abstract String getPromptText();
+    public void setActionSuffix(String actionSuffix) {
+        this.actionSuffix = actionSuffix;
+    }
 
-	public EntityReference getSource() {
-		return source;
-	}
+    public ActionType getActionType() {
+        return actionType;
+    }
 
-	public EntityReference getTargetKey() {
-		return targetKey;
-	}
+    protected void setActionType(ActionType actionType) {
+        this.actionType = actionType;
+    }
 
-	public TargetSelection getTargetRequirement() {
-		return targetRequirement;
-	}
+    public abstract String getPromptText();
 
-	public abstract boolean isSameActionGroup(GameAction anotherAction);
+    public EntityReference getSource() {
+        return source;
+    }
 
-	public void setActionSuffix(String actionSuffix) {
-		this.actionSuffix = actionSuffix;
-	}
+    public void setSource(EntityReference source) {
+        this.source = source;
+    }
 
-	protected void setActionType(ActionType actionType) {
-		this.actionType = actionType;
-	}
+    public EntityReference getTargetKey() {
+        return targetKey;
+    }
 
-	public void setSource(EntityReference source) {
-		this.source = source;
-	}
+    public void setTargetKey(EntityReference targetKey) {
+        this.targetKey = targetKey;
+    }
 
-	public void setTarget(Entity target) {
-		this.targetKey = EntityReference.pointTo(target);
-	}
+    public TargetSelection getTargetRequirement() {
+        return targetRequirement;
+    }
 
-	public void setTargetKey(EntityReference targetKey) {
-		this.targetKey = targetKey;
-	}
+    public void setTargetRequirement(TargetSelection targetRequirement) {
+        this.targetRequirement = targetRequirement;
+    }
 
-	public void setTargetRequirement(TargetSelection targetRequirement) {
-		this.targetRequirement = targetRequirement;
-	}
+    public abstract boolean isSameActionGroup(GameAction anotherAction);
 
-	@Override
-	public String toString() {
-		return "Action " + actionType.toString() + " " + actionSuffix + " from " + source.toString();
-	}
+    public void setTarget(Entity target) {
+        this.targetKey = EntityReference.pointTo(target);
+    }
+
+    @Override
+    public String toString() {
+        return "Action " + actionType.toString() + " " + actionSuffix + " from " + source.toString();
+    }
 }

@@ -4,19 +4,21 @@ import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.entities.Entity;
 
-public abstract class Condition {
+import java.io.Serializable;
 
-	private final ConditionDesc desc;
+public abstract class Condition implements Serializable {
 
-	public Condition(ConditionDesc desc) {
-		this.desc = desc;
-	}
+    private final ConditionDesc desc;
 
-	protected abstract boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target);
+    public Condition(ConditionDesc desc) {
+        this.desc = desc;
+    }
 
-	public boolean isFulfilled(GameContext context, Player player, Entity source, Entity target) {
-		boolean invert = desc.getBool(ConditionArg.INVERT);
-		return isFulfilled(context, player, desc, source, target) != invert;
-	}
+    protected abstract boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target);
+
+    public boolean isFulfilled(GameContext context, Player player, Entity source, Entity target) {
+        boolean invert = desc.getBool(ConditionArg.INVERT);
+        return isFulfilled(context, player, desc, source, target) != invert;
+    }
 
 }

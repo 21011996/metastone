@@ -4,18 +4,18 @@ import net.demilich.metastone.game.GameContext;
 
 public interface IBrain {
 
-	public abstract double getEstimatedUtility(double[] output);
+    double getEstimatedUtility(double[] output);
 
-	public abstract double[] getOutput(GameContext context, int playerId);
+    double[] getOutput(GameContext context, int playerId);
 
-	public abstract boolean isLearning();
+    boolean isLearning();
 
-	public abstract void learn(GameContext originalState, int playerId, double[] nextOutput, double reward);
+    void setLearning(boolean learning);
 
-	public abstract void load(String savePath);
+    void learn(GameContext originalState, int playerId, double[] nextOutput, double reward);
 
-	public abstract void save(String savePath);
+    void load(String savePath);
 
-	public abstract void setLearning(boolean learning);
+    void save(String savePath);
 
 }

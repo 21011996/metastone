@@ -6,25 +6,25 @@ import net.demilich.metastone.game.entities.weapons.Weapon;
 
 public class WeaponDestroyedEvent extends GameEvent {
 
-	private final Weapon weapon;
+    private final Weapon weapon;
 
-	public WeaponDestroyedEvent(GameContext context, Weapon weapon) {
-		super(context, weapon.getOwner(), -1);
-		this.weapon = weapon;
-	}
-	
-	@Override
-	public Entity getEventTarget() {
-		return getWeapon();
-	}
+    public WeaponDestroyedEvent(GameContext context, Weapon weapon) {
+        super(context, weapon.getOwner(), -1);
+        this.weapon = weapon;
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.WEAPON_DESTROYED;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getWeapon();
+    }
 
-	public Weapon getWeapon() {
-		return weapon;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.WEAPON_DESTROYED;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
 
 }

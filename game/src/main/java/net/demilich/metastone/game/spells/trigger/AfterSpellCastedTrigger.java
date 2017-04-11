@@ -10,25 +10,21 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class AfterSpellCastedTrigger extends GameEventTrigger {
 
-	public AfterSpellCastedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public AfterSpellCastedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		AfterSpellCastedEvent spellCastedEvent = (AfterSpellCastedEvent) event;
-		
-		EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
-		if (targetEntityType != null && (spellCastedEvent.getEventTarget() == null || targetEntityType != spellCastedEvent.getEventTarget().getEntityType())) {
-			return false;
-		}
-		
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        AfterSpellCastedEvent spellCastedEvent = (AfterSpellCastedEvent) event;
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.AFTER_SPELL_CASTED;
-	}
+        EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
+        return !(targetEntityType != null && (spellCastedEvent.getEventTarget() == null || targetEntityType != spellCastedEvent.getEventTarget().getEntityType()));
+    }
+
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.AFTER_SPELL_CASTED;
+    }
 
 }

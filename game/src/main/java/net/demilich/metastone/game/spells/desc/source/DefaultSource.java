@@ -7,13 +7,13 @@ import net.demilich.metastone.game.cards.CardCollection;
 
 public class DefaultSource extends CardSource {
 
-	public DefaultSource(SourceDesc desc) {
-		super(desc);
-	}
+    public DefaultSource(SourceDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected CardCollection match(GameContext context, Player player) {
-		return CardCatalogue.query(context.getDeckFormat());
-	}
+    @Override
+    protected CardCollection match(GameContext context, Player player) {
+        return CardCatalogue.query(context.getDeckFormat());
+    }
 
 }

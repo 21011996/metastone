@@ -4,7 +4,7 @@ import net.demilich.metastone.game.GameContext;
 
 public interface IGameStateHeuristic {
 
-	double getScore(GameContext context, int playerId);
+    double getScore(GameContext context, int playerId);
 
-	void onActionSelected(GameContext context, int playerId);
+    void onActionSelected(GameContext context, int playerId);
 }

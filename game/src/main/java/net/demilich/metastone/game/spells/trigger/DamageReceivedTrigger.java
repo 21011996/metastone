@@ -10,25 +10,21 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class DamageReceivedTrigger extends GameEventTrigger {
 
-	public DamageReceivedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public DamageReceivedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		DamageEvent damageEvent = (DamageEvent) event;
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        DamageEvent damageEvent = (DamageEvent) event;
 
-		EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
-		if (targetEntityType != null && damageEvent.getVictim().getEntityType() != targetEntityType) {
-			return false;
-		}
+        EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
+        return !(targetEntityType != null && damageEvent.getVictim().getEntityType() != targetEntityType);
+    }
 
-		return true;
-	}
-
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.DAMAGE;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.DAMAGE;
+    }
 
 }

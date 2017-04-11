@@ -6,20 +6,20 @@ import net.demilich.metastone.game.events.SummonEvent;
 import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class MinionPlayedTrigger extends MinionSummonedTrigger {
-	public MinionPlayedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public MinionPlayedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		SummonEvent summonEvent = (SummonEvent) event;
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        SummonEvent summonEvent = (SummonEvent) event;
 
-		// when source card is null, then this minion not played as a minion
-		// card
-		if (summonEvent.getSource() == null) {
-			return false;
-		}
-		return super.fire(summonEvent, host);
-	}
+        // when source card is null, then this minion not played as a minion
+        // card
+        if (summonEvent.getSource() == null) {
+            return false;
+        }
+        return super.fire(summonEvent, host);
+    }
 
 }

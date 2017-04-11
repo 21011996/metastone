@@ -1,14 +1,16 @@
 package net.demilich.metastone.game.logic;
 
-public class CustomCloneable implements Cloneable {
+import java.io.Serializable;
 
-	@Override
-	public CustomCloneable clone() {
-		try {
-			return (CustomCloneable) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+public class CustomCloneable implements Cloneable, Serializable {
+
+    @Override
+    public CustomCloneable clone() {
+        try {
+            return (CustomCloneable) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

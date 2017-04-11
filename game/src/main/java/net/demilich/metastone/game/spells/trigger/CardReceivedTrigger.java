@@ -7,18 +7,18 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class CardReceivedTrigger extends GameEventTrigger {
 
-	public CardReceivedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public CardReceivedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.DRAW_CARD;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.DRAW_CARD;
+    }
 
 }

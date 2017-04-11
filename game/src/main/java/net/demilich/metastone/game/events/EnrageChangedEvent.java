@@ -5,21 +5,21 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class EnrageChangedEvent extends GameEvent {
 
-	private final Entity target;
+    private final Entity target;
 
-	public EnrageChangedEvent(GameContext context, Entity target) {
-		super(context, target.getOwner(), -1);
-		this.target = target;
-	}
-	
-	@Override
-	public Entity getEventTarget() {
-		return target;
-	}
+    public EnrageChangedEvent(GameContext context, Entity target) {
+        super(context, target.getOwner(), -1);
+        this.target = target;
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.ENRAGE_CHANGED;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return target;
+    }
+
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.ENRAGE_CHANGED;
+    }
 
 }

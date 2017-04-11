@@ -10,27 +10,27 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class HealingTrigger extends GameEventTrigger {
 
-	public HealingTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public HealingTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		HealEvent healEvent = (HealEvent) event;
-		
-		EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
-		if (targetEntityType != null) {
-			if (healEvent.getTarget().getEntityType() != targetEntityType) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        HealEvent healEvent = (HealEvent) event;
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.HEAL;
-	}
+        EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
+        if (targetEntityType != null) {
+            if (healEvent.getTarget().getEntityType() != targetEntityType) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.HEAL;
+    }
 
 }

@@ -10,29 +10,25 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class CardDrawnTrigger extends GameEventTrigger {
 
-	public CardDrawnTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public CardDrawnTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		DrawCardEvent drawEvent = (DrawCardEvent) event;
-		
-		CardType sourceType = (CardType) desc.get(EventTriggerArg.SOURCE_TYPE);
-		if (sourceType != null && drawEvent.getSourceType() != sourceType) {
-			return false;
-		}
-		
-		if (!drawEvent.isDrawn()) {
-			return false;
-		}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        DrawCardEvent drawEvent = (DrawCardEvent) event;
 
-		return true;
-	}
+        CardType sourceType = (CardType) desc.get(EventTriggerArg.SOURCE_TYPE);
+        if (sourceType != null && drawEvent.getSourceType() != sourceType) {
+            return false;
+        }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.DRAW_CARD;
-	}
+        return drawEvent.isDrawn();
+    }
+
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.DRAW_CARD;
+    }
 
 }

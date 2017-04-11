@@ -1,9 +1,5 @@
 package net.demilich.metastone.gui.simulationmode;
 
-import java.io.IOException;
-import java.util.List;
-
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,8 +14,11 @@ import net.demilich.metastone.GameNotification;
 import net.demilich.metastone.NotificationProxy;
 import net.demilich.metastone.game.decks.Deck;
 import net.demilich.metastone.game.decks.DeckFormat;
-import net.demilich.metastone.gui.common.DeckFormatStringConverter;
 import net.demilich.metastone.game.gameconfig.GameConfig;
+import net.demilich.metastone.gui.common.DeckFormatStringConverter;
+
+import java.io.IOException;
+import java.util.List;
 
 public class SimulationModeConfigView extends BorderPane implements EventHandler<ActionEvent> {
 
@@ -66,9 +65,9 @@ public class SimulationModeConfigView extends BorderPane implements EventHandler
 		backButton.setOnAction(this);
 		setupNumberOfGamesBox();
 
-		formatBox.valueProperty().addListener((ChangeListener<DeckFormat>) (observableProperty, oldDeckFormat, newDeckFormat) -> {
-			setDeckFormats(newDeckFormat);
-		});
+        formatBox.valueProperty().addListener((observableProperty, oldDeckFormat, newDeckFormat) -> {
+            setDeckFormats(newDeckFormat);
+        });
 	}
 
 	private void setupDeckFormats() {
@@ -122,7 +121,7 @@ public class SimulationModeConfigView extends BorderPane implements EventHandler
 		numberOfGamesEntries.add(10000);
 		numberOfGamesEntries.add(100000);
 		numberOfGamesBox.setItems(numberOfGamesEntries);
-		numberOfGamesBox.getSelectionModel().select(2);
-	}
+        numberOfGamesBox.getSelectionModel().select(0);
+    }
 
 }

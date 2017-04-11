@@ -6,13 +6,13 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class RandomCondition extends Condition {
 
-	public RandomCondition(ConditionDesc desc) {
-		super(desc);
-	}
+    public RandomCondition(ConditionDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
-		return context.getLogic().randomBool();
-	}
+    @Override
+    protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
+        return context.getLogic().randomBool();
+    }
 
 }

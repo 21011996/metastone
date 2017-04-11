@@ -8,37 +8,39 @@ import net.demilich.metastone.game.entities.minions.Minion;
 import net.demilich.metastone.game.targeting.CardReference;
 import net.demilich.metastone.game.targeting.TargetSelection;
 
-public class PlayMinionCardAction extends PlayCardAction {
+import java.io.Serializable;
 
-	private final BattlecryAction battlecry;
+public class PlayMinionCardAction extends PlayCardAction implements Serializable {
 
-	public PlayMinionCardAction(CardReference cardReference) {
-		this(cardReference, null);
-	}
+    private final BattlecryAction battlecry;
 
-	public PlayMinionCardAction(CardReference cardReference, BattlecryAction battlecry) {
-		super(cardReference);
-		this.battlecry = battlecry;
-		setTargetRequirement(TargetSelection.FRIENDLY_MINIONS);
-		setActionType(ActionType.SUMMON);
-	}
+    public PlayMinionCardAction(CardReference cardReference) {
+        this(cardReference, null);
+    }
 
-	@Override
-	public String getPromptText() {
-		return "[Summon minion]";
-	}
+    public PlayMinionCardAction(CardReference cardReference, BattlecryAction battlecry) {
+        super(cardReference);
+        this.battlecry = battlecry;
+        setTargetRequirement(TargetSelection.FRIENDLY_MINIONS);
+        setActionType(ActionType.SUMMON);
+    }
 
-	@Override
-	protected void play(GameContext context, int playerId) {
-		MinionCard minionCard = (MinionCard) context.getPendingCard();
-		Actor nextTo = (Actor) (getTargetKey() != null ? context.resolveSingleTarget(getTargetKey()) : null);
-		Minion minion = minionCard.summon();
-		if (battlecry != null) {
-			minion.setBattlecry(battlecry);
-		}
-		Player player = context.getPlayer(playerId);
-		int index = player.getSummons().indexOf(nextTo);
-		context.getLogic().summon(playerId, minion, minionCard, index, true);
-	}
+    @Override
+    public String getPromptText() {
+        return "[Summon minion]";
+    }
+
+    @Override
+    protected void play(GameContext context, int playerId) {
+        MinionCard minionCard = (MinionCard) context.getPendingCard();
+        Actor nextTo = (Actor) (getTargetKey() != null ? context.resolveSingleTarget(getTargetKey()) : null);
+        Minion minion = minionCard.summon();
+        if (battlecry != null) {
+            minion.setBattlecry(battlecry);
+        }
+        Player player = context.getPlayer(playerId);
+        int index = player.getSummons().indexOf(nextTo);
+        context.getLogic().summon(playerId, minion, minionCard, index, true);
+    }
 
 }

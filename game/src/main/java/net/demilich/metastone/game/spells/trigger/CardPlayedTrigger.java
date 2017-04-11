@@ -12,29 +12,25 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class CardPlayedTrigger extends GameEventTrigger {
 
-	public CardPlayedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public CardPlayedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		CardPlayedEvent cardPlayedEvent = (CardPlayedEvent) event;
-		CardType cardType = (CardType) desc.get(EventTriggerArg.CARD_TYPE);
-		if (cardType != null && !cardPlayedEvent.getCard().getCardType().isCardType(cardType)) {
-			return false;
-		}
-		
-		Race race = (Race) desc.get(EventTriggerArg.RACE);
-		if (race != null && cardPlayedEvent.getCard().getAttribute(Attribute.RACE) != race) {
-			return false;
-		}
-		
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        CardPlayedEvent cardPlayedEvent = (CardPlayedEvent) event;
+        CardType cardType = (CardType) desc.get(EventTriggerArg.CARD_TYPE);
+        if (cardType != null && !cardPlayedEvent.getCard().getCardType().isCardType(cardType)) {
+            return false;
+        }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.PLAY_CARD;
-	}
+        Race race = (Race) desc.get(EventTriggerArg.RACE);
+        return !(race != null && cardPlayedEvent.getCard().getAttribute(Attribute.RACE) != race);
+    }
+
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.PLAY_CARD;
+    }
 
 }

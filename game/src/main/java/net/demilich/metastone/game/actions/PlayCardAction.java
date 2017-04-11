@@ -1,8 +1,5 @@
 package net.demilich.metastone.game.actions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.demilich.metastone.game.Attribute;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
@@ -10,82 +7,86 @@ import net.demilich.metastone.game.cards.Card;
 import net.demilich.metastone.game.cards.SpellCard;
 import net.demilich.metastone.game.entities.Entity;
 import net.demilich.metastone.game.targeting.CardReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public abstract class PlayCardAction extends GameAction {
+import java.io.Serializable;
 
-	public static Logger logger = LoggerFactory.getLogger(PlayCardAction.class);
+public abstract class PlayCardAction extends GameAction implements Serializable {
 
-	private final CardReference cardReference;
-	private int groupIndex;
+    public static Logger logger = LoggerFactory.getLogger(PlayCardAction.class);
 
-	public PlayCardAction(CardReference cardReference) {
-		this.cardReference = cardReference;
-	}
+    private final CardReference cardReference;
+    private int groupIndex;
 
-	@Override
-	public boolean canBeExecutedOn(GameContext context, Player player, Entity entity) {
-		Card card = context.resolveCardReference(getCardReference());
-		if (card instanceof SpellCard) {
-			SpellCard spellCard = (SpellCard) card;
-			return spellCard.canBeCastOn(context, player, entity);
-		}
+    public PlayCardAction(CardReference cardReference) {
+        this.cardReference = cardReference;
+    }
 
-		return true;
-	}
+    @Override
+    public boolean canBeExecutedOn(GameContext context, Player player, Entity entity) {
+        Card card = context.resolveCardReference(getCardReference());
+        if (card instanceof SpellCard) {
+            SpellCard spellCard = (SpellCard) card;
+            return spellCard.canBeCastOn(context, player, entity);
+        }
 
-	@Override
-	public void execute(GameContext context, int playerId) {
-		Card card = context.resolveCardReference(getCardReference());
-		context.setPendingCard(card);
-		try {
-			context.getLogic().playCard(playerId, getCardReference());
-			// card was countered, do not actually resolve its effects
-			if (!card.hasAttribute(Attribute.COUNTERED)) {
-				play(context, playerId);
-			}
+        return true;
+    }
 
-		} catch (Exception e) {
-			logger.error("ERROR while playing card " + card + " reference: " + cardReference);
-			context.getLogic().panicDump();
-			e.printStackTrace();
-			System.exit(-1);
-			throw e;
-		}
+    @Override
+    public void execute(GameContext context, int playerId) {
+        Card card = context.resolveCardReference(getCardReference());
+        context.setPendingCard(card);
+        try {
+            context.getLogic().playCard(playerId, getCardReference());
+            // card was countered, do not actually resolve its effects
+            if (!card.hasAttribute(Attribute.COUNTERED)) {
+                play(context, playerId);
+            }
 
-		context.getLogic().afterCardPlayed(playerId, getCardReference());
-		context.setPendingCard(null);
-	}
+        } catch (Exception e) {
+            logger.error("ERROR while playing card " + card + " reference: " + cardReference);
+            context.getLogic().panicDump();
+            e.printStackTrace();
+            System.exit(-1);
+            throw e;
+        }
 
-	public CardReference getCardReference() {
-		return cardReference;
-	}
+        context.getLogic().afterCardPlayed(playerId, getCardReference());
+        context.setPendingCard(null);
+    }
 
-	public int getGroupIndex() {
-		return groupIndex;
-	}
+    public CardReference getCardReference() {
+        return cardReference;
+    }
 
-	@Override
-	public String getPromptText() {
-		return "[Play card]";
-	}
+    public int getGroupIndex() {
+        return groupIndex;
+    }
 
-	@Override
-	public boolean isSameActionGroup(GameAction anotherAction) {
-		if (anotherAction.getActionType() != getActionType()) {
-			return false;
-		}
-		PlayCardAction playCardAction = (PlayCardAction) anotherAction;
-		return playCardAction.getGroupIndex() == getGroupIndex() && this.cardReference.equals(playCardAction.cardReference);
-	}
+    public void setGroupIndex(int groupIndex) {
+        this.groupIndex = groupIndex;
+    }
 
-	protected abstract void play(GameContext context, int playerId);
+    @Override
+    public String getPromptText() {
+        return "[Play card]";
+    }
 
-	public void setGroupIndex(int groupIndex) {
-		this.groupIndex = groupIndex;
-	}
+    @Override
+    public boolean isSameActionGroup(GameAction anotherAction) {
+        if (anotherAction.getActionType() != getActionType()) {
+            return false;
+        }
+        PlayCardAction playCardAction = (PlayCardAction) anotherAction;
+        return playCardAction.getGroupIndex() == getGroupIndex() && this.cardReference.equals(playCardAction.cardReference);
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s Card: %s Target: %s", getActionType(), cardReference, getTargetKey());
-	}
+    protected abstract void play(GameContext context, int playerId);
+
+    @Override
+    public String toString() {
+        return String.format("%s Card: %s Target: %s", getActionType(), cardReference, getTargetKey());
+    }
 }

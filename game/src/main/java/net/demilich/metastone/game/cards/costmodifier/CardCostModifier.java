@@ -1,8 +1,5 @@
 package net.demilich.metastone.game.cards.costmodifier;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.demilich.metastone.game.Attribute;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.cards.Card;
@@ -21,214 +18,218 @@ import net.demilich.metastone.game.spells.trigger.GameEventTrigger;
 import net.demilich.metastone.game.spells.trigger.IGameEventListener;
 import net.demilich.metastone.game.targeting.EntityReference;
 
-public class CardCostModifier extends CustomCloneable implements IGameEventListener {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-	private boolean expired;
-	private int owner;
-	private EntityReference hostReference;
-	private GameEventTrigger expirationTrigger;
+public class CardCostModifier extends CustomCloneable implements IGameEventListener, Serializable {
 
-	private CardCostModifierDesc desc;
+    private boolean expired;
+    private int owner;
+    private EntityReference hostReference;
+    private GameEventTrigger expirationTrigger;
 
-	public CardCostModifier(CardCostModifierDesc desc) {
-		this.desc = desc;
-		EventTriggerDesc triggerDesc = (EventTriggerDesc) desc.get(CardCostModifierArg.EXPIRATION_TRIGGER);
-		if (triggerDesc != null) {
-			this.expirationTrigger = triggerDesc.create();
-		}
-	}
+    private CardCostModifierDesc desc;
 
-	public boolean appliesTo(Card card) {
-		if (expired) {
-			return false;
-		}
-		
-		if (!getRequiredCardIds().isEmpty() && !getRequiredCardIds().contains(card.getId())) {
-			return false;
-		}
+    public CardCostModifier(CardCostModifierDesc desc) {
+        this.desc = desc;
+        EventTriggerDesc triggerDesc = (EventTriggerDesc) desc.get(CardCostModifierArg.EXPIRATION_TRIGGER);
+        if (triggerDesc != null) {
+            this.expirationTrigger = triggerDesc.create();
+        }
+    }
 
-		if (getRequiredAttribute() != null && !card.hasAttribute(getRequiredAttribute())) {
-			return false;
-		}
+    public boolean appliesTo(Card card) {
+        if (expired) {
+            return false;
+        }
 
-		if (getRequiredRace() != null && card.getAttribute(Attribute.RACE) != getRequiredRace()) {
-			return false;
-		}
+        if (!getRequiredCardIds().isEmpty() && !getRequiredCardIds().contains(card.getId())) {
+            return false;
+        }
 
-		switch (getTargetPlayer()) {
-		case BOTH:
-			break;
-		case OPPONENT:
-			if (card.getOwner() == getOwner()) {
-				return false;
-			}
-			break;
-		case SELF:
-			if (card.getOwner() != getOwner()) {
-				return false;
-			}
-			break;
-		default:
-			break;
+        if (getRequiredAttribute() != null && !card.hasAttribute(getRequiredAttribute())) {
+            return false;
+        }
 
-		}
-		if (getCardType() == null && !card.getCardType().isCardType(CardType.HERO_POWER)) {
-			return true;
-		}
-		
-		return card.getCardType().isCardType(getCardType());
-	}
-	
-	@Override
-	public boolean canFire(GameEvent event) {
-		return true;
-	}
+        if (getRequiredRace() != null && card.getAttribute(Attribute.RACE) != getRequiredRace()) {
+            return false;
+        }
 
-	@Override
-	public CardCostModifier clone() {
-		CardCostModifier clone = (CardCostModifier) super.clone();
-		clone.expirationTrigger = expirationTrigger != null ? (GameEventTrigger) expirationTrigger.clone() : null;
-		return clone;
-	}
+        switch (getTargetPlayer()) {
+            case BOTH:
+                break;
+            case OPPONENT:
+                if (card.getOwner() == getOwner()) {
+                    return false;
+                }
+                break;
+            case SELF:
+                if (card.getOwner() != getOwner()) {
+                    return false;
+                }
+                break;
+            default:
+                break;
 
-	public void expire() {
-		expired = true;
-	}
+        }
+        if (getCardType() == null && !card.getCardType().isCardType(CardType.HERO_POWER)) {
+            return true;
+        }
 
-	protected Object get(CardCostModifierArg arg) {
-		return desc.get(arg);
-	}
+        return card.getCardType().isCardType(getCardType());
+    }
 
-	protected CardType getCardType() {
-		return (CardType) desc.get(CardCostModifierArg.CARD_TYPE);
-	}
+    @Override
+    public boolean canFire(GameEvent event) {
+        return true;
+    }
 
-	@Override
-	public EntityReference getHostReference() {
-		return hostReference;
-	}
+    @Override
+    public CardCostModifier clone() {
+        CardCostModifier clone = (CardCostModifier) super.clone();
+        clone.expirationTrigger = expirationTrigger != null ? expirationTrigger.clone() : null;
+        return clone;
+    }
 
-	public int getMinValue() {
-		return desc.getInt(CardCostModifierArg.MIN_VALUE);
-	}
+    public void expire() {
+        expired = true;
+    }
 
-	@Override
-	public int getOwner() {
-		return owner;
-	}
+    protected Object get(CardCostModifierArg arg) {
+        return desc.get(arg);
+    }
 
-	protected Attribute getRequiredAttribute() {
-		return (Attribute) desc.get(CardCostModifierArg.REQUIRED_ATTRIBUTE);
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected List<Integer> getRequiredCardIds() {
-		if (!desc.contains(CardCostModifierArg.CARD_IDS)) {
-			return new ArrayList<Integer>();
-		}
-		return (List<Integer>) desc.get(CardCostModifierArg.CARD_IDS);
-	}
+    protected CardType getCardType() {
+        return (CardType) desc.get(CardCostModifierArg.CARD_TYPE);
+    }
 
-	protected Race getRequiredRace() {
-		return (Race) get(CardCostModifierArg.RACE);
-	}
+    @Override
+    public EntityReference getHostReference() {
+        return hostReference;
+    }
 
-	protected TargetPlayer getTargetPlayer() {
-		if (!desc.contains(CardCostModifierArg.TARGET_PLAYER)) {
-			return TargetPlayer.SELF;
-		}
-		return (TargetPlayer) desc.get(CardCostModifierArg.TARGET_PLAYER);
-	}
+    public int getMinValue() {
+        return desc.getInt(CardCostModifierArg.MIN_VALUE);
+    }
 
-	@Override
-	public boolean interestedIn(GameEventType eventType) {
-		if (expirationTrigger == null) {
-			return false;
-		}
-		return eventType == expirationTrigger.interestedIn() || expirationTrigger.interestedIn() == GameEventType.ALL;
-	}
+    @Override
+    public int getOwner() {
+        return owner;
+    }
 
-	@Override
-	public boolean isExpired() {
-		return expired;
-	}
+    @Override
+    public void setOwner(int playerIndex) {
+        this.owner = playerIndex;
+        if (expirationTrigger != null) {
+            expirationTrigger.setOwner(playerIndex);
+        }
+    }
 
-	@Override
-	public void onAdd(GameContext context) {
-	}
+    protected Attribute getRequiredAttribute() {
+        return (Attribute) desc.get(CardCostModifierArg.REQUIRED_ATTRIBUTE);
+    }
 
-	@Override
-	public void onGameEvent(GameEvent event) {
-		Entity host = event.getGameContext().resolveSingleTarget(getHostReference());
-		if (expirationTrigger != null && event.getEventType() == expirationTrigger.interestedIn() && expirationTrigger.fires(event, host)) {
-			expire();
-		}
-	}
+    @SuppressWarnings("unchecked")
+    protected List<Integer> getRequiredCardIds() {
+        if (!desc.contains(CardCostModifierArg.CARD_IDS)) {
+            return new ArrayList<Integer>();
+        }
+        return (List<Integer>) desc.get(CardCostModifierArg.CARD_IDS);
+    }
 
-	@Override
-	public void onRemove(GameContext context) {
-		expired = true;
-	}
+    protected Race getRequiredRace() {
+        return (Race) get(CardCostModifierArg.RACE);
+    }
 
-	public int process(Card card, int currentManaCost) {
-		AlgebraicOperation operation = (AlgebraicOperation) desc.get(CardCostModifierArg.OPERATION);
-		int value = desc.getInt(CardCostModifierArg.VALUE);
-		if (operation != null) {
-			return operation.performOperation(currentManaCost, value);
-		}
-		int modifiedManaCost = currentManaCost + desc.getInt(CardCostModifierArg.VALUE);
-		return modifiedManaCost;
-	}
+    protected TargetPlayer getTargetPlayer() {
+        if (!desc.contains(CardCostModifierArg.TARGET_PLAYER)) {
+            return TargetPlayer.SELF;
+        }
+        return (TargetPlayer) desc.get(CardCostModifierArg.TARGET_PLAYER);
+    }
 
-	@Override
-	public void setHost(Entity host) {
-		hostReference = host.getReference();
-	}
+    @Override
+    public boolean interestedIn(GameEventType eventType) {
+        if (expirationTrigger == null) {
+            return false;
+        }
+        return eventType == expirationTrigger.interestedIn() || expirationTrigger.interestedIn() == GameEventType.ALL;
+    }
 
-	@Override
-	public void setOwner(int playerIndex) {
-		this.owner = playerIndex;
-		if (expirationTrigger != null) {
-			expirationTrigger.setOwner(playerIndex);
-		}
-	}
+    @Override
+    public boolean isExpired() {
+        return expired;
+    }
 
-	@Override
-	public boolean hasPersistentOwner() {
-		return false;
-	}
+    @Override
+    public void onAdd(GameContext context) {
+    }
 
-	@Override
-	public boolean oneTurnOnly() {
-		return false;
-	}
+    @Override
+    public void onGameEvent(GameEvent event) {
+        Entity host = event.getGameContext().resolveSingleTarget(getHostReference());
+        if (expirationTrigger != null && event.getEventType() == expirationTrigger.interestedIn() && expirationTrigger.fires(event, host)) {
+            expire();
+        }
+    }
 
-	@Override
-	public boolean isDelayed() {
-		return false;
-	}
+    @Override
+    public void onRemove(GameContext context) {
+        expired = true;
+    }
 
-	@Override
-	public void delayTimeDown() {
-		
-	}
+    public int process(Card card, int currentManaCost) {
+        AlgebraicOperation operation = (AlgebraicOperation) desc.get(CardCostModifierArg.OPERATION);
+        int value = desc.getInt(CardCostModifierArg.VALUE);
+        if (operation != null) {
+            return operation.performOperation(currentManaCost, value);
+        }
+        int modifiedManaCost = currentManaCost + desc.getInt(CardCostModifierArg.VALUE);
+        return modifiedManaCost;
+    }
 
-	@Override
-	public boolean canFireCondition(GameEvent event) {
-		if (expirationTrigger != null) {
-			return expirationTrigger.canFireCondition(event);
-		}
-		return true;
-	}
+    @Override
+    public void setHost(Entity host) {
+        hostReference = host.getReference();
+    }
 
-	@Override
-	public boolean hasCounter() {
-		return false;
-	}
+    @Override
+    public boolean hasPersistentOwner() {
+        return false;
+    }
 
-	@Override
-	public void countDown() {
-		
-	}
+    @Override
+    public boolean oneTurnOnly() {
+        return false;
+    }
+
+    @Override
+    public boolean isDelayed() {
+        return false;
+    }
+
+    @Override
+    public void delayTimeDown() {
+
+    }
+
+    @Override
+    public boolean canFireCondition(GameEvent event) {
+        if (expirationTrigger != null) {
+            return expirationTrigger.canFireCondition(event);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean hasCounter() {
+        return false;
+    }
+
+    @Override
+    public void countDown() {
+
+    }
 
 }

@@ -11,56 +11,56 @@ import net.demilich.metastone.game.spells.NullSpell;
 
 public class HeroPowerChooseOne extends HeroPower implements IChooseOneCard {
 
-	private String[] cardIds;
-	private String cardId;
+    private String[] cardIds;
+    private String cardId;
 
-	public HeroPowerChooseOne(HeroPowerCardDesc desc) {
-		super(desc);
-		setAttribute(Attribute.CHOOSE_ONE);
-		this.cardIds = desc.options;
-		this.cardId = desc.bothOptions;
-		setSpell(NullSpell.create());
-	}
+    public HeroPowerChooseOne(HeroPowerCardDesc desc) {
+        super(desc);
+        setAttribute(Attribute.CHOOSE_ONE);
+        this.cardIds = desc.options;
+        this.cardId = desc.bothOptions;
+        setSpell(NullSpell.create());
+    }
 
-	private SpellCard getCard(String cardId) {
-		SpellCard card = (SpellCard) CardCatalogue.getCardById(cardId);
-		card.setLocation(getLocation());
-		card.setOwner(getOwner());
-		card.setId(getId());
-		return card;
-	}
+    private SpellCard getCard(String cardId) {
+        SpellCard card = (SpellCard) CardCatalogue.getCardById(cardId);
+        card.setLocation(getLocation());
+        card.setOwner(getOwner());
+        card.setId(getId());
+        return card;
+    }
 
-	public boolean hasBothOptions() {
-		return cardId != null;
-	}
+    public boolean hasBothOptions() {
+        return cardId != null;
+    }
 
-	@Override
-	public PlayCardAction play() {
-		throw new UnsupportedOperationException("The method .play() should not be called for HeroPowerChooseOne");
-	}
+    @Override
+    public PlayCardAction play() {
+        throw new UnsupportedOperationException("The method .play() should not be called for HeroPowerChooseOne");
+    }
 
-	@Override
-	public PlayCardAction[] playOptions() {
-		PlayCardAction[] actions = new PlayCardAction[cardIds.length];
-		for (int i = 0; i < cardIds.length; i++) {
-			String cardId = cardIds[i];
-			SpellCard card = getCard(cardId);
+    @Override
+    public PlayCardAction[] playOptions() {
+        PlayCardAction[] actions = new PlayCardAction[cardIds.length];
+        for (int i = 0; i < cardIds.length; i++) {
+            String cardId = cardIds[i];
+            SpellCard card = getCard(cardId);
 
-			PlayCardAction cardAction = new HeroPowerAction(card.getSpell(), this, getTargetRequirement());
-			cardAction.setActionSuffix(card.getName());
-			cardAction.setGroupIndex(i);
-			actions[i] = cardAction;
-		}
-		return actions;
-	}
+            PlayCardAction cardAction = new HeroPowerAction(card.getSpell(), this, getTargetRequirement());
+            cardAction.setActionSuffix(card.getName());
+            cardAction.setGroupIndex(i);
+            actions[i] = cardAction;
+        }
+        return actions;
+    }
 
-	@Override
-	public PlayCardAction playBothOptions() {
-		SpellCard card = getCard(cardId);
+    @Override
+    public PlayCardAction playBothOptions() {
+        SpellCard card = getCard(cardId);
 
-		PlayCardAction cardAction = new HeroPowerAction(card.getSpell(), this, getTargetRequirement());
-		cardAction.setActionSuffix(card.getName());
-		return cardAction;
-	}
+        PlayCardAction cardAction = new HeroPowerAction(card.getSpell(), this, getTargetRequirement());
+        cardAction.setActionSuffix(card.getName());
+        return cardAction;
+    }
 
 }

@@ -12,21 +12,21 @@ import net.demilich.metastone.game.targeting.TargetSelection;
 
 public class SecretCard extends SpellCard {
 
-	public SecretCard(SecretCardDesc desc) {
-		super(desc);
-		GameEventTrigger trigger = desc.trigger.create();
-		setSecret(new Secret(trigger, desc.spell, this));
-		setAttribute(Attribute.SECRET);
-	}
+    public SecretCard(SecretCardDesc desc) {
+        super(desc);
+        GameEventTrigger trigger = desc.trigger.create();
+        setSecret(new Secret(trigger, desc.spell, this));
+        setAttribute(Attribute.SECRET);
+    }
 
-	public boolean canBeCast(GameContext context, Player player) {
-		return context.getLogic().canPlaySecret(player, this);
-	}
+    public boolean canBeCast(GameContext context, Player player) {
+        return context.getLogic().canPlaySecret(player, this);
+    }
 
-	public void setSecret(Secret secret) {
-		SpellDesc spell = AddSecretSpell.create(secret);
-		setTargetRequirement(TargetSelection.NONE);
-		setSpell(spell);
-	}
+    public void setSecret(Secret secret) {
+        SpellDesc spell = AddSecretSpell.create(secret);
+        setTargetRequirement(TargetSelection.NONE);
+        setSpell(spell);
+    }
 
 }

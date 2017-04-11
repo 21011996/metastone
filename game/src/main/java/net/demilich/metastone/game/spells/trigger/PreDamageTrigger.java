@@ -10,30 +10,26 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class PreDamageTrigger extends GameEventTrigger {
 
-	public PreDamageTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public PreDamageTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		PreDamageEvent preDamageEvent = (PreDamageEvent) event;
-		
-		EntityType sourceEntityType = (EntityType) desc.get(EventTriggerArg.SOURCE_ENTITY_TYPE);
-		if (sourceEntityType != null && preDamageEvent.getSource().getEntityType() != sourceEntityType) {
-			return false;
-		}
-		
-		EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
-		if (targetEntityType != null && preDamageEvent.getVictim().getEntityType() != targetEntityType) {
-			return false;
-		}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        PreDamageEvent preDamageEvent = (PreDamageEvent) event;
 
-		return true;
-	}
+        EntityType sourceEntityType = (EntityType) desc.get(EventTriggerArg.SOURCE_ENTITY_TYPE);
+        if (sourceEntityType != null && preDamageEvent.getSource().getEntityType() != sourceEntityType) {
+            return false;
+        }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.PRE_DAMAGE;
-	}
+        EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
+        return !(targetEntityType != null && preDamageEvent.getVictim().getEntityType() != targetEntityType);
+    }
+
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.PRE_DAMAGE;
+    }
 
 }

@@ -10,29 +10,25 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class AfterPhysicalAttackTrigger extends GameEventTrigger {
 
-	public AfterPhysicalAttackTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public AfterPhysicalAttackTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		AfterPhysicalAttackEvent physicalAttackEvent = (AfterPhysicalAttackEvent) event;
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        AfterPhysicalAttackEvent physicalAttackEvent = (AfterPhysicalAttackEvent) event;
 
-		EntityType sourceEntityType = (EntityType) desc.get(EventTriggerArg.SOURCE_ENTITY_TYPE);
-		if (sourceEntityType != null && physicalAttackEvent.getAttacker().getEntityType() != sourceEntityType) {
-			return false;
-		}
+        EntityType sourceEntityType = (EntityType) desc.get(EventTriggerArg.SOURCE_ENTITY_TYPE);
+        if (sourceEntityType != null && physicalAttackEvent.getAttacker().getEntityType() != sourceEntityType) {
+            return false;
+        }
 
-		EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
-		if (targetEntityType != null && physicalAttackEvent.getDefender().getEntityType() != targetEntityType) {
-			return false;
-		}
+        EntityType targetEntityType = (EntityType) desc.get(EventTriggerArg.TARGET_ENTITY_TYPE);
+        return !(targetEntityType != null && physicalAttackEvent.getDefender().getEntityType() != targetEntityType);
+    }
 
-		return true;
-	}
-
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.AFTER_PHYSICAL_ATTACK;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.AFTER_PHYSICAL_ATTACK;
+    }
 }

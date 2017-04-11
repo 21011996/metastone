@@ -6,19 +6,19 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class OrCondition extends Condition {
 
-	public OrCondition(ConditionDesc desc) {
-		super(desc);
-	}
+    public OrCondition(ConditionDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
-		Condition[] conditions = (Condition[]) desc.get(ConditionArg.CONDITIONS);
-		for (Condition condition : conditions) {
-			if (condition.isFulfilled(context, player, source, target)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
+        Condition[] conditions = (Condition[]) desc.get(ConditionArg.CONDITIONS);
+        for (Condition condition : conditions) {
+            if (condition.isFulfilled(context, player, source, target)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

@@ -7,36 +7,36 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class AfterSummonEvent extends GameEvent {
 
-	private final Actor minion;
-	private final Card source;
+    private final Actor minion;
+    private final Card source;
 
-	public AfterSummonEvent(GameContext context, Actor minion, Card source) {
-		super(context, minion.getOwner(), -1);
-		this.minion = minion;
-		this.source = source;
-	}
-	
-	@Override
-	public Entity getEventTarget() {
-		return getMinion();
-	}
+    public AfterSummonEvent(GameContext context, Actor minion, Card source) {
+        super(context, minion.getOwner(), -1);
+        this.minion = minion;
+        this.source = source;
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.AFTER_SUMMON;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getMinion();
+    }
 
-	public Actor getMinion() {
-		return minion;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.AFTER_SUMMON;
+    }
 
-	public Card getSource() {
-		return source;
-	}
+    public Actor getMinion() {
+        return minion;
+    }
 
-	@Override
-	public String toString() {
-		return "[After Summon Event MINION " + minion + " from SOURCE " + source + "]";
-	}
+    public Card getSource() {
+        return source;
+    }
+
+    @Override
+    public String toString() {
+        return "[After Summon Event MINION " + minion + " from SOURCE " + source + "]";
+    }
 
 }

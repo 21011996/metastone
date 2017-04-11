@@ -8,19 +8,19 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class SilenceTrigger extends GameEventTrigger {
 
-	public SilenceTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public SilenceTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		SilenceEvent silenceEvent = (SilenceEvent) event;
-		return silenceEvent.getTarget() == host;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        SilenceEvent silenceEvent = (SilenceEvent) event;
+        return silenceEvent.getTarget() == host;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.SILENCE;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.SILENCE;
+    }
 
 }

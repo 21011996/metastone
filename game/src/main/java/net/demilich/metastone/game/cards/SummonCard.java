@@ -6,14 +6,14 @@ import net.demilich.metastone.game.entities.minions.Summon;
 
 public abstract class SummonCard extends Card {
 
-	public SummonCard(SummonCardDesc desc) {
-		super(desc);
-	}
+    public SummonCard(SummonCardDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	public abstract PlayCardAction play();
+    @Override
+    public abstract PlayCardAction play();
 
-	
-	public abstract Summon summon();
+
+    public abstract Summon summon();
 
 }

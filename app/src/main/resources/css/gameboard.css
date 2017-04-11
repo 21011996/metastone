@@ -1,9 +1,9 @@
 .board {
-	-fx-background-color: bisque;
+    -fx-background-color: bisque;
 }
 
 .center-message {
-	-fx-font-size: 20pt;
+    -fx-font-size: 20pt;
     -fx-font-family: "System";
     -fx-font-weight: bold;
     -fx-text-fill: gray;
@@ -12,5 +12,5 @@
 }
 
 #target-button {
-	-fx-background-color: transparent;
+    -fx-background-color: transparent;
 }

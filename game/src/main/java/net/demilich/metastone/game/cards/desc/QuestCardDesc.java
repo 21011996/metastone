@@ -6,11 +6,11 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class QuestCardDesc extends SpellCardDesc {
 
-	public EventTriggerDesc quest;
+    public EventTriggerDesc quest;
 
-	@Override
-	public Card createInstance() {
-		return new QuestCard(this);
-	}
+    @Override
+    public Card createInstance() {
+        return new QuestCard(this);
+    }
 
 }

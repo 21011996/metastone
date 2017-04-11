@@ -6,42 +6,42 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class PhysicalAttackEvent extends GameEvent {
 
-	private final Actor attacker;
-	private final Actor defender;
-	private final int damageDealt;
+    private final Actor attacker;
+    private final Actor defender;
+    private final int damageDealt;
 
-	public PhysicalAttackEvent(GameContext context, Actor attacker, Actor defender, int damageDealt) {
-		super(context, defender.getOwner(), attacker.getOwner());
-		this.attacker = attacker;
-		this.defender = defender;
-		this.damageDealt = damageDealt;
-	}
+    public PhysicalAttackEvent(GameContext context, Actor attacker, Actor defender, int damageDealt) {
+        super(context, defender.getOwner(), attacker.getOwner());
+        this.attacker = attacker;
+        this.defender = defender;
+        this.damageDealt = damageDealt;
+    }
 
-	public Actor getAttacker() {
-		return attacker;
-	}
+    public Actor getAttacker() {
+        return attacker;
+    }
 
-	public int getDamageDealt() {
-		return damageDealt;
-	}
+    public int getDamageDealt() {
+        return damageDealt;
+    }
 
-	public Actor getDefender() {
-		return defender;
-	}
-	
-	@Override
-	public Entity getEventSource() {
-		return getAttacker();
-	}
+    public Actor getDefender() {
+        return defender;
+    }
 
-	@Override
-	public Entity getEventTarget() {
-		return getDefender();
-	}
+    @Override
+    public Entity getEventSource() {
+        return getAttacker();
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.PHYSICAL_ATTACK;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getDefender();
+    }
+
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.PHYSICAL_ATTACK;
+    }
 
 }

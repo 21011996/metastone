@@ -7,13 +7,13 @@ import net.demilich.metastone.game.spells.SpellUtils;
 
 public class HighlanderDeckCondition extends Condition {
 
-	public HighlanderDeckCondition(ConditionDesc desc) {
-		super(desc);
-	}
+    public HighlanderDeckCondition(ConditionDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
-		return SpellUtils.highlanderDeck(player);
-	}
+    @Override
+    protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
+        return SpellUtils.highlanderDeck(player);
+    }
 
 }

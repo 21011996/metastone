@@ -6,15 +6,15 @@ import net.demilich.metastone.game.targeting.CardReference;
 
 public class PlayWeaponCardAction extends PlayCardAction {
 
-	public PlayWeaponCardAction(CardReference cardReference) {
-		super(cardReference);
-		setActionType(ActionType.EQUIP_WEAPON);
-	}
+    public PlayWeaponCardAction(CardReference cardReference) {
+        super(cardReference);
+        setActionType(ActionType.EQUIP_WEAPON);
+    }
 
-	@Override
-	public void play(GameContext context, int playerId) {
-		WeaponCard weaponCard = (WeaponCard) context.getPendingCard();
-		context.getLogic().equipWeapon(playerId, weaponCard.getWeapon(), true);
-	}
+    @Override
+    public void play(GameContext context, int playerId) {
+        WeaponCard weaponCard = (WeaponCard) context.getPendingCard();
+        context.getLogic().equipWeapon(playerId, weaponCard.getWeapon(), true);
+    }
 
 }

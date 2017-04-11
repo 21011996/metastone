@@ -6,13 +6,13 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class ControlsSecretCondition extends Condition {
 
-	public ControlsSecretCondition(ConditionDesc desc) {
-		super(desc);
-	}
+    public ControlsSecretCondition(ConditionDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
-		return (player.getSecrets().size() - player.getQuests().size()) > 0;
-	}
+    @Override
+    protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
+        return (player.getSecrets().size() - player.getQuests().size()) > 0;
+    }
 
 }

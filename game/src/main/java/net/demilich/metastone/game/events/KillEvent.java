@@ -5,25 +5,25 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class KillEvent extends GameEvent {
 
-	private final Entity victim;
+    private final Entity victim;
 
-	public KillEvent(GameContext context, Entity victim) {
-		super(context, victim.getOwner(), -1);
-		this.victim = victim;
-	}
-	
-	@Override
-	public Entity getEventTarget() {
-		return getVictim();
-	}
+    public KillEvent(GameContext context, Entity victim) {
+        super(context, victim.getOwner(), -1);
+        this.victim = victim;
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.KILL;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getVictim();
+    }
 
-	public Entity getVictim() {
-		return victim;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.KILL;
+    }
+
+    public Entity getVictim() {
+        return victim;
+    }
 
 }

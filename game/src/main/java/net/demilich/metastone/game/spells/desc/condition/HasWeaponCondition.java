@@ -7,21 +7,18 @@ import net.demilich.metastone.game.entities.weapons.Weapon;
 
 public class HasWeaponCondition extends Condition {
 
-	public HasWeaponCondition(ConditionDesc desc) {
-		super(desc);
-	}
+    public HasWeaponCondition(ConditionDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
-		Weapon weapon = player.getHero().getWeapon();
-		if (weapon == null || weapon.isBroken()) {
-			return false;
-		}
-		String cardId = (String) desc.get(ConditionArg.CARD_ID);
-		if (cardId != null && !weapon.getSourceCard().getCardId().contains(cardId)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
+        Weapon weapon = player.getHero().getWeapon();
+        if (weapon == null || weapon.isBroken()) {
+            return false;
+        }
+        String cardId = (String) desc.get(ConditionArg.CARD_ID);
+        return !(cardId != null && !weapon.getSourceCard().getCardId().contains(cardId));
+    }
 
 }

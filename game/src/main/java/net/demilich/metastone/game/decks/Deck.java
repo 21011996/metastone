@@ -5,87 +5,89 @@ import net.demilich.metastone.game.cards.CardCollection;
 import net.demilich.metastone.game.entities.heroes.HeroClass;
 import net.demilich.metastone.game.logic.GameLogic;
 
-public class Deck {
+import java.io.Serializable;
 
-	private String name = "";
-	private final HeroClass heroClass;
-	private final CardCollection cards = new CardCollection();
-	private String description;
-	private String filename;
-	private boolean arbitrary;
+public class Deck implements Serializable {
 
-	public Deck(HeroClass heroClass) {
-		this.heroClass = heroClass;
-	}
+    private final HeroClass heroClass;
+    private final CardCollection cards = new CardCollection();
+    private String name = "";
+    private String description;
+    private String filename;
+    private boolean arbitrary;
 
-	public Deck(HeroClass heroClass, boolean arbitrary) {
-		this.heroClass = heroClass;
-		this.arbitrary = arbitrary;
-	}
+    public Deck(HeroClass heroClass) {
+        this.heroClass = heroClass;
+    }
 
-	public int containsHowMany(Card card) {
-		int count = 0;
-		for (Card cardInDeck : cards) {
-			if (card.getCardId().equals(cardInDeck.getCardId())) {
-				count++;
-			}
-		}
-		return count;
-	}
+    public Deck(HeroClass heroClass, boolean arbitrary) {
+        this.heroClass = heroClass;
+        this.arbitrary = arbitrary;
+    }
 
-	public CardCollection getCards() {
-		return cards;
-	}
+    public int containsHowMany(Card card) {
+        int count = 0;
+        for (Card cardInDeck : cards) {
+            if (card.getCardId().equals(cardInDeck.getCardId())) {
+                count++;
+            }
+        }
+        return count;
+    }
 
-	public CardCollection getCardsCopy() {
-		return getCards().clone();
-	}
+    public CardCollection getCards() {
+        return cards;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public CardCollection getCardsCopy() {
+        return getCards().clone();
+    }
 
-	public HeroClass getHeroClass() {
-		return heroClass;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getName() {
-		return name;
-	}
-	
-	public boolean isArbitrary() {
-		return arbitrary;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public boolean isComplete() {
-		return cards.getCount() == GameLogic.DECK_SIZE;
-	}
-	
-	public boolean isFull() {
-		return cards.getCount() == GameLogic.MAX_DECK_SIZE;
-	}
+    public HeroClass getHeroClass() {
+        return heroClass;
+    }
 
-	public boolean isMetaDeck() {
-		return getHeroClass() == HeroClass.DECK_COLLECTION;
-	}
-	
-	public boolean isTooBig() {
-		return cards.getCount() > GameLogic.DECK_SIZE;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public boolean isArbitrary() {
+        return arbitrary;
+    }
 
-	public String getFilename() {
-		return filename;
-	}
+    public boolean isComplete() {
+        return cards.getCount() == GameLogic.DECK_SIZE;
+    }
 
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
+    public boolean isFull() {
+        return cards.getCount() == GameLogic.MAX_DECK_SIZE;
+    }
+
+    public boolean isMetaDeck() {
+        return getHeroClass() == HeroClass.DECK_COLLECTION;
+    }
+
+    public boolean isTooBig() {
+        return cards.getCount() > GameLogic.DECK_SIZE;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 }

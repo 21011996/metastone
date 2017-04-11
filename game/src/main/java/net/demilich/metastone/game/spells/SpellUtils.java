@@ -1,10 +1,5 @@
 package net.demilich.metastone.game.spells;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Predicate;
-
 import net.demilich.metastone.game.Attribute;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
@@ -27,258 +22,263 @@ import net.demilich.metastone.game.spells.desc.filter.EntityFilter;
 import net.demilich.metastone.game.spells.desc.filter.Operation;
 import net.demilich.metastone.game.targeting.EntityReference;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
+
 public class SpellUtils {
 
-	public static void castChildSpell(GameContext context, Player player, SpellDesc spell, Entity source, Entity target) {
-		EntityReference sourceReference = source != null ? source.getReference() : null;
-		EntityReference targetReference = spell.getTarget();
-		if (targetReference == null && target != null) {
-			targetReference = target.getReference();
-		}
-		context.getLogic().castSpell(player.getId(), spell, sourceReference, targetReference, true);
-	}
+    private SpellUtils() {
+    }
 
-	public static boolean evaluateOperation(Operation operation, int actualValue, int targetValue) {
-		switch (operation) {
-		case EQUAL:
-			return actualValue == targetValue;
-		case GREATER:
-			return actualValue > targetValue;
-		case GREATER_OR_EQUAL:
-			return actualValue >= targetValue;
-		case HAS:
-			return actualValue > 0;
-		case LESS:
-			return actualValue < targetValue;
-		case LESS_OR_EQUAL:
-			return actualValue <= targetValue;
-		}
-		return false;
-	}
+    public static void castChildSpell(GameContext context, Player player, SpellDesc spell, Entity source, Entity target) {
+        EntityReference sourceReference = source != null ? source.getReference() : null;
+        EntityReference targetReference = spell.getTarget();
+        if (targetReference == null && target != null) {
+            targetReference = target.getReference();
+        }
+        context.getLogic().castSpell(player.getId(), spell, sourceReference, targetReference, true);
+    }
 
-	public static CardCollection getCards(CardCollection source, Predicate<Card> filter) {
-		CardCollection result = new CardCollection();
-		for (Card card : source) {
-			if (filter == null || filter.test(card)) {
-				result.add(card);
-			}
-		}
-		return result;
-	}
-	
-	public static Card getCard(GameContext context, SpellDesc spell) {
-		Card card = null;
-		String cardName = (String) spell.get(SpellArg.CARD);
-		card = CardCatalogue.getCardById(cardName);
-		if (spell.get(SpellArg.CARD).toString().toUpperCase().equals("PENDING_CARD")) {
-			card = (Card) context.getPendingCard();
-		} else if (spell.get(SpellArg.CARD).toString().toUpperCase().equals("EVENT_CARD")) {
-			card = (Card) context.getEventCard();
-		}
-		return card;
-	}
+    public static boolean evaluateOperation(Operation operation, int actualValue, int targetValue) {
+        switch (operation) {
+            case EQUAL:
+                return actualValue == targetValue;
+            case GREATER:
+                return actualValue > targetValue;
+            case GREATER_OR_EQUAL:
+                return actualValue >= targetValue;
+            case HAS:
+                return actualValue > 0;
+            case LESS:
+                return actualValue < targetValue;
+            case LESS_OR_EQUAL:
+                return actualValue <= targetValue;
+        }
+        return false;
+    }
 
-	public static Card[] getCards(GameContext context, SpellDesc spell) {
-		String[] cardNames = null;
-		if (spell.contains(SpellArg.CARDS)) {
-			cardNames = (String[]) spell.get(SpellArg.CARDS);
-		} else {
-			cardNames = new String[1];
-			cardNames[0] = (String) spell.get(SpellArg.CARD);
-		}
-		Card[] cards = new Card[cardNames.length];
-		for (int i = 0; i < cards.length; i++) {
-			cards[i] = context.getCardById(cardNames[i]);
-		}
-		return cards;
-	}
-	
-	public static DiscoverAction getDiscover(GameContext context, Player player, SpellDesc desc, CardCollection cards) {
-		SpellDesc spell = (SpellDesc) desc.get(SpellArg.SPELL);
-		List<GameAction> discoverActions = new ArrayList<>();
-		for (Card card : cards) {
-			SpellDesc spellClone = spell.addArg(SpellArg.CARD, card.getCardId());
-			DiscoverAction discover = DiscoverAction.createDiscover(spellClone);
-			discover.setCard(card);
-			discover.setActionSuffix(card.getName());
-			discoverActions.add(discover);
-		}
-		if (discoverActions.size() == 0) {
-			return null;
-		}
-		
-		if (context.getLogic().attributeExists(Attribute.ALL_RANDOM_YOGG_ONLY_FINAL_DESTINATION)) {
-			return (DiscoverAction) discoverActions.get(context.getLogic().random(discoverActions.size()));
-		} else {
-			return (DiscoverAction) player.getBehaviour().requestAction(context, player, discoverActions);
-		}
-	}
+    public static CardCollection getCards(CardCollection source, Predicate<Card> filter) {
+        CardCollection result = new CardCollection();
+        for (Card card : source) {
+            if (filter == null || filter.test(card)) {
+                result.add(card);
+            }
+        }
+        return result;
+    }
 
-	public static DiscoverAction getSpellDiscover(GameContext context, Player player, SpellDesc desc, List<SpellDesc> spells) {
-		List<GameAction> discoverActions = new ArrayList<>();
-		for (SpellDesc spell : spells) {
-			DiscoverAction discover = DiscoverAction.createDiscover(spell);
-			discover.setName(spell.getString(SpellArg.NAME));
-			discover.setDescription(spell.getString(SpellArg.DESCRIPTION));
-			discover.setActionSuffix((String) spell.get(SpellArg.NAME));
-			discoverActions.add(discover);
-		}
-		
-		if (context.getLogic().attributeExists(Attribute.ALL_RANDOM_YOGG_ONLY_FINAL_DESTINATION)) {
-			return (DiscoverAction) discoverActions.get(context.getLogic().random(discoverActions.size()));
-		} else {
-			return (DiscoverAction) player.getBehaviour().requestAction(context, player, discoverActions);
-		}
-	}
+    public static Card getCard(GameContext context, SpellDesc spell) {
+        Card card = null;
+        String cardName = (String) spell.get(SpellArg.CARD);
+        card = CardCatalogue.getCardById(cardName);
+        if (spell.get(SpellArg.CARD).toString().toUpperCase().equals("PENDING_CARD")) {
+            card = context.getPendingCard();
+        } else if (spell.get(SpellArg.CARD).toString().toUpperCase().equals("EVENT_CARD")) {
+            card = context.getEventCard();
+        }
+        return card;
+    }
 
-	public static Card getRandomCard(CardCollection source, Predicate<Card> filter) {
-		CardCollection result = getCards(source, filter);
-		if (result.isEmpty()) {
-			return null;
-		}
-		return result.getRandom();
-	}
-	
-	public static HeroClass getRandomHeroClass() {
-		HeroClass[] values = HeroClass.values();
-		List<HeroClass> heroClasses = new ArrayList<HeroClass>();
-		for (HeroClass heroClass : values) {
-			if (heroClass.isBaseClass()) {
-				heroClasses.add(heroClass);
-			}
-		}
-		return heroClasses.get(ThreadLocalRandom.current().nextInt(heroClasses.size()));
-	}
-	
-	public static HeroClass getRandomHeroClassExcept(HeroClass... heroClassesExcluded) {
-		HeroClass[] values = HeroClass.values();
-		List<HeroClass> heroClasses = new ArrayList<HeroClass>();
-		for (HeroClass heroClass : values) {
-			if (heroClass.isBaseClass()) {
-				heroClasses.add(heroClass);
-				for (HeroClass heroClassExcluded : heroClassesExcluded) {
-					if (heroClassExcluded == heroClass) {
-						heroClasses.remove(heroClass);
-					}
-				}
-			}
-		}
-		return heroClasses.get(ThreadLocalRandom.current().nextInt(heroClasses.size()));
-	}
+    public static Card[] getCards(GameContext context, SpellDesc spell) {
+        String[] cardNames = null;
+        if (spell.contains(SpellArg.CARDS)) {
+            cardNames = (String[]) spell.get(SpellArg.CARDS);
+        } else {
+            cardNames = new String[1];
+            cardNames[0] = (String) spell.get(SpellArg.CARD);
+        }
+        Card[] cards = new Card[cardNames.length];
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = context.getCardById(cardNames[i]);
+        }
+        return cards;
+    }
 
-	public static <T> T getRandomTarget(List<T> targets) {
-		int randomIndex = ThreadLocalRandom.current().nextInt(targets.size());
-		return targets.get(randomIndex);
-	}
+    public static DiscoverAction getDiscover(GameContext context, Player player, SpellDesc desc, CardCollection cards) {
+        SpellDesc spell = (SpellDesc) desc.get(SpellArg.SPELL);
+        List<GameAction> discoverActions = new ArrayList<>();
+        for (Card card : cards) {
+            SpellDesc spellClone = spell.addArg(SpellArg.CARD, card.getCardId());
+            DiscoverAction discover = DiscoverAction.createDiscover(spellClone);
+            discover.setCard(card);
+            discover.setActionSuffix(card.getName());
+            discoverActions.add(discover);
+        }
+        if (discoverActions.size() == 0) {
+            return null;
+        }
 
-	public static List<Actor> getValidRandomTargets(List<Entity> targets) {
-		List<Actor> validTargets = new ArrayList<Actor>();
-		for (Entity entity : targets) {
-			Actor actor = (Actor) entity;
-			if (!actor.isDestroyed() || actor.getEntityType() == EntityType.HERO) {
-				validTargets.add(actor);
-			}
+        if (context.getLogic().attributeExists(Attribute.ALL_RANDOM_YOGG_ONLY_FINAL_DESTINATION)) {
+            return (DiscoverAction) discoverActions.get(context.getLogic().random(discoverActions.size()));
+        } else {
+            return (DiscoverAction) player.getBehaviour().requestAction(context, player, discoverActions);
+        }
+    }
 
-		}
-		return validTargets;
-	}
+    public static DiscoverAction getSpellDiscover(GameContext context, Player player, SpellDesc desc, List<SpellDesc> spells) {
+        List<GameAction> discoverActions = new ArrayList<>();
+        for (SpellDesc spell : spells) {
+            DiscoverAction discover = DiscoverAction.createDiscover(spell);
+            discover.setName(spell.getString(SpellArg.NAME));
+            discover.setDescription(spell.getString(SpellArg.DESCRIPTION));
+            discover.setActionSuffix((String) spell.get(SpellArg.NAME));
+            discoverActions.add(discover);
+        }
 
-	public static List<Entity> getValidTargets(GameContext context, Player player, List<Entity> allTargets, EntityFilter filter) {
-		if (filter == null) {
-			return allTargets;
-		}
-		List<Entity> validTargets = new ArrayList<>();
-		for (Entity entity : allTargets) {
-			if (filter.matches(context, player, entity)) {
-				validTargets.add(entity);
-			}
-		}
-		return validTargets;
-	}
+        if (context.getLogic().attributeExists(Attribute.ALL_RANDOM_YOGG_ONLY_FINAL_DESTINATION)) {
+            return (DiscoverAction) discoverActions.get(context.getLogic().random(discoverActions.size()));
+        } else {
+            return (DiscoverAction) player.getBehaviour().requestAction(context, player, discoverActions);
+        }
+    }
 
-	public static int hasHowManyOfRace(Player player, Race race) {
-		int count = 0;
-		for (Summon summon : player.getSummons()) {
-			if (summon.getRace() == race) {
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	public static boolean highlanderDeck(Player player) {
-		List<String> cards = new ArrayList<String>();
-		for (Card card : player.getDeck()) {
-			if (cards.contains(card.getCardId())) {
-				return false;
-			}
-			cards.add(card.getCardId());
-		}
-		return true;
-	}
+    public static Card getRandomCard(CardCollection source, Predicate<Card> filter) {
+        CardCollection result = getCards(source, filter);
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.getRandom();
+    }
 
-	public static boolean holdsCardOfType(Player player, CardType cardType) {
-		for (Card card : player.getHand()) {
-			if (card.getCardType().isCardType(cardType)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public static HeroClass getRandomHeroClass() {
+        HeroClass[] values = HeroClass.values();
+        List<HeroClass> heroClasses = new ArrayList<HeroClass>();
+        for (HeroClass heroClass : values) {
+            if (heroClass.isBaseClass()) {
+                heroClasses.add(heroClass);
+            }
+        }
+        return heroClasses.get(ThreadLocalRandom.current().nextInt(heroClasses.size()));
+    }
 
-	public static boolean holdsMinionOfRace(Player player, Race race) {
-		for (Card card : player.getHand()) {
-			if (card.getAttribute(Attribute.RACE) == race) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public static HeroClass getRandomHeroClassExcept(HeroClass... heroClassesExcluded) {
+        HeroClass[] values = HeroClass.values();
+        List<HeroClass> heroClasses = new ArrayList<HeroClass>();
+        for (HeroClass heroClass : values) {
+            if (heroClass.isBaseClass()) {
+                heroClasses.add(heroClass);
+                for (HeroClass heroClassExcluded : heroClassesExcluded) {
+                    if (heroClassExcluded == heroClass) {
+                        heroClasses.remove(heroClass);
+                    }
+                }
+            }
+        }
+        return heroClasses.get(ThreadLocalRandom.current().nextInt(heroClasses.size()));
+    }
 
-	public static int howManyMinionsDiedThisTurn(GameContext context) {
-		int currentTurn = context.getTurn();
-		int count = 0;
-		for (Player player : context.getPlayers()) {
-			for (Entity deadEntity : player.getGraveyard()) {
-				if (deadEntity.getEntityType() != EntityType.MINION) {
-					continue;
-				}
+    public static <T> T getRandomTarget(List<T> targets) {
+        int randomIndex = ThreadLocalRandom.current().nextInt(targets.size());
+        return targets.get(randomIndex);
+    }
 
-				if (deadEntity.getAttributeValue(Attribute.DIED_ON_TURN) == currentTurn) {
-					count++;
-				}
+    public static List<Actor> getValidRandomTargets(List<Entity> targets) {
+        List<Actor> validTargets = new ArrayList<Actor>();
+        for (Entity entity : targets) {
+            Actor actor = (Actor) entity;
+            if (!actor.isDestroyed() || actor.getEntityType() == EntityType.HERO) {
+                validTargets.add(actor);
+            }
 
-			}
-		}
-		return count;
-	}
-	
-	public static int getBoardPosition(GameContext context, Player player, SpellDesc desc, Entity source) {
-		final int UNDEFINED = -1;
-		int boardPosition = desc.getInt(SpellArg.BOARD_POSITION_ABSOLUTE, UNDEFINED);
-		if (boardPosition != UNDEFINED) {
-			return boardPosition;
-		}
-		RelativeToSource relativeBoardPosition = (RelativeToSource) desc.get(SpellArg.BOARD_POSITION_RELATIVE);
-		if (relativeBoardPosition == null) {
-			return UNDEFINED;
-		}
+        }
+        return validTargets;
+    }
 
-		int sourcePosition = context.getBoardPosition((Summon) source);
-		if (sourcePosition == UNDEFINED) {
-			return UNDEFINED;
-		}
-		switch (relativeBoardPosition) {
-		case LEFT:
-			return sourcePosition;
-		case RIGHT:
-			return sourcePosition + 1;
-		default:
-			return UNDEFINED;
-		}
-	}
+    public static List<Entity> getValidTargets(GameContext context, Player player, List<Entity> allTargets, EntityFilter filter) {
+        if (filter == null) {
+            return allTargets;
+        }
+        List<Entity> validTargets = new ArrayList<>();
+        for (Entity entity : allTargets) {
+            if (filter.matches(context, player, entity)) {
+                validTargets.add(entity);
+            }
+        }
+        return validTargets;
+    }
 
-	private SpellUtils() {
-	}
+    public static int hasHowManyOfRace(Player player, Race race) {
+        int count = 0;
+        for (Summon summon : player.getSummons()) {
+            if (summon.getRace() == race) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static boolean highlanderDeck(Player player) {
+        List<String> cards = new ArrayList<String>();
+        for (Card card : player.getDeck()) {
+            if (cards.contains(card.getCardId())) {
+                return false;
+            }
+            cards.add(card.getCardId());
+        }
+        return true;
+    }
+
+    public static boolean holdsCardOfType(Player player, CardType cardType) {
+        for (Card card : player.getHand()) {
+            if (card.getCardType().isCardType(cardType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean holdsMinionOfRace(Player player, Race race) {
+        for (Card card : player.getHand()) {
+            if (card.getAttribute(Attribute.RACE) == race) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int howManyMinionsDiedThisTurn(GameContext context) {
+        int currentTurn = context.getTurn();
+        int count = 0;
+        for (Player player : context.getPlayers()) {
+            for (Entity deadEntity : player.getGraveyard()) {
+                if (deadEntity.getEntityType() != EntityType.MINION) {
+                    continue;
+                }
+
+                if (deadEntity.getAttributeValue(Attribute.DIED_ON_TURN) == currentTurn) {
+                    count++;
+                }
+
+            }
+        }
+        return count;
+    }
+
+    public static int getBoardPosition(GameContext context, Player player, SpellDesc desc, Entity source) {
+        final int UNDEFINED = -1;
+        int boardPosition = desc.getInt(SpellArg.BOARD_POSITION_ABSOLUTE, UNDEFINED);
+        if (boardPosition != UNDEFINED) {
+            return boardPosition;
+        }
+        RelativeToSource relativeBoardPosition = (RelativeToSource) desc.get(SpellArg.BOARD_POSITION_RELATIVE);
+        if (relativeBoardPosition == null) {
+            return UNDEFINED;
+        }
+
+        int sourcePosition = context.getBoardPosition((Summon) source);
+        if (sourcePosition == UNDEFINED) {
+            return UNDEFINED;
+        }
+        switch (relativeBoardPosition) {
+            case LEFT:
+                return sourcePosition;
+            case RIGHT:
+                return sourcePosition + 1;
+            default:
+                return UNDEFINED;
+        }
+    }
 
 }

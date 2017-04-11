@@ -8,12 +8,12 @@ import net.demilich.metastone.game.targeting.EntityReference;
 
 public class BuffAura extends Aura {
 
-	public BuffAura(AuraDesc desc) {
-		this(desc.getInt(AuraArg.ATTACK_BONUS), desc.getInt(AuraArg.HP_BONUS), desc.getTarget(), desc.getFilter());
-	}
+    public BuffAura(AuraDesc desc) {
+        this(desc.getInt(AuraArg.ATTACK_BONUS), desc.getInt(AuraArg.HP_BONUS), desc.getTarget(), desc.getFilter());
+    }
 
-	public BuffAura(int attackBonus, int hpBonus, EntityReference targetSelection, EntityFilter filter) {
-		super(AuraBuffSpell.create(attackBonus, hpBonus), AuraBuffSpell.create(-attackBonus, -hpBonus), targetSelection);
-		this.setEntityFilter(filter);
-	}
+    public BuffAura(int attackBonus, int hpBonus, EntityReference targetSelection, EntityFilter filter) {
+        super(AuraBuffSpell.create(attackBonus, hpBonus), AuraBuffSpell.create(-attackBonus, -hpBonus), targetSelection);
+        this.setEntityFilter(filter);
+    }
 }

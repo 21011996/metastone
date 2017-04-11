@@ -6,25 +6,25 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class SecretPlayedEvent extends GameEvent {
 
-	private final SecretCard secretCard;
+    private final SecretCard secretCard;
 
-	public SecretPlayedEvent(GameContext context, int playerId, SecretCard secretCard) {
-		super(context, playerId, -1);
-		this.secretCard = secretCard;
-	}
-	
-	@Override
-	public Entity getEventTarget() {
-		return getSecretCard();
-	}
+    public SecretPlayedEvent(GameContext context, int playerId, SecretCard secretCard) {
+        super(context, playerId, -1);
+        this.secretCard = secretCard;
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.SECRET_PLAYED;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getSecretCard();
+    }
 
-	public SecretCard getSecretCard() {
-		return secretCard;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.SECRET_PLAYED;
+    }
+
+    public SecretCard getSecretCard() {
+        return secretCard;
+    }
 
 }

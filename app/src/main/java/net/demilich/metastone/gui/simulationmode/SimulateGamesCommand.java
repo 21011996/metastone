@@ -1,64 +1,29 @@
 package net.demilich.metastone.gui.simulationmode;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import net.demilich.nittygrittymvc.Notification;
-import net.demilich.nittygrittymvc.SimpleCommand;
-import net.demilich.nittygrittymvc.interfaces.INotification;
 import net.demilich.metastone.GameNotification;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.decks.DeckFormat;
-import net.demilich.metastone.game.logic.GameLogic;
 import net.demilich.metastone.game.gameconfig.GameConfig;
 import net.demilich.metastone.game.gameconfig.PlayerConfig;
+import net.demilich.metastone.game.logic.GameLogic;
 import net.demilich.metastone.utils.Tuple;
+import net.demilich.nittygrittymvc.Notification;
+import net.demilich.nittygrittymvc.SimpleCommand;
+import net.demilich.nittygrittymvc.interfaces.INotification;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class SimulateGamesCommand extends SimpleCommand<GameNotification> {
-
-	private class PlayGameTask implements Callable<Void> {
-
-		private final GameConfig gameConfig;
-
-		public PlayGameTask(GameConfig gameConfig) {
-			this.gameConfig = gameConfig;
-		}
-
-		@Override
-		public Void call() throws Exception {
-			PlayerConfig playerConfig1 = gameConfig.getPlayerConfig1();
-			PlayerConfig playerConfig2 = gameConfig.getPlayerConfig2();
-
-			Player player1 = new Player(playerConfig1);
-			Player player2 = new Player(playerConfig2);
-			
-			DeckFormat deckFormat = gameConfig.getDeckFormat();
-
-			GameContext newGame = new GameContext(player1, player2, new GameLogic(), deckFormat);
-			newGame.play();
-
-			onGameComplete(gameConfig, newGame);
-			newGame.dispose();
-
-			return null;
-		}
-
-	}
 
 	private static Logger logger = LoggerFactory.getLogger(SimulateGamesCommand.class);
 	private int gamesCompleted;
 	private long lastUpdate;
-
 	private SimulationResult result;
 
 	@Override
@@ -72,9 +37,9 @@ public class SimulateGamesCommand extends SimpleCommand<GameNotification> {
 
 			@Override
 			public void run() {
-				int cores = Runtime.getRuntime().availableProcessors();
-				logger.info("Starting simulation on " + cores + " cores");
-				ExecutorService executor = Executors.newFixedThreadPool(cores);
+                int cores = 1;
+                logger.info("Starting simulation on " + cores + " cores");
+                ExecutorService executor = Executors.newFixedThreadPool(cores);
 				// ExecutorService executor =
 				// Executors.newSingleThreadExecutor();
 
@@ -140,5 +105,34 @@ public class SimulateGamesCommand extends SimpleCommand<GameNotification> {
 			result.getPlayer2Stats().merge(context.getPlayer2().getStatistics());
 		}
 	}
+
+    private class PlayGameTask implements Callable<Void> {
+
+        private final GameConfig gameConfig;
+
+        public PlayGameTask(GameConfig gameConfig) {
+            this.gameConfig = gameConfig;
+        }
+
+        @Override
+        public Void call() throws Exception {
+            PlayerConfig playerConfig1 = gameConfig.getPlayerConfig1();
+            PlayerConfig playerConfig2 = gameConfig.getPlayerConfig2();
+
+            Player player1 = new Player(playerConfig1);
+            Player player2 = new Player(playerConfig2);
+
+            DeckFormat deckFormat = gameConfig.getDeckFormat();
+
+            GameContext newGame = new GameContext(player1, player2, new GameLogic(), deckFormat);
+            newGame.play();
+
+            onGameComplete(gameConfig, newGame);
+            newGame.dispose();
+
+            return null;
+        }
+
+    }
 
 }

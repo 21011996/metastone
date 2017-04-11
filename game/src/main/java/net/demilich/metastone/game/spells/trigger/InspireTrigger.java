@@ -7,18 +7,18 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class InspireTrigger extends GameEventTrigger {
 
-	public InspireTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public InspireTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.HERO_POWER_USED;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.HERO_POWER_USED;
+    }
 
 }

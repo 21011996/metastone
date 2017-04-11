@@ -1,55 +1,55 @@
 package net.demilich.metastone.game.spells.desc.trigger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.EnumMap;
-import java.util.Map;
-
 import net.demilich.metastone.game.cards.desc.Desc;
 import net.demilich.metastone.game.spells.TargetPlayer;
 import net.demilich.metastone.game.spells.trigger.GameEventTrigger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.EnumMap;
+import java.util.Map;
+
 public class EventTriggerDesc extends Desc<EventTriggerArg> {
 
-	public static Map<EventTriggerArg, Object> build(Class<? extends GameEventTrigger> triggerClass) {
-		final Map<EventTriggerArg, Object> arguments = new EnumMap<>(EventTriggerArg.class);
-		arguments.put(EventTriggerArg.CLASS, triggerClass);
-		return arguments;
-	}
+    public EventTriggerDesc(Map<EventTriggerArg, Object> arguments) {
+        super(arguments);
+    }
 
-	public static EventTriggerDesc createEmpty(Class<? extends GameEventTrigger> triggerClass) {
-		return new EventTriggerDesc(EventTriggerDesc.build(triggerClass));
-	}
+    public static Map<EventTriggerArg, Object> build(Class<? extends GameEventTrigger> triggerClass) {
+        final Map<EventTriggerArg, Object> arguments = new EnumMap<>(EventTriggerArg.class);
+        arguments.put(EventTriggerArg.CLASS, triggerClass);
+        return arguments;
+    }
 
-	public EventTriggerDesc(Map<EventTriggerArg, Object> arguments) {
-		super(arguments);
-	}
+    public static EventTriggerDesc createEmpty(Class<? extends GameEventTrigger> triggerClass) {
+        return new EventTriggerDesc(EventTriggerDesc.build(triggerClass));
+    }
 
-	public GameEventTrigger create() {
-		Class<? extends GameEventTrigger> triggerClass = getTriggerClass();
-		try {
-			return triggerClass.getConstructor(EventTriggerDesc.class).newInstance(this);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    public GameEventTrigger create() {
+        Class<? extends GameEventTrigger> triggerClass = getTriggerClass();
+        try {
+            return triggerClass.getConstructor(EventTriggerDesc.class).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-	public TargetPlayer getSourcePlayer() {
-		return (TargetPlayer) get(EventTriggerArg.SOURCE_PLAYER);
-	}
+    public TargetPlayer getSourcePlayer() {
+        return (TargetPlayer) get(EventTriggerArg.SOURCE_PLAYER);
+    }
 
-	public TargetPlayer getTargetPlayer() {
-		return (TargetPlayer) get(EventTriggerArg.TARGET_PLAYER);
-	}
+    public TargetPlayer getTargetPlayer() {
+        return (TargetPlayer) get(EventTriggerArg.TARGET_PLAYER);
+    }
 
-	public int getTriggerCount() {
-		return getInt(EventTriggerArg.VALUE);
-	}
+    public int getTriggerCount() {
+        return getInt(EventTriggerArg.VALUE);
+    }
 
-	@SuppressWarnings("unchecked")
-	public Class<? extends GameEventTrigger> getTriggerClass() {
-		return (Class<? extends GameEventTrigger>) get(EventTriggerArg.CLASS);
-	}
+    @SuppressWarnings("unchecked")
+    public Class<? extends GameEventTrigger> getTriggerClass() {
+        return (Class<? extends GameEventTrigger>) get(EventTriggerArg.CLASS);
+    }
 
 }

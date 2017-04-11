@@ -8,8 +8,8 @@ import net.demilich.metastone.game.spells.desc.filter.EntityFilter;
 
 public class AttributeAura extends Aura {
 
-	public AttributeAura(AuraDesc desc) {
-		super(null, AddAttributeSpell.create(desc.getAttribute()), RemoveAttributeSpell.create(desc.getAttribute()), desc.getTarget(), (EntityFilter) desc.get(AuraArg.FILTER));
-	}
+    public AttributeAura(AuraDesc desc) {
+        super(null, AddAttributeSpell.create(desc.getAttribute()), RemoveAttributeSpell.create(desc.getAttribute()), desc.getTarget(), (EntityFilter) desc.get(AuraArg.FILTER));
+    }
 
 }

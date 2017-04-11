@@ -5,6 +5,6 @@ import net.demilich.metastone.game.Player;
 
 public interface IBattlecryCondition {
 
-	boolean isFulfilled(GameContext context, Player player);
+    boolean isFulfilled(GameContext context, Player player);
 
 }

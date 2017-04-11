@@ -6,6 +6,6 @@ import net.demilich.metastone.game.cards.Card;
 
 public interface ICardPostProcessor {
 
-	void processCard(GameContext context, Player player, Card card);
+    void processCard(GameContext context, Player player, Card card);
 
 }

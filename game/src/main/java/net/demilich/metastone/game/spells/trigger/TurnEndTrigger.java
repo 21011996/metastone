@@ -7,22 +7,22 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class TurnEndTrigger extends GameEventTrigger {
 
-	public TurnEndTrigger() {
-		this(EventTriggerDesc.createEmpty(TurnEndTrigger.class));
-	}
+    public TurnEndTrigger() {
+        this(EventTriggerDesc.createEmpty(TurnEndTrigger.class));
+    }
 
-	public TurnEndTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public TurnEndTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.TURN_END;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.TURN_END;
+    }
 
 }

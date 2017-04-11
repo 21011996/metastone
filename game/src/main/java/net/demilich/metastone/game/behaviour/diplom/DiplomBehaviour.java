@@ -1,0 +1,233 @@
+package net.demilich.metastone.game.behaviour.diplom;
+
+import net.demilich.metastone.game.GameContext;
+import net.demilich.metastone.game.Player;
+import net.demilich.metastone.game.actions.EndTurnAction;
+import net.demilich.metastone.game.actions.GameAction;
+import net.demilich.metastone.game.actions.PhysicalAttackAction;
+import net.demilich.metastone.game.behaviour.Behaviour;
+import net.demilich.metastone.game.behaviour.GreedyOptimizeMove;
+import net.demilich.metastone.game.behaviour.diplom.network.Net;
+import net.demilich.metastone.game.behaviour.diplom.qutils.MinionHeuristic;
+import net.demilich.metastone.game.behaviour.diplom.utils.Activation;
+import net.demilich.metastone.game.behaviour.diplom.utils.DataInstance;
+import net.demilich.metastone.game.behaviour.diplom.utils.FeautureExtractor;
+import net.demilich.metastone.game.behaviour.diplom.utils.Params;
+import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
+import net.demilich.metastone.game.cards.Card;
+import net.demilich.metastone.game.entities.minions.Minion;
+
+import java.io.File;
+import java.util.*;
+import java.util.stream.IntStream;
+
+/**
+ * @author ilya2
+ *         created on 08.04.2017
+ */
+public class DiplomBehaviour extends Behaviour {
+    private static final Params BEST_PARAMS = new Params(0.07, 0, 1, 0);
+    private static final double LEARNING_RATE = 1.0;
+    private static final double DICOUNT_REWARD = 0.8;
+    public boolean finished = false;
+    //TODO setup trading games and use magic of Q learning
+    //Input - 84 features
+    //Output - 64 actions for trading + 7 to go face + 1 do nothing
+    private Net network = new Net(new int[]{86, 57}, Activation.SIGMOID);
+    private GameContext start = null;
+
+    public DiplomBehaviour(GameContext start) {
+        if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
+            network.initWeights();
+        } else {
+            this.network.initWeights(new File[]{
+                    new File("neunet", "w0.txt"),
+                    new File("neunet", "w1.txt")
+            });
+        }
+        this.start = start;
+        this.start.getActivePlayer().setBehaviour(this);
+        this.start.getOpponent(this.start.getActivePlayer()).setBehaviour(new GreedyOptimizeMove(new WeightedHeuristic()));
+        this.start.resume(this);
+    }
+
+    public DiplomBehaviour() {
+        if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
+            network.initWeights();
+        } else {
+            this.network.initWeights(new File[]{
+                    new File("neunet", "w0.txt"),
+                    new File("neunet", "w1.txt")
+            });
+        }
+    }
+
+    public void saveNet() {
+        for (int i = 0; i < network.weights.length; i++) {
+            network.weights[i].writeFile("neunet\\w" + i + ".txt");
+        }
+    }
+
+    public void learn() {
+    }
+
+    @Override
+    public String getName() {
+        return "Diplom Behaviour";
+    }
+
+    @Override
+    public List<Card> mulligan(GameContext context, Player player, List<Card> cards) {
+        List<Card> discardedCards = new ArrayList<Card>();
+        for (Card card : cards) {
+            if (card.getBaseManaCost() >= 4) {
+                discardedCards.add(card);
+            }
+        }
+        return discardedCards;
+    }
+
+    private double[] getQ(GameContext context, Player player, List<GameAction> validActions, boolean first) {
+        double baseScore = new MinionHeuristic().getScore(context, player.getId());
+        double[] answer = new double[57];
+        Arrays.fill(answer, -1.0);
+        answer[56] = 0.0;
+        if (true) {
+            GameContext simulation = context.clone();
+            simulation.getLogic().performGameAction(player.getId(), new EndTurnAction());
+            GameAction gameAction;
+            do {
+                gameAction = new GreedyOptimizeMove(new WeightedHeuristic()).requestAction(simulation, simulation.getActivePlayer(), simulation.getValidActions());
+                simulation.getLogic().performGameAction(simulation.getActivePlayerId(), gameAction);
+            } while (!(gameAction instanceof EndTurnAction));
+            double newScore = new MinionHeuristic().getScore(simulation, player.getId());
+            simulation.dispose();
+            answer[56] = DICOUNT_REWARD * (newScore - baseScore) / 2000;
+        }
+        HashMap<GameAction, Integer> actionMap = convertAttackAction(context, player, validActions);
+        for (Map.Entry<GameAction, Integer> entry : actionMap.entrySet()) {
+            GameAction action = entry.getKey();
+            int slot = entry.getValue();
+
+            GameContext simulation = context.clone();
+            simulation.getLogic().performGameAction(player.getId(), action);
+            double newScore = new MinionHeuristic().getScore(simulation, player.getId());
+            answer[slot] = (newScore - baseScore);
+            if (first) {
+                double futureQ = Arrays.stream(getQ(simulation, simulation.getPlayer(player.getId()), simulation.getValidActions(), false)).max().getAsDouble();
+                answer[slot] += DICOUNT_REWARD * futureQ;
+            }
+            answer[slot] = answer[slot] / 2000;
+            simulation.dispose();
+        }
+        return answer;
+    }
+
+    private HashMap<GameAction, Integer> convertAttackAction(GameContext context, Player player, List<GameAction> validActions) {
+        HashMap<GameAction, Integer> answer = new HashMap<>();
+        ArrayList<Minion> ourMinions = (ArrayList<Minion>) player.getMinions();
+        ArrayList<Minion> oppMinions = (ArrayList<Minion>) context.getOpponent(player).getMinions();
+        for (GameAction action : validActions) {
+            if (action instanceof PhysicalAttackAction) {
+                PhysicalAttackAction physicalAttackAction = (PhysicalAttackAction) action;
+                int attackerId;
+                attackerId = physicalAttackAction.getAttackerReference().getId();
+                int defenderId = physicalAttackAction.getTargetKey().getId();
+
+                int i = getById(ourMinions, attackerId);
+                int j = getById(oppMinions, defenderId);
+                if (j == -1) {
+                    j = 7;
+                }
+
+                answer.put(action, i * 8 + j);
+            }
+        }
+        return answer;
+    }
+
+    private HashMap<Integer, GameAction> convertAttackActionReversed(GameContext context, Player player, List<GameAction> validActions) {
+        HashMap<Integer, GameAction> answer = new HashMap<>();
+        ArrayList<Minion> ourMinions = (ArrayList<Minion>) player.getMinions();
+        ArrayList<Minion> oppMinions = (ArrayList<Minion>) context.getOpponent(player).getMinions();
+        for (GameAction action : validActions) {
+            if (action instanceof PhysicalAttackAction) {
+                PhysicalAttackAction physicalAttackAction = (PhysicalAttackAction) action;
+                int attackerId = physicalAttackAction.getAttackerReference().getId();
+                int defenderId;
+                defenderId = physicalAttackAction.getTargetKey().getId();
+
+                int i = getById(ourMinions, attackerId);
+                int j = getById(oppMinions, defenderId);
+                j = j == -1 ? 7 : j;
+
+                answer.put(i * 8 + j, action);
+            }
+        }
+        return answer;
+    }
+
+    private int getById(ArrayList<Minion> minions, int id) {
+        for (int i = 0; i < minions.size(); i++) {
+            if (minions.get(i).getId() == id) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
+        network.learnStep(new DataInstance(FeautureExtractor.getFeatures(context, player), getQ(context, player, validActions, true)), BEST_PARAMS);
+        HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
+        if (actionMap.size() != 0) {
+            double[] q = network.classify(FeautureExtractor.getFeatures(context, player));
+            int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
+            if (index > -1 && index < 56) {
+                if (!actionMap.containsKey(index)) {
+                    System.out.println(validActions);
+                    System.out.println(Arrays.toString(FeautureExtractor.getFeatures(context, player).x));
+                    System.out.println(Arrays.toString(q));
+                    System.out.println(index);
+                    return (GameAction) actionMap.values().toArray()[0];
+                }
+                return actionMap.get(index);
+            } else {
+                if (index == 56) {
+                    return new EndTurnAction();
+                } else {
+                    System.out.println(validActions);
+                    System.out.println(context);
+                    System.out.println(Arrays.toString(q));
+                    System.out.println(index);
+                    return null;
+                }
+            }
+        } else {
+            return validActions.get(0);
+        }
+    }
+
+    public GameAction requestAction2(GameContext context, Player player, List<GameAction> validActions) {
+        HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
+        if (actionMap.size() != 0) {
+            double[] q = network.classify(FeautureExtractor.getFeatures(context, player));
+            int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
+            if (index > -1 && index < 56) {
+                return actionMap.get(index);
+            } else {
+                if (index == 56) {
+                    return new EndTurnAction();
+                } else {
+                    System.out.println(validActions);
+                    System.out.println(context);
+                    System.out.println(Arrays.toString(q));
+                    System.out.println(index);
+                    return null;
+                }
+            }
+        } else {
+            return validActions.get(0);
+        }
+    }
+}

@@ -7,22 +7,22 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class EnrageChangedTrigger extends GameEventTrigger {
 
-	public EnrageChangedTrigger() {
-		this(EventTriggerDesc.createEmpty(EnrageChangedTrigger.class));
-	}
+    public EnrageChangedTrigger() {
+        this(EventTriggerDesc.createEmpty(EnrageChangedTrigger.class));
+    }
 
-	public EnrageChangedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public EnrageChangedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return event.getEventTarget() == host;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return event.getEventTarget() == host;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.ENRAGE_CHANGED;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.ENRAGE_CHANGED;
+    }
 
 }

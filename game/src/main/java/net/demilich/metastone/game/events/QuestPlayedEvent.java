@@ -6,25 +6,25 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class QuestPlayedEvent extends GameEvent {
 
-	private final QuestCard questCard;
+    private final QuestCard questCard;
 
-	public QuestPlayedEvent(GameContext context, int playerId, QuestCard questCard) {
-		super(context, playerId, -1);
-		this.questCard = questCard;
-	}
-	
-	@Override
-	public Entity getEventTarget() {
-		return getQuestCard();
-	}
+    public QuestPlayedEvent(GameContext context, int playerId, QuestCard questCard) {
+        super(context, playerId, -1);
+        this.questCard = questCard;
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.SECRET_PLAYED;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getQuestCard();
+    }
 
-	public QuestCard getQuestCard() {
-		return questCard;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.SECRET_PLAYED;
+    }
+
+    public QuestCard getQuestCard() {
+        return questCard;
+    }
 
 }

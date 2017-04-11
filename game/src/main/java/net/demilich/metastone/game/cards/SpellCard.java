@@ -11,77 +11,79 @@ import net.demilich.metastone.game.spells.desc.condition.Condition;
 import net.demilich.metastone.game.spells.desc.filter.EntityFilter;
 import net.demilich.metastone.game.targeting.TargetSelection;
 
-public class SpellCard extends Card {
+import java.io.Serializable;
 
-	private SpellDesc spell;
-	private TargetSelection targetRequirement;
-	private Condition condition;
+public class SpellCard extends Card implements Serializable {
 
-	public SpellCard(SpellCardDesc desc) {
-		super(desc);
-		setTargetRequirement(desc.targetSelection);
-		setSpell(desc.spell);
-		if (desc.condition != null) {
-			condition = desc.condition.create();
-		}
-	}
+    private SpellDesc spell;
+    private TargetSelection targetRequirement;
+    private Condition condition;
 
-	public boolean canBeCast(GameContext context, Player player) {
-		Player opponent = context.getOpponent(player);
-		switch (targetRequirement) {
-		case ENEMY_MINIONS:
-			return context.getMinionCount(opponent) > 0;
-		case FRIENDLY_MINIONS:
-			return context.getMinionCount(player) > 0;
-		case MINIONS:
-			return context.getTotalMinionCount() > 0;
-		default:
-			break;
-		}
-		if (condition != null) {
-			return condition.isFulfilled(context, player, null, null);
-		}
-		return true;
-	}
+    public SpellCard(SpellCardDesc desc) {
+        super(desc);
+        setTargetRequirement(desc.targetSelection);
+        setSpell(desc.spell);
+        if (desc.condition != null) {
+            condition = desc.condition.create();
+        }
+    }
 
-	public boolean canBeCastOn(GameContext context, Player player, Entity target) {
-		EntityFilter filter = spell.getEntityFilter();
-		if (filter == null) {
-			return true;
-		}
-		return filter.matches(context, player, target);
-	}
+    public boolean canBeCast(GameContext context, Player player) {
+        Player opponent = context.getOpponent(player);
+        switch (targetRequirement) {
+            case ENEMY_MINIONS:
+                return context.getMinionCount(opponent) > 0;
+            case FRIENDLY_MINIONS:
+                return context.getMinionCount(player) > 0;
+            case MINIONS:
+                return context.getTotalMinionCount() > 0;
+            default:
+                break;
+        }
+        if (condition != null) {
+            return condition.isFulfilled(context, player, null, null);
+        }
+        return true;
+    }
 
-	@Override
-	public SpellCard clone() {
-		SpellCard clone = (SpellCard) super.clone();
-		if (spell == null) {
-			throw new RuntimeException("Spell is NULL for SpellCard " + getName());
-		}
-		clone.spell = spell.clone();
-		clone.condition = condition;
-		return clone;
-	}
+    public boolean canBeCastOn(GameContext context, Player player, Entity target) {
+        EntityFilter filter = spell.getEntityFilter();
+        if (filter == null) {
+            return true;
+        }
+        return filter.matches(context, player, target);
+    }
 
-	public SpellDesc getSpell() {
-		return spell;
-	}
+    @Override
+    public SpellCard clone() {
+        SpellCard clone = (SpellCard) super.clone();
+        if (spell == null) {
+            throw new RuntimeException("Spell is NULL for SpellCard " + getName());
+        }
+        clone.spell = spell.clone();
+        clone.condition = condition;
+        return clone;
+    }
 
-	public TargetSelection getTargetRequirement() {
-		return targetRequirement;
-	}
+    public SpellDesc getSpell() {
+        return spell;
+    }
 
-	@Override
-	public PlayCardAction play() {
-		return new PlaySpellCardAction(getSpell(), this, getTargetRequirement());
-	}
+    public void setSpell(SpellDesc spell) {
+        this.spell = spell;
+    }
 
-	public void setSpell(SpellDesc spell) {
-		this.spell = spell;
-	}
+    public TargetSelection getTargetRequirement() {
+        return targetRequirement;
+    }
 
-	public void setTargetRequirement(TargetSelection targetRequirement) {
-		this.targetRequirement = targetRequirement;
-	}
+    public void setTargetRequirement(TargetSelection targetRequirement) {
+        this.targetRequirement = targetRequirement;
+    }
+
+    @Override
+    public PlayCardAction play() {
+        return new PlaySpellCardAction(getSpell(), this, getTargetRequirement());
+    }
 
 }

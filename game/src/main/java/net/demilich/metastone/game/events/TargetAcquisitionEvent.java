@@ -6,42 +6,42 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class TargetAcquisitionEvent extends GameEvent {
 
-	private final Entity target;
-	private final Entity source;
-	private final ActionType actionType;
+    private final Entity target;
+    private final Entity source;
+    private final ActionType actionType;
 
-	public TargetAcquisitionEvent(GameContext context, int playerId, ActionType actionType, Entity source, Entity target) {
-		super(context, playerId, source.getOwner());
-		this.actionType = actionType;
-		this.source = source;
-		this.target = target;
-	}
+    public TargetAcquisitionEvent(GameContext context, int playerId, ActionType actionType, Entity source, Entity target) {
+        super(context, playerId, source.getOwner());
+        this.actionType = actionType;
+        this.source = source;
+        this.target = target;
+    }
 
-	public ActionType getActionType() {
-		return actionType;
-	}
-	
-	@Override
-	public Entity getEventSource() {
-		return getSource();
-	}
+    public ActionType getActionType() {
+        return actionType;
+    }
 
-	@Override
-	public Entity getEventTarget() {
-		return getTarget();
-	}
+    @Override
+    public Entity getEventSource() {
+        return getSource();
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.TARGET_ACQUISITION;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getTarget();
+    }
 
-	public Entity getSource() {
-		return source;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.TARGET_ACQUISITION;
+    }
 
-	public Entity getTarget() {
-		return target;
-	}
+    public Entity getSource() {
+        return source;
+    }
+
+    public Entity getTarget() {
+        return target;
+    }
 
 }

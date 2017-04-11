@@ -6,9 +6,9 @@ import net.demilich.metastone.game.logic.GameLogic;
 
 public class ArbitraryDeckValidator implements IDeckValidator {
 
-	@Override
-	public boolean canAddCardToDeck(Card card, Deck deck) {
-		return deck.getCards().getCount() <= GameLogic.MAX_DECK_SIZE;
-	}
+    @Override
+    public boolean canAddCardToDeck(Card card, Deck deck) {
+        return deck.getCards().getCount() <= GameLogic.MAX_DECK_SIZE;
+    }
 
 }

@@ -10,15 +10,15 @@ import net.demilich.metastone.game.spells.desc.SpellDesc;
 
 public class CloneMinionSpell extends Spell {
 
-	@Override
-	protected void onCast(GameContext context, Player player, SpellDesc desc, Entity source, Entity target) {
-		if (target instanceof Hero) {
-			target = ((MinionCard) context.getPendingCard()).summon();
-		}
-		Minion template = (Minion) target;
-		Minion clone = template.clone();
+    @Override
+    protected void onCast(GameContext context, Player player, SpellDesc desc, Entity source, Entity target) {
+        if (target instanceof Hero) {
+            target = ((MinionCard) context.getPendingCard()).summon();
+        }
+        Minion template = (Minion) target;
+        Minion clone = template.clone();
 
-		context.getLogic().summon(player.getId(), clone);
-	}
+        context.getLogic().summon(player.getId(), clone);
+    }
 
 }

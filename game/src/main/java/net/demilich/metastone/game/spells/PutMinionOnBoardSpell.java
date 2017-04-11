@@ -8,13 +8,13 @@ import net.demilich.metastone.game.spells.desc.SpellDesc;
 
 public class PutMinionOnBoardSpell extends Spell {
 
-	@Override
-	protected void onCast(GameContext context, Player player, SpellDesc desc, Entity source, Entity target) {
-		MinionCard minionCard = (MinionCard) target;
-		
-		if (context.getLogic().summon(player.getId(), minionCard.summon())) {
-			context.getLogic().removeCard(player.getId(), minionCard);
-		}
-	}
+    @Override
+    protected void onCast(GameContext context, Player player, SpellDesc desc, Entity source, Entity target) {
+        MinionCard minionCard = (MinionCard) target;
+
+        if (context.getLogic().summon(player.getId(), minionCard.summon())) {
+            context.getLogic().removeCard(player.getId(), minionCard);
+        }
+    }
 
 }

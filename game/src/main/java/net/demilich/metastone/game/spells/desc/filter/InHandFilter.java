@@ -8,23 +8,23 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class InHandFilter extends EntityFilter {
 
-	public InHandFilter(FilterDesc desc) {
-		super(desc);
-	}
-	
-	@Override
-	protected boolean test(GameContext context, Player player, Entity entity) {
-		Card card = null;
-		if (entity instanceof Card) {
-			card = (Card) entity;
-		} else if (entity instanceof Actor) {
-			Actor actor = (Actor) entity;
-			card = actor.getSourceCard();
-		} else {
-			return false;
-		}
+    public InHandFilter(FilterDesc desc) {
+        super(desc);
+    }
 
-		return player.getHand().containsCard(card);
-	}
+    @Override
+    protected boolean test(GameContext context, Player player, Entity entity) {
+        Card card = null;
+        if (entity instanceof Card) {
+            card = (Card) entity;
+        } else if (entity instanceof Actor) {
+            Actor actor = (Actor) entity;
+            card = actor.getSourceCard();
+        } else {
+            return false;
+        }
+
+        return player.getHand().containsCard(card);
+    }
 
 }

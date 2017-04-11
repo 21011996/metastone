@@ -10,32 +10,32 @@ import net.demilich.metastone.game.targeting.CardLocation;
 
 public class HeroPower extends SpellCard {
 
-	private int used;
+    private int used;
 
-	public HeroPower(HeroPowerCardDesc desc) {
-		super(desc);
-		setLocation(CardLocation.HERO_POWER);
-	}
+    public HeroPower(HeroPowerCardDesc desc) {
+        super(desc);
+        setLocation(CardLocation.HERO_POWER);
+    }
 
-	public int hasBeenUsed() {
-		return used;
-	}
+    public int hasBeenUsed() {
+        return used;
+    }
 
-	public void markUsed() {
-		this.used++;
-	}
+    public void markUsed() {
+        this.used++;
+    }
 
-	public void onWillUse(GameContext context, Player player) {
+    public void onWillUse(GameContext context, Player player) {
 
-	}
+    }
 
-	@Override
-	public PlayCardAction play() {
-		return new HeroPowerAction(getSpell(), this, getTargetRequirement());
-	}
-	
-	public void setUsed(int used) {
-		this.used = used;
-	}
+    @Override
+    public PlayCardAction play() {
+        return new HeroPowerAction(getSpell(), this, getTargetRequirement());
+    }
+
+    public void setUsed(int used) {
+        this.used = used;
+    }
 
 }

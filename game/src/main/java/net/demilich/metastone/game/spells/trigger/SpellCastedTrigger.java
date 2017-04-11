@@ -7,20 +7,20 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class SpellCastedTrigger extends GameEventTrigger {
 
-	public SpellCastedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public SpellCastedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		//SpellCastedEvent spellCastedEvent = (SpellCastedEvent) event;
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        //SpellCastedEvent spellCastedEvent = (SpellCastedEvent) event;
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.SPELL_CASTED;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.SPELL_CASTED;
+    }
 
 }

@@ -3,29 +3,31 @@ package net.demilich.metastone.game.targeting;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.logic.CustomCloneable;
 
-public class IdFactory extends CustomCloneable {
+import java.io.Serializable;
 
-	public static final int UNASSIGNED = -1;
-	public static final int PLAYER_1 = GameContext.PLAYER_1;
-	public static final int PLAYER_2 = GameContext.PLAYER_2;
+public class IdFactory extends CustomCloneable implements Serializable {
 
-	private int id;
+    public static final int UNASSIGNED = -1;
+    public static final int PLAYER_1 = GameContext.PLAYER_1;
+    public static final int PLAYER_2 = GameContext.PLAYER_2;
 
-	public IdFactory() {
-		id = PLAYER_2 + 1;
-	}
+    private int id;
 
-	private IdFactory(int resumeId) {
-		this.id = resumeId;
-	}
+    public IdFactory() {
+        id = PLAYER_2 + 1;
+    }
 
-	@Override
-	public IdFactory clone() {
-		return new IdFactory(id);
-	}
+    private IdFactory(int resumeId) {
+        this.id = resumeId;
+    }
 
-	public int generateId() {
-		return ++id;
-	}
+    @Override
+    public IdFactory clone() {
+        return new IdFactory(id);
+    }
+
+    public int generateId() {
+        return ++id;
+    }
 
 }

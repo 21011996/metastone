@@ -7,18 +7,18 @@ import net.demilich.metastone.game.heroes.powers.HeroPower;
 
 public class HasHeroPowerCondition extends Condition {
 
-	public HasHeroPowerCondition(ConditionDesc desc) {
-		super(desc);
-	}
+    public HasHeroPowerCondition(ConditionDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
-		HeroPower heroPower = player.getHero().getHeroPower();
-		if (heroPower.getCardId() == null) {
-			return false;
-		}
-		String cardName = (String) desc.get(ConditionArg.CARD_ID);
-		return heroPower.getCardId().equalsIgnoreCase(cardName);
-	}
+    @Override
+    protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
+        HeroPower heroPower = player.getHero().getHeroPower();
+        if (heroPower.getCardId() == null) {
+            return false;
+        }
+        String cardName = (String) desc.get(ConditionArg.CARD_ID);
+        return heroPower.getCardId().equalsIgnoreCase(cardName);
+    }
 
 }

@@ -7,13 +7,13 @@ import net.demilich.metastone.game.spells.SpellUtils;
 
 public class DeadMinionsThisTurn extends ValueProvider {
 
-	public DeadMinionsThisTurn(ValueProviderDesc desc) {
-		super(desc);
-	}
+    public DeadMinionsThisTurn(ValueProviderDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected int provideValue(GameContext context, Player player, Entity target, Entity host) {
-		return SpellUtils.howManyMinionsDiedThisTurn(context);
-	}
+    @Override
+    protected int provideValue(GameContext context, Player player, Entity target, Entity host) {
+        return SpellUtils.howManyMinionsDiedThisTurn(context);
+    }
 
 }

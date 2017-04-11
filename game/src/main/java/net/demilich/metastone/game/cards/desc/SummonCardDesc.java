@@ -4,6 +4,6 @@ import net.demilich.metastone.game.spells.desc.manamodifier.CardCostModifierDesc
 
 public abstract class SummonCardDesc extends ActorCardDesc {
 
-	public CardCostModifierDesc cardCostModifier;
+    public CardCostModifierDesc cardCostModifier;
 
 }

@@ -7,18 +7,18 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class OverloadTrigger extends GameEventTrigger {
 
-	public OverloadTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public OverloadTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	public boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    public boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.OVERLOAD;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.OVERLOAD;
+    }
 
 }

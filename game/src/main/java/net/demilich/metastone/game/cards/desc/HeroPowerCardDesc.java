@@ -5,16 +5,16 @@ import net.demilich.metastone.game.heroes.powers.HeroPower;
 import net.demilich.metastone.game.heroes.powers.HeroPowerChooseOne;
 
 public class HeroPowerCardDesc extends SpellCardDesc {
-	
-	public String[] options;
-	public String bothOptions;
 
-	@Override
-	public Card createInstance() {
-		if (options != null && options.length > 0) {
-			return new HeroPowerChooseOne(this);
-		}
-		return new HeroPower(this);
-	}
+    public String[] options;
+    public String bothOptions;
+
+    @Override
+    public Card createInstance() {
+        if (options != null && options.length > 0) {
+            return new HeroPowerChooseOne(this);
+        }
+        return new HeroPower(this);
+    }
 
 }

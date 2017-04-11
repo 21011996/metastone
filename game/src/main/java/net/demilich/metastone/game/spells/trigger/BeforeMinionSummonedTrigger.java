@@ -11,29 +11,25 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class BeforeMinionSummonedTrigger extends GameEventTrigger {
 
-	public BeforeMinionSummonedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public BeforeMinionSummonedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		BeforeSummonEvent summonEvent = (BeforeSummonEvent) event;
-		Race race = (Race) desc.get(EventTriggerArg.RACE);
-		if (race != null && summonEvent.getMinion().getRace() != race) {
-			return false;
-		}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        BeforeSummonEvent summonEvent = (BeforeSummonEvent) event;
+        Race race = (Race) desc.get(EventTriggerArg.RACE);
+        if (race != null && summonEvent.getMinion().getRace() != race) {
+            return false;
+        }
 
-		Attribute requiredAttribute = (Attribute) desc.get(EventTriggerArg.REQUIRED_ATTRIBUTE);
-		if (requiredAttribute != null && !summonEvent.getMinion().hasAttribute(requiredAttribute)) {
-			return false;
-		}
-		
-		return true;
-	}
+        Attribute requiredAttribute = (Attribute) desc.get(EventTriggerArg.REQUIRED_ATTRIBUTE);
+        return !(requiredAttribute != null && !summonEvent.getMinion().hasAttribute(requiredAttribute));
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.BEFORE_SUMMON;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.BEFORE_SUMMON;
+    }
 
 }

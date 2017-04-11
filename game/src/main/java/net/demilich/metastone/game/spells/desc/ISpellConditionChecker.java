@@ -6,6 +6,6 @@ import net.demilich.metastone.game.entities.Entity;
 
 public interface ISpellConditionChecker {
 
-	boolean isFulfilled(GameContext context, Player player, Entity target);
+    boolean isFulfilled(GameContext context, Player player, Entity target);
 
 }

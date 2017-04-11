@@ -10,24 +10,20 @@ import net.demilich.metastone.game.targeting.EntityReference;
 
 public class DiscardTrigger extends GameEventTrigger {
 
-	public DiscardTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public DiscardTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		DiscardEvent discardEvent = (DiscardEvent) event;
-		EntityReference target = (EntityReference) desc.get(EventTriggerArg.TARGET);
-		if (target == EntityReference.SELF && discardEvent.getCard() != host) {
-			return false;
-		}
-		
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        DiscardEvent discardEvent = (DiscardEvent) event;
+        EntityReference target = (EntityReference) desc.get(EventTriggerArg.TARGET);
+        return !(target == EntityReference.SELF && discardEvent.getCard() != host);
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.DISCARD;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.DISCARD;
+    }
 
 }

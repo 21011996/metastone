@@ -8,14 +8,14 @@ import net.demilich.metastone.game.entities.minions.Race;
 
 public class RaceFilter extends EntityFilter {
 
-	public RaceFilter(FilterDesc desc) {
-		super(desc);
-	}
+    public RaceFilter(FilterDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean test(GameContext context, Player player, Entity entity) {
-		Race race = (Race) desc.get(FilterArg.RACE);
-		return entity.getAttribute(Attribute.RACE) == race;
-	}
+    @Override
+    protected boolean test(GameContext context, Player player, Entity entity) {
+        Race race = (Race) desc.get(FilterArg.RACE);
+        return entity.getAttribute(Attribute.RACE) == race;
+    }
 
 }

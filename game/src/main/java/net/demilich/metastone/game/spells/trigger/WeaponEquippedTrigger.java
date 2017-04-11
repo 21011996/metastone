@@ -7,18 +7,18 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class WeaponEquippedTrigger extends GameEventTrigger {
 
-	public WeaponEquippedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public WeaponEquippedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.WEAPON_EQUIPPED;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.WEAPON_EQUIPPED;
+    }
 
 }

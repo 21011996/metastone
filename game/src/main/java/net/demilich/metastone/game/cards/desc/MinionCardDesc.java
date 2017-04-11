@@ -4,15 +4,17 @@ import net.demilich.metastone.game.cards.Card;
 import net.demilich.metastone.game.cards.MinionCard;
 import net.demilich.metastone.game.entities.minions.Race;
 
-public class MinionCardDesc extends SummonCardDesc {
+import java.io.Serializable;
 
-	public int baseAttack;
-	public int baseHp;
-	public Race race;
+public class MinionCardDesc extends SummonCardDesc implements Serializable {
 
-	@Override
-	public Card createInstance() {
-		return new MinionCard(this);
-	}
+    public int baseAttack;
+    public int baseHp;
+    public Race race;
+
+    @Override
+    public Card createInstance() {
+        return new MinionCard(this);
+    }
 
 }

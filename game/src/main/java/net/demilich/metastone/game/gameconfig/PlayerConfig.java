@@ -8,81 +8,81 @@ import net.demilich.metastone.game.entities.heroes.MetaHero;
 
 public class PlayerConfig {
 
-	private String name;
-	private HeroCard heroCard;
-	private Deck deck;
-	private IBehaviour behaviour;
-	private boolean hideCards;
+    private String name;
+    private HeroCard heroCard;
+    private Deck deck;
+    private IBehaviour behaviour;
+    private boolean hideCards;
 
-	private Deck deckForPlay;
-	private HeroCard heroForPlay;
+    private Deck deckForPlay;
+    private HeroCard heroForPlay;
 
-	public PlayerConfig() {
-	}
+    public PlayerConfig() {
+    }
 
-	public PlayerConfig(Deck deck, IBehaviour behaviour) {
-		this.deck = deck;
-		this.behaviour = behaviour;
-	}
+    public PlayerConfig(Deck deck, IBehaviour behaviour) {
+        this.deck = deck;
+        this.behaviour = behaviour;
+    }
 
-	public void build() {
-		if (deck instanceof MetaDeck) {
-			MetaDeck metaDeck = (MetaDeck) deck;
-			deckForPlay = metaDeck.selectRandom();
+    public void build() {
+        if (deck instanceof MetaDeck) {
+            MetaDeck metaDeck = (MetaDeck) deck;
+            deckForPlay = metaDeck.selectRandom();
 
-			heroForPlay = MetaHero.getHeroCard(deckForPlay.getHeroClass());
-		} else {
-			deckForPlay = deck;
-			heroForPlay = heroCard;
-		}
-	}
+            heroForPlay = MetaHero.getHeroCard(deckForPlay.getHeroClass());
+        } else {
+            deckForPlay = deck;
+            heroForPlay = heroCard;
+        }
+    }
 
-	public IBehaviour getBehaviour() {
-		return behaviour;
-	}
+    public IBehaviour getBehaviour() {
+        return behaviour;
+    }
 
-	public Deck getDeck() {
-		return deck;
-	}
+    public void setBehaviour(IBehaviour behaviour) {
+        this.behaviour = behaviour;
+    }
 
-	public Deck getDeckForPlay() {
-		return deckForPlay;
-	}
+    public Deck getDeck() {
+        return deck;
+    }
 
-	public HeroCard getHeroCard() {
-		return heroCard;
-	}
+    public void setDeck(Deck deck) {
+        this.deck = deck;
+    }
 
-	public HeroCard getHeroForPlay() {
-		return heroForPlay;
-	}
+    public Deck getDeckForPlay() {
+        return deckForPlay;
+    }
 
-	public String getName() {
-		return name != null ? name : heroCard.getName();
-	}
+    public HeroCard getHeroCard() {
+        return heroCard;
+    }
 
-	public boolean hideCards() {
-		return hideCards;
-	}
+    public void setHeroCard(HeroCard HeroCard) {
+        this.heroCard = HeroCard;
+    }
 
-	public void setBehaviour(IBehaviour behaviour) {
-		this.behaviour = behaviour;
-	}
+    public HeroCard getHeroForPlay() {
+        return heroForPlay;
+    }
 
-	public void setDeck(Deck deck) {
-		this.deck = deck;
-	}
+    public String getName() {
+        return name != null ? name : heroCard.getName();
+    }
 
-	public void setHeroCard(HeroCard HeroCard) {
-		this.heroCard = HeroCard;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setHideCards(boolean hideCards) {
-		this.hideCards = hideCards;
-	}
+    public boolean hideCards() {
+        return hideCards;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setHideCards(boolean hideCards) {
+        this.hideCards = hideCards;
+    }
 
 }

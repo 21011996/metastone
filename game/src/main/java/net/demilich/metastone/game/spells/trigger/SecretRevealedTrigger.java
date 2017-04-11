@@ -7,18 +7,18 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class SecretRevealedTrigger extends GameEventTrigger {
 
-	public SecretRevealedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public SecretRevealedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.SECRET_REVEALED;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.SECRET_REVEALED;
+    }
 
 }

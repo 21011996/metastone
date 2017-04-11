@@ -7,13 +7,13 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class ComboCondition extends Condition {
 
-	public ComboCondition(ConditionDesc desc) {
-		super(desc);
-	}
+    public ComboCondition(ConditionDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
-		return player.hasAttribute(Attribute.COMBO);
-	}
+    @Override
+    protected boolean isFulfilled(GameContext context, Player player, ConditionDesc desc, Entity source, Entity target) {
+        return player.hasAttribute(Attribute.COMBO);
+    }
 
 }

@@ -7,18 +7,18 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class GameStateChangedTrigger extends GameEventTrigger {
 
-	public GameStateChangedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public GameStateChangedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.ALL;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.ALL;
+    }
 
 }

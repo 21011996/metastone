@@ -1,12 +1,5 @@
 package net.demilich.metastone.tests;
 
-import java.util.concurrent.ThreadLocalRandom;
-
-import org.slf4j.LoggerFactory;
-import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import net.demilich.metastone.game.GameContext;
@@ -16,12 +9,18 @@ import net.demilich.metastone.game.cards.CardSet;
 import net.demilich.metastone.game.decks.DeckFactory;
 import net.demilich.metastone.game.decks.DeckFormat;
 import net.demilich.metastone.game.entities.heroes.HeroClass;
-import net.demilich.metastone.game.logic.GameLogic;
 import net.demilich.metastone.game.gameconfig.PlayerConfig;
+import net.demilich.metastone.game.logic.GameLogic;
+import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MassTest extends TestBase {
-
-	private static HeroClass getRandomClass() {
+    //TODO use this shit
+    private static HeroClass getRandomClass() {
 		HeroClass randomClass = HeroClass.ANY;
 		HeroClass[] values = HeroClass.values();
 		while (!randomClass.isBaseClass()) {

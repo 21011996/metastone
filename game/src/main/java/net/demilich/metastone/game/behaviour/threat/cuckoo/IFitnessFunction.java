@@ -4,6 +4,6 @@ import net.demilich.metastone.game.behaviour.threat.FeatureVector;
 
 public interface IFitnessFunction {
 
-	double evaluate(FeatureVector featureVector);
+    double evaluate(FeatureVector featureVector);
 
 }

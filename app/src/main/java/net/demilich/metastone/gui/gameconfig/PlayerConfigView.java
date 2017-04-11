@@ -1,10 +1,5 @@
 package net.demilich.metastone.gui.gameconfig;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +15,7 @@ import net.demilich.metastone.game.behaviour.GreedyOptimizeMove;
 import net.demilich.metastone.game.behaviour.IBehaviour;
 import net.demilich.metastone.game.behaviour.NoAggressionBehaviour;
 import net.demilich.metastone.game.behaviour.PlayRandomBehaviour;
+import net.demilich.metastone.game.behaviour.diplom.SubRandomBehaviour;
 import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
 import net.demilich.metastone.game.behaviour.human.HumanBehaviour;
 import net.demilich.metastone.game.behaviour.threat.GameStateValueBehaviour;
@@ -38,28 +34,25 @@ import net.demilich.metastone.gui.common.DeckStringConverter;
 import net.demilich.metastone.gui.common.HeroStringConverter;
 import net.demilich.metastone.gui.playmode.config.PlayerConfigType;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlayerConfigView extends VBox {
 
+	private final PlayerConfig playerConfig = new PlayerConfig();
 	@FXML
 	protected Label heroNameLabel;
-
 	@FXML
 	protected ImageView heroIcon;
-
 	@FXML
 	protected ComboBox<IBehaviour> behaviourBox;
-
 	@FXML
 	protected ComboBox<HeroCard> heroBox;
-
 	@FXML
 	protected ComboBox<Deck> deckBox;
-
 	@FXML
 	protected CheckBox hideCardsCheckBox;
-
-	private final PlayerConfig playerConfig = new PlayerConfig();
-
 	private List<Deck> decks = new ArrayList<Deck>();
 
 	private PlayerConfigType selectionHint;
@@ -85,7 +78,7 @@ public class PlayerConfigView extends VBox {
 		setupHideCardsBox(selectionHint);
 		setupHeroes();
 		setupBehaviours();
-		deckBox.valueProperty().addListener((ChangeListener<Deck>) (observableProperty, oldDeck, newDeck) -> {
+		deckBox.valueProperty().addListener((observableProperty, oldDeck, newDeck) -> {
 			getPlayerConfig().setDeck(newDeck);
 		});
 	}
@@ -155,6 +148,8 @@ public class PlayerConfigView extends VBox {
 
 	public void setupBehaviours() {
 		ObservableList<IBehaviour> behaviourList = FXCollections.observableArrayList();
+		behaviourList.add(new PlayRandomBehaviour());
+		behaviourList.add(new SubRandomBehaviour());
 		if (selectionHint == PlayerConfigType.HUMAN || selectionHint == PlayerConfigType.SANDBOX) {
 			behaviourList.add(new HumanBehaviour());
 		}
@@ -165,7 +160,7 @@ public class PlayerConfigView extends VBox {
 			behaviourList.add(new HumanBehaviour());
 		}
 
-		behaviourList.add(new PlayRandomBehaviour());
+
 
 		behaviourList.add(new GreedyOptimizeMove(new WeightedHeuristic()));
 		behaviourList.add(new NoAggressionBehaviour());
@@ -183,7 +178,7 @@ public class PlayerConfigView extends VBox {
 		heroList.add(new MetaHero());
 
 		heroBox.setItems(heroList);
-		heroBox.valueProperty().addListener((ChangeListener<HeroCard>) (observableValue, oldHero, newHero) -> {
+		heroBox.valueProperty().addListener((observableValue, oldHero, newHero) -> {
 			selectHero(newHero);
 		});
 	}

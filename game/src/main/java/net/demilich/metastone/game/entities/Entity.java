@@ -1,108 +1,108 @@
 package net.demilich.metastone.game.entities;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 import net.demilich.metastone.game.Attribute;
 import net.demilich.metastone.game.logic.CustomCloneable;
 import net.demilich.metastone.game.targeting.EntityReference;
 import net.demilich.metastone.game.targeting.IdFactory;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 public abstract class Entity extends CustomCloneable {
 
-	private String name;
-	protected Map<Attribute, Object> attributes = new EnumMap<Attribute, Object>(Attribute.class);
-	private int id = IdFactory.UNASSIGNED;
-	private int ownerIndex = -1;
+    protected Map<Attribute, Object> attributes = new EnumMap<Attribute, Object>(Attribute.class);
+    private String name;
+    private int id = IdFactory.UNASSIGNED;
+    private int ownerIndex = -1;
 
-	@Override
-	public Entity clone() {
-		Entity clone = (Entity) super.clone();
-		return clone;
-	}
+    @Override
+    public Entity clone() {
+        Entity clone = (Entity) super.clone();
+        return clone;
+    }
 
-	public Object getAttribute(Attribute attribute) {
-		return attributes.get(attribute);
-	}
+    public Object getAttribute(Attribute attribute) {
+        return attributes.get(attribute);
+    }
 
-	public Map<Attribute, Object> getAttributes() {
-		return attributes;
-	}
+    public Map<Attribute, Object> getAttributes() {
+        return attributes;
+    }
 
-	public int getAttributeValue(Attribute attribute) {
-		return attributes.containsKey(attribute) ? (int) attributes.get(attribute) : 0;
-	}
+    public int getAttributeValue(Attribute attribute) {
+        return attributes.containsKey(attribute) ? (int) attributes.get(attribute) : 0;
+    }
 
-	public abstract EntityType getEntityType();
+    public abstract EntityType getEntityType();
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public int getOwner() {
-		return ownerIndex;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public EntityReference getReference() {
-		return EntityReference.pointTo(this);
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public boolean hasAttribute(Attribute attribute) {
-		Object value = attributes.get(attribute);
-		if (value == null) {
-			return false;
-		}
-		if (value instanceof Integer) {
-			return ((int) value) != 0;
-		}
-		return true;
-	}
+    public int getOwner() {
+        return ownerIndex;
+    }
 
-	public boolean isDestroyed() {
-		return hasAttribute(Attribute.DESTROYED);
-	}
+    public void setOwner(int ownerIndex) {
+        this.ownerIndex = ownerIndex;
+    }
 
-	public void modifyAttribute(Attribute attribute, int value) {
-		if (!attributes.containsKey(attribute)) {
-			setAttribute(attribute, 0);
-		}
-		setAttribute(attribute, getAttributeValue(attribute) + value);
-	}
-	
-	public void modifyHpBonus(int value) {
-		modifyAttribute(Attribute.HP_BONUS, value);
-	}
+    public EntityReference getReference() {
+        return EntityReference.pointTo(this);
+    }
 
-	public void removeAttribute(Attribute attribute) {
-		attributes.remove(attribute);
-	}
+    public boolean hasAttribute(Attribute attribute) {
+        Object value = attributes.get(attribute);
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof Integer) {
+            return ((int) value) != 0;
+        }
+        return true;
+    }
 
-	public void setAttribute(Attribute attribute) {
-		attributes.put(attribute, 1);
-	}
+    public boolean isDestroyed() {
+        return hasAttribute(Attribute.DESTROYED);
+    }
 
-	public void setAttribute(Attribute attribute, int value) {
-		attributes.put(attribute, value);
-	}
+    public void modifyAttribute(Attribute attribute, int value) {
+        if (!attributes.containsKey(attribute)) {
+            setAttribute(attribute, 0);
+        }
+        setAttribute(attribute, getAttributeValue(attribute) + value);
+    }
 
-	public void setAttribute(Attribute attribute, Object value) {
-		attributes.put(attribute, value);
-	}
+    public void modifyHpBonus(int value) {
+        modifyAttribute(Attribute.HP_BONUS, value);
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void removeAttribute(Attribute attribute) {
+        attributes.remove(attribute);
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setAttribute(Attribute attribute) {
+        attributes.put(attribute, 1);
+    }
 
-	public void setOwner(int ownerIndex) {
-		this.ownerIndex = ownerIndex;
-	}
+    public void setAttribute(Attribute attribute, int value) {
+        attributes.put(attribute, value);
+    }
+
+    public void setAttribute(Attribute attribute, Object value) {
+        attributes.put(attribute, value);
+    }
 
 }

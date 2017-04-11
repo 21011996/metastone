@@ -1,159 +1,156 @@
 package net.demilich.metastone.game.cards;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
-public class CardCollection implements Iterable<Card>, Cloneable {
+public class CardCollection implements Iterable<Card>, Cloneable, Serializable {
 
-	private List<Card> cards = new ArrayList<Card>();
+    private List<Card> cards = new ArrayList<Card>();
 
-	public CardCollection() {
+    public CardCollection() {
 
-	}
+    }
 
-	public void add(Card card) {
-		cards.add(card);
-	}
+    public void add(Card card) {
+        cards.add(card);
+    }
 
-	public void addAll(CardCollection cardCollection) {
-		for (Card card : cardCollection) {
-			cards.add(card.clone());
-		}
-	}
-	
-	public void addRandomly(Card card) {
-		int index = ThreadLocalRandom.current().nextInt(cards.size() + 1);
-		cards.add(index, card);
-	}
+    public void addAll(CardCollection cardCollection) {
+        for (Card card : cardCollection) {
+            cards.add(card.clone());
+        }
+    }
 
-	public CardCollection clone() {
-		CardCollection clone = new CardCollection();
-		for (Card card : cards) {
-			clone.add(card.clone());
-		}
+    public void addRandomly(Card card) {
+        int index = ThreadLocalRandom.current().nextInt(cards.size() + 1);
+        cards.add(index, card);
+    }
 
-		return clone;
-	}
+    public CardCollection clone() {
+        CardCollection clone = new CardCollection();
+        for (Card card : cards) {
+            clone.add(card.clone());
+        }
 
-	public boolean contains(Card card) {
-		return cards.contains(card);
-	}
-	
-	public boolean containsCard(Card card) {
-		if (card == null) {
-			return false;
-		}
-		for (Card other : cards) {
-			if (other.getCardId().equals(card.getCardId())) {
-				return true;
-			}
-		}
-		return false;
-	}
+        return clone;
+    }
 
-	public Card get(int index) {
-		return cards.get(index);
-	}
+    public boolean contains(Card card) {
+        return cards.contains(card);
+    }
 
-	public int getCount() {
-		return cards.size();
-	}
+    public boolean containsCard(Card card) {
+        if (card == null) {
+            return false;
+        }
+        for (Card other : cards) {
+            if (other.getCardId().equals(card.getCardId())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public Card getRandom() {
-		if (cards.isEmpty()) {
-			return null;
-		}
-		return cards.get(ThreadLocalRandom.current().nextInt(cards.size()));
-	}
+    public Card get(int index) {
+        return cards.get(index);
+    }
 
-	public Card getRandomOfType(CardType cardType) {
-		List<Card> relevantCards = new ArrayList<>();
-		for (Card card : cards) {
-			if (card.getCardType().isCardType(cardType)) {
-				relevantCards.add(card);
-			}
-		}
-		if (relevantCards.isEmpty()) {
-			return null;
-		}
-		return relevantCards.get(ThreadLocalRandom.current().nextInt(relevantCards.size()));
-	}
+    public int getCount() {
+        return cards.size();
+    }
 
-	public boolean hasCardOfType(CardType cardType) {
-		for (Card card : cards) {
-			if (card.getCardType().isCardType(cardType)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public Card getRandom() {
+        if (cards.isEmpty()) {
+            return null;
+        }
+        return cards.get(ThreadLocalRandom.current().nextInt(cards.size()));
+    }
 
-	public boolean isEmpty() {
-		return cards.isEmpty();
-	}
+    public Card getRandomOfType(CardType cardType) {
+        List<Card> relevantCards = new ArrayList<>();
+        for (Card card : cards) {
+            if (card.getCardType().isCardType(cardType)) {
+                relevantCards.add(card);
+            }
+        }
+        if (relevantCards.isEmpty()) {
+            return null;
+        }
+        return relevantCards.get(ThreadLocalRandom.current().nextInt(relevantCards.size()));
+    }
 
-	@Override
-	public Iterator<Card> iterator() {
-		return cards.iterator();
-	}
+    public boolean hasCardOfType(CardType cardType) {
+        for (Card card : cards) {
+            if (card.getCardType().isCardType(cardType)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public Card peekFirst() {
-		return cards.get(0);
-	}
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
 
-	public boolean remove(Card card) {
-		return cards.remove(card);
-	}
+    @Override
+    public Iterator<Card> iterator() {
+        return cards.iterator();
+    }
 
-	public void removeAll() {
-		cards.clear();
-	}
+    public Card peekFirst() {
+        return cards.get(0);
+    }
 
-	public void removeAll(Predicate<Card> filter) {
-		cards.removeIf(filter);
-	}
+    public boolean remove(Card card) {
+        return cards.remove(card);
+    }
 
-	public Card removeFirst() {
-		return cards.remove(0);
-	}
+    public void removeAll() {
+        cards.clear();
+    }
 
-	public boolean replace(Card oldCard, Card newCard) {
-		int index = cards.indexOf(oldCard);
-		if (index != -1) {
-			cards.set(index, newCard);
-			return true;
-		}
-		return false;
-	}
+    public void removeAll(Predicate<Card> filter) {
+        cards.removeIf(filter);
+    }
 
-	public void shuffle() {
-		Collections.shuffle(cards);
-	}
+    public Card removeFirst() {
+        return cards.remove(0);
+    }
 
-	public void sortByManaCost() {
-		Comparator<Card> manaComparator = new Comparator<Card>() {
+    public boolean replace(Card oldCard, Card newCard) {
+        int index = cards.indexOf(oldCard);
+        if (index != -1) {
+            cards.set(index, newCard);
+            return true;
+        }
+        return false;
+    }
 
-			@Override
-			public int compare(Card card1, Card card2) {
-				Integer manaCost1 = card1.getBaseManaCost();
-				Integer manaCost2 = card2.getBaseManaCost();
-				return manaCost1.compareTo(manaCost2);
-			}
-		};
-		cards.sort(manaComparator);
-	}
+    public void shuffle() {
+        Collections.shuffle(cards);
+    }
 
-	public void sortByName() {
-		cards.sort((card1, card2) -> card1.getName().compareTo(card2.getName()));
-	}
+    public void sortByManaCost() {
+        Comparator<Card> manaComparator = new Comparator<Card>() {
 
-	public List<Card> toList() {
-		return new ArrayList<>(cards);
-	}
+            @Override
+            public int compare(Card card1, Card card2) {
+                Integer manaCost1 = card1.getBaseManaCost();
+                Integer manaCost2 = card2.getBaseManaCost();
+                return manaCost1.compareTo(manaCost2);
+            }
+        };
+        cards.sort(manaComparator);
+    }
+
+    public void sortByName() {
+        cards.sort((card1, card2) -> card1.getName().compareTo(card2.getName()));
+    }
+
+    public List<Card> toList() {
+        return new ArrayList<>(cards);
+    }
 
 }

@@ -7,22 +7,22 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class GameStartTrigger extends GameEventTrigger {
 
-	public GameStartTrigger() {
-		this(EventTriggerDesc.createEmpty(GameStartTrigger.class));
-	}
+    public GameStartTrigger() {
+        this(EventTriggerDesc.createEmpty(GameStartTrigger.class));
+    }
 
-	public GameStartTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public GameStartTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.GAME_START;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.GAME_START;
+    }
 
 }

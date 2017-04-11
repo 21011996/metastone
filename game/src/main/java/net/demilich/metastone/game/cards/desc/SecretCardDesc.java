@@ -6,11 +6,11 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class SecretCardDesc extends SpellCardDesc {
 
-	public EventTriggerDesc trigger;
+    public EventTriggerDesc trigger;
 
-	@Override
-	public Card createInstance() {
-		return new SecretCard(this);
-	}
+    @Override
+    public Card createInstance() {
+        return new SecretCard(this);
+    }
 
 }

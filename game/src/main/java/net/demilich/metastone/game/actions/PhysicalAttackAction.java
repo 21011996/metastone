@@ -11,61 +11,58 @@ import net.demilich.metastone.game.targeting.TargetSelection;
 
 public class PhysicalAttackAction extends GameAction {
 
-	private final EntityReference attackerReference;
+    private final EntityReference attackerReference;
 
-	public PhysicalAttackAction(EntityReference attackerReference) {
-		setTargetRequirement(TargetSelection.ENEMY_CHARACTERS);
-		setActionType(ActionType.PHYSICAL_ATTACK);
-		this.attackerReference = attackerReference;
-	}
-	
-	@Override
-	public boolean canBeExecutedOn(GameContext context, Player player, Entity entity) {
-		if (!super.canBeExecutedOn(context, player, entity)) {
-			return false;
-		}
-		if (entity.getEntityType() != EntityType.HERO) {
-			return true;
-		}
-		Actor attacker = (Actor) context.resolveSingleTarget(attackerReference);
-		if (attacker.hasAttribute(Attribute.CANNOT_ATTACK_HEROES) ||
-				(attacker.hasAttribute(Attribute.CANNOT_ATTACK_HERO_ON_SUMMON)
-						&& attacker.hasAttribute(Attribute.SUMMONING_SICKNESS))) {
-			return false;
-		}
-		return true;
-	}
+    public PhysicalAttackAction(EntityReference attackerReference) {
+        setTargetRequirement(TargetSelection.ENEMY_CHARACTERS);
+        setActionType(ActionType.PHYSICAL_ATTACK);
+        this.attackerReference = attackerReference;
+    }
 
-	@Override
-	public void execute(GameContext context, int playerId) {
-		Actor defender = (Actor) context.resolveSingleTarget(getTargetKey());
-		Actor attacker = (Actor) context.resolveSingleTarget(attackerReference);
+    @Override
+    public boolean canBeExecutedOn(GameContext context, Player player, Entity entity) {
+        if (!super.canBeExecutedOn(context, player, entity)) {
+            return false;
+        }
+        if (entity.getEntityType() != EntityType.HERO) {
+            return true;
+        }
+        Actor attacker = (Actor) context.resolveSingleTarget(attackerReference);
+        return !(attacker.hasAttribute(Attribute.CANNOT_ATTACK_HEROES) ||
+                (attacker.hasAttribute(Attribute.CANNOT_ATTACK_HERO_ON_SUMMON)
+                        && attacker.hasAttribute(Attribute.SUMMONING_SICKNESS)));
+    }
 
-		context.getLogic().fight(context.getPlayer(playerId), attacker, defender);
-	}
+    @Override
+    public void execute(GameContext context, int playerId) {
+        Actor defender = (Actor) context.resolveSingleTarget(getTargetKey());
+        Actor attacker = (Actor) context.resolveSingleTarget(attackerReference);
 
-	public EntityReference getAttackerReference() {
-		return attackerReference;
-	}
+        context.getLogic().fight(context.getPlayer(playerId), attacker, defender);
+    }
 
-	@Override
-	public String getPromptText() {
-		return "[Physical Attack]";
-	}
+    public EntityReference getAttackerReference() {
+        return attackerReference;
+    }
 
-	@Override
-	public boolean isSameActionGroup(GameAction anotherAction) {
-		if (anotherAction.getActionType() != getActionType()) {
-			return false;
-		}
-		PhysicalAttackAction physicalAttackAction = (PhysicalAttackAction) anotherAction;
+    @Override
+    public String getPromptText() {
+        return "[Physical Attack]";
+    }
 
-		return this.getAttackerReference().equals(physicalAttackAction.getAttackerReference());
-	}
+    @Override
+    public boolean isSameActionGroup(GameAction anotherAction) {
+        if (anotherAction.getActionType() != getActionType()) {
+            return false;
+        }
+        PhysicalAttackAction physicalAttackAction = (PhysicalAttackAction) anotherAction;
 
-	@Override
-	public String toString() {
-		return String.format("%s Attacker: %s Defender: %s", getActionType(), attackerReference, getTargetKey());
-	}
+        return this.getAttackerReference().equals(physicalAttackAction.getAttackerReference());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s Attacker: %s Defender: %s", getActionType(), attackerReference, getTargetKey());
+    }
 
 }

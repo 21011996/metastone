@@ -6,13 +6,13 @@ import net.demilich.metastone.game.cards.CardCollection;
 
 public class DeckSource extends CardSource {
 
-	public DeckSource(SourceDesc desc) {
-		super(desc);
-	}
+    public DeckSource(SourceDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected CardCollection match(GameContext context, Player player) {
-		return player.getDeck().clone();
-	}
+    @Override
+    protected CardCollection match(GameContext context, Player player) {
+        return player.getDeck().clone();
+    }
 
 }

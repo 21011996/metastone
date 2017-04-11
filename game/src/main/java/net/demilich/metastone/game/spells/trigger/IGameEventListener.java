@@ -8,42 +8,42 @@ import net.demilich.metastone.game.targeting.EntityReference;
 
 public interface IGameEventListener {
 
-	public IGameEventListener clone();
-	
-	public abstract boolean canFire(GameEvent event);
+    IGameEventListener clone();
 
-	public abstract EntityReference getHostReference();
+    boolean canFire(GameEvent event);
 
-	public abstract int getOwner();
+    EntityReference getHostReference();
 
-	public abstract boolean interestedIn(GameEventType eventType);
+    int getOwner();
 
-	public abstract boolean isExpired();
+    void setOwner(int playerIndex);
 
-	public abstract void onAdd(GameContext context);
+    boolean interestedIn(GameEventType eventType);
 
-	public abstract void onGameEvent(GameEvent event);
+    boolean isExpired();
 
-	public abstract void onRemove(GameContext context);
+    void onAdd(GameContext context);
 
-	public abstract void setHost(Entity host);
+    void onGameEvent(GameEvent event);
 
-	public abstract void setOwner(int playerIndex);
-	
-	public abstract boolean hasPersistentOwner();
+    void onRemove(GameContext context);
 
-	public abstract boolean oneTurnOnly();
+    void setHost(Entity host);
 
-	public abstract boolean isDelayed();
+    boolean hasPersistentOwner();
 
-	public abstract void delayTimeDown();
+    boolean oneTurnOnly();
 
-	public abstract boolean hasCounter();
+    boolean isDelayed();
 
-	public abstract void countDown();
+    void delayTimeDown();
 
-	public abstract void expire();
-	
-	public abstract boolean canFireCondition(GameEvent event);
+    boolean hasCounter();
+
+    void countDown();
+
+    void expire();
+
+    boolean canFireCondition(GameEvent event);
 
 }

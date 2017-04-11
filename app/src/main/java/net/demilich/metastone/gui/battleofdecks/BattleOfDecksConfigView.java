@@ -1,9 +1,5 @@
 package net.demilich.metastone.gui.battleofdecks;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,12 +15,17 @@ import net.demilich.metastone.GameNotification;
 import net.demilich.metastone.NotificationProxy;
 import net.demilich.metastone.game.behaviour.IBehaviour;
 import net.demilich.metastone.game.behaviour.PlayRandomBehaviour;
+import net.demilich.metastone.game.behaviour.diplom.SubRandomBehaviour;
 import net.demilich.metastone.game.behaviour.threat.GameStateValueBehaviour;
 import net.demilich.metastone.game.decks.Deck;
 import net.demilich.metastone.game.decks.DeckFormat;
 import net.demilich.metastone.game.entities.heroes.HeroClass;
 import net.demilich.metastone.gui.common.BehaviourStringConverter;
 import net.demilich.metastone.gui.common.DeckStringConverter;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 public class BattleOfDecksConfigView extends BorderPane {
 
@@ -106,9 +107,9 @@ public class BattleOfDecksConfigView extends BorderPane {
 
 	private void setupBehaviourBox() {
 		behaviourBox.setConverter(new BehaviourStringConverter());
-		behaviourBox.getItems().setAll(new GameStateValueBehaviour(), new PlayRandomBehaviour());
-		behaviourBox.getSelectionModel().selectFirst();
-	}
+        behaviourBox.getItems().setAll(new GameStateValueBehaviour(), new PlayRandomBehaviour(), new SubRandomBehaviour());
+        behaviourBox.getSelectionModel().selectFirst();
+    }
 
 	private void setupNumberOfGamesBox() {
 		ObservableList<Integer> numberOfGamesEntries = FXCollections.observableArrayList();

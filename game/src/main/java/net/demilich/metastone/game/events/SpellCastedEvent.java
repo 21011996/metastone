@@ -6,30 +6,30 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class SpellCastedEvent extends GameEvent {
 
-	private final Card sourceCard;
+    private final Card sourceCard;
 
-	public SpellCastedEvent(GameContext context, int playerId, Card sourceCard) {
-		super(context, playerId, playerId);
-		this.sourceCard = sourceCard;
-	}
-	
-	@Override
-	public Entity getEventSource() {
-		return getSourceCard();
-	}
+    public SpellCastedEvent(GameContext context, int playerId, Card sourceCard) {
+        super(context, playerId, playerId);
+        this.sourceCard = sourceCard;
+    }
 
-	@Override
-	public Entity getEventTarget() {
-		return getSourceCard();
-	}
+    @Override
+    public Entity getEventSource() {
+        return getSourceCard();
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.SPELL_CASTED;
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getSourceCard();
+    }
 
-	public Card getSourceCard() {
-		return sourceCard;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.SPELL_CASTED;
+    }
+
+    public Card getSourceCard() {
+        return sourceCard;
+    }
 
 }

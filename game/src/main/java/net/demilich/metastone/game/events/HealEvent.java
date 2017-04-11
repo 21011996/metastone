@@ -5,31 +5,31 @@ import net.demilich.metastone.game.entities.Entity;
 
 public class HealEvent extends GameEvent {
 
-	private final Entity target;
-	private final int healing;
+    private final Entity target;
+    private final int healing;
 
-	public HealEvent(GameContext context, int playerId, Entity target, int healing) {
-		super(context, playerId, -1);
-		this.target = target;
-		this.healing = healing;
-	}
+    public HealEvent(GameContext context, int playerId, Entity target, int healing) {
+        super(context, playerId, -1);
+        this.target = target;
+        this.healing = healing;
+    }
 
-	@Override
-	public Entity getEventTarget() {
-		return getTarget();
-	}
+    @Override
+    public Entity getEventTarget() {
+        return getTarget();
+    }
 
-	@Override
-	public GameEventType getEventType() {
-		return GameEventType.HEAL;
-	}
+    @Override
+    public GameEventType getEventType() {
+        return GameEventType.HEAL;
+    }
 
-	public int getHealing() {
-		return healing;
-	}
+    public int getHealing() {
+        return healing;
+    }
 
-	public Entity getTarget() {
-		return target;
-	}
+    public Entity getTarget() {
+        return target;
+    }
 
 }

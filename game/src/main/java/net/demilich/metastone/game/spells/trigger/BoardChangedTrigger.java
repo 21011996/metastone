@@ -7,22 +7,22 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class BoardChangedTrigger extends GameEventTrigger {
 
-	public BoardChangedTrigger() {
-		this(EventTriggerDesc.createEmpty(BoardChangedTrigger.class));
-	}
+    public BoardChangedTrigger() {
+        this(EventTriggerDesc.createEmpty(BoardChangedTrigger.class));
+    }
 
-	public BoardChangedTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public BoardChangedTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		return true;
-	}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        return true;
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.BOARD_CHANGED;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.BOARD_CHANGED;
+    }
 
 }

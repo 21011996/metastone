@@ -1,6 +1,8 @@
 package net.demilich.metastone.game;
 
-public enum TurnState {
-	TURN_ENDED, TURN_IN_PROGRESS
+import java.io.Serializable;
+
+public enum TurnState implements Serializable {
+    TURN_ENDED, TURN_IN_PROGRESS
 
 }

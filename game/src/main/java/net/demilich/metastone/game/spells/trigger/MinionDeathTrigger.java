@@ -12,30 +12,26 @@ import net.demilich.metastone.game.spells.desc.trigger.EventTriggerDesc;
 
 public class MinionDeathTrigger extends GameEventTrigger {
 
-	public MinionDeathTrigger(EventTriggerDesc desc) {
-		super(desc);
-	}
+    public MinionDeathTrigger(EventTriggerDesc desc) {
+        super(desc);
+    }
 
-	@Override
-	protected boolean fire(GameEvent event, Entity host) {
-		KillEvent killEvent = (KillEvent) event;
-		if (killEvent.getVictim().getEntityType() != EntityType.MINION) {
-			return false;
-		}
+    @Override
+    protected boolean fire(GameEvent event, Entity host) {
+        KillEvent killEvent = (KillEvent) event;
+        if (killEvent.getVictim().getEntityType() != EntityType.MINION) {
+            return false;
+        }
 
-		Minion minion = (Minion) killEvent.getVictim();
+        Minion minion = (Minion) killEvent.getVictim();
 
-		Race race = (Race) desc.get(EventTriggerArg.RACE);
-		if (race != null && minion.getRace() != race) {
-			return false;
-		}
-		
-		return true;
-	}
+        Race race = (Race) desc.get(EventTriggerArg.RACE);
+        return !(race != null && minion.getRace() != race);
+    }
 
-	@Override
-	public GameEventType interestedIn() {
-		return GameEventType.KILL;
-	}
+    @Override
+    public GameEventType interestedIn() {
+        return GameEventType.KILL;
+    }
 
 }
