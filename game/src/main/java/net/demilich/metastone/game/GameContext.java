@@ -2,7 +2,7 @@ package net.demilich.metastone.game;
 
 import net.demilich.metastone.game.actions.ActionType;
 import net.demilich.metastone.game.actions.GameAction;
-import net.demilich.metastone.game.behaviour.diplom.DiplomBehaviour;
+import net.demilich.metastone.game.behaviour.diplom.LearningStation;
 import net.demilich.metastone.game.cards.Card;
 import net.demilich.metastone.game.cards.CardCatalogue;
 import net.demilich.metastone.game.cards.CardCollection;
@@ -454,7 +454,7 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
     protected void onGameStateChanged() {
     }
 
-    private void performAction(int playerId, GameAction gameAction) {
+    public void performAction(int playerId, GameAction gameAction) {
         logic.performGameAction(playerId, gameAction);
         onGameStateChanged();
     }
@@ -474,7 +474,13 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
 
     }
 
-    public void resume(DiplomBehaviour dp) {
+    public void playOneTurn() {
+        startTurn(activePlayer);
+        while (playTurn()) {
+        }
+    }
+
+    public void resume(LearningStation dp) {
         while (!gameDecided()) {
             while (playTurn()) {
             }
@@ -484,7 +490,6 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
             startTurn(activePlayer);
         }
         endGame();
-        dp.saveNet();
         dp.finished = true;
         if (winner != null) {
             System.out.println(String.format("Winner is %s - %s", winner.getName(), winner.getBehaviour().getName()));

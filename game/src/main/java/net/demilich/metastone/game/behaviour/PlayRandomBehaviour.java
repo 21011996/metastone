@@ -3,6 +3,7 @@ package net.demilich.metastone.game.behaviour;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.actions.GameAction;
+import net.demilich.metastone.game.behaviour.diplom.LearningStation;
 import net.demilich.metastone.game.cards.Card;
 
 import java.io.Serializable;
@@ -47,12 +48,12 @@ public class PlayRandomBehaviour extends Behaviour implements Serializable {
                 e.printStackTrace();
             }
         }*/
-        /*if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() != 0) {
+        if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() != 0) {
             GameContext context1 = context.clone();
-            DiplomBehaviour diplomBehaviour = new DiplomBehaviour(context1);
-            while (!diplomBehaviour.finished){
+            LearningStation learningStation = new LearningStation(context1);
+            while (!learningStation.finished2) {
             }
-        }*/
+        }
         return randomAction;
     }
 

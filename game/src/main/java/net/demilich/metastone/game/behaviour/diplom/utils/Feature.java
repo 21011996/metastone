@@ -1,6 +1,8 @@
 package net.demilich.metastone.game.behaviour.diplom.utils;
 
-public class Feature {
+import java.io.Serializable;
+
+public class Feature implements Serializable {
     public double[] x;
     public int size;
 

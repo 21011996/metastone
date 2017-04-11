@@ -28,7 +28,7 @@ public class FeautureExtractor {
 
     private static void getPlayerFeatures(Player player, double[] features, int offset) {
         int i = offset;
-        features[i] = player.getHero().getHp() + player.getHero().getArmor() / 60.0;
+        features[i] = player.getHero().getEffectiveHp() / 60.0;
         i++;
         for (Minion minion : player.getMinions()) {
             features[i] = minion.getHp() / 12.0;

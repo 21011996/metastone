@@ -43,20 +43,16 @@ public class GreedyOptimizeMove extends Behaviour {
 
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
-        if (validActions.size() == 0) {
+        List<GameAction> tradingActions = validActions.stream()
+                .filter(gameAction -> gameAction instanceof PhysicalAttackAction || gameAction instanceof EndTurnAction)
+                .collect(Collectors.toList());
+        if (tradingActions.size() == 0) {
             return new EndTurnAction();
         }
-        if (validActions.size() == 1) {
-            return validActions.get(0);
-        }
-        List<GameAction> validActions2 = validActions.stream().filter(gameAction -> gameAction instanceof PhysicalAttackAction || gameAction instanceof EndTurnAction).collect(Collectors.toList());
-        if (validActions2.size() == 0) {
-            validActions2.add(new EndTurnAction());
-        }
-        GameAction bestAction = validActions2.get(0);
+        GameAction bestAction = tradingActions.get(0);
         double bestScore = Double.NEGATIVE_INFINITY;
         logger.debug("Current game state has a score of {}", bestScore, hashCode());
-        for (GameAction gameAction : validActions2) {
+        for (GameAction gameAction : tradingActions) {
             GameContext simulationResult = simulateAction(context.clone(), player, gameAction);
             double gameStateScore = heuristic.getScore(simulationResult, player.getId());
             logger.debug("Action {} gains score of {}", gameAction, gameStateScore);

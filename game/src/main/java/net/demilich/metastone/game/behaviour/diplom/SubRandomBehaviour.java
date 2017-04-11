@@ -20,7 +20,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class SubRandomBehaviour extends Behaviour implements Serializable {
-    private int i = 0;
+    public double eps = 1;
 
     private Random random = new Random();
     private DiplomBehaviour diplomBehaviour = new DiplomBehaviour();
@@ -40,6 +40,7 @@ public class SubRandomBehaviour extends Behaviour implements Serializable {
 
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
+        //TODO dont use this!!!
         if (validActions.size() == 1) {
             return validActions.get(0);
         }
@@ -50,8 +51,9 @@ public class SubRandomBehaviour extends Behaviour implements Serializable {
             GameAction randomAction = validActions2.get(randomIndex);
             return randomAction;
         } else {
-            return diplomBehaviour.requestAction2(context, player, validActions);
+            return diplomBehaviour.requestAction(context, player, validActions);
         }
+
     }
 
 }

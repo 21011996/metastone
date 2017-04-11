@@ -6,14 +6,8 @@ import net.demilich.metastone.game.actions.EndTurnAction;
 import net.demilich.metastone.game.actions.GameAction;
 import net.demilich.metastone.game.actions.PhysicalAttackAction;
 import net.demilich.metastone.game.behaviour.Behaviour;
-import net.demilich.metastone.game.behaviour.GreedyOptimizeMove;
 import net.demilich.metastone.game.behaviour.diplom.network.Net;
-import net.demilich.metastone.game.behaviour.diplom.qutils.MinionHeuristic;
-import net.demilich.metastone.game.behaviour.diplom.utils.Activation;
-import net.demilich.metastone.game.behaviour.diplom.utils.DataInstance;
-import net.demilich.metastone.game.behaviour.diplom.utils.FeautureExtractor;
-import net.demilich.metastone.game.behaviour.diplom.utils.Params;
-import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
+import net.demilich.metastone.game.behaviour.diplom.utils.*;
 import net.demilich.metastone.game.cards.Card;
 import net.demilich.metastone.game.entities.minions.Minion;
 
@@ -33,7 +27,7 @@ public class DiplomBehaviour extends Behaviour {
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{86, 57}, Activation.SIGMOID);
+    private Net network = new Net(new int[]{86, 60, 60, 57}, Activation.SIGMOID);
     private GameContext start = null;
 
     public DiplomBehaviour(GameContext start) {
@@ -42,13 +36,10 @@ public class DiplomBehaviour extends Behaviour {
         } else {
             this.network.initWeights(new File[]{
                     new File("neunet", "w0.txt"),
-                    new File("neunet", "w1.txt")
+                    new File("neunet", "w1.txt"),
+                    new File("neunet", "w2.txt")
             });
         }
-        this.start = start;
-        this.start.getActivePlayer().setBehaviour(this);
-        this.start.getOpponent(this.start.getActivePlayer()).setBehaviour(new GreedyOptimizeMove(new WeightedHeuristic()));
-        this.start.resume(this);
     }
 
     public DiplomBehaviour() {
@@ -57,7 +48,8 @@ public class DiplomBehaviour extends Behaviour {
         } else {
             this.network.initWeights(new File[]{
                     new File("neunet", "w0.txt"),
-                    new File("neunet", "w1.txt")
+                    new File("neunet", "w1.txt"),
+                    new File("neunet", "w2.txt")
             });
         }
     }
@@ -69,6 +61,17 @@ public class DiplomBehaviour extends Behaviour {
     }
 
     public void learn() {
+        ArrayList<TrainUnit> trainSet = ReplayBank.getBatch(0, 128);
+        for (TrainUnit trainUnit : trainSet) {
+            Feature s = trainUnit.getSFeatures();
+            int actionIndex = trainUnit.getAction();
+            double r = trainUnit.getReward();
+            Feature sa = trainUnit.getSAFeatures();
+            double[] qs = network.classify(s);
+            double maxqsa = Arrays.stream(network.classify(sa)).max().getAsDouble();
+            qs[actionIndex] = r + DICOUNT_REWARD * maxqsa;
+            network.learnStep(new DataInstance(trainUnit.getSFeatures(), qs), BEST_PARAMS);
+        }
     }
 
     @Override
@@ -87,7 +90,7 @@ public class DiplomBehaviour extends Behaviour {
         return discardedCards;
     }
 
-    private double[] getQ(GameContext context, Player player, List<GameAction> validActions, boolean first) {
+    /*private double[] getQ(GameContext context, Player player, List<GameAction> validActions, boolean first) {
         double baseScore = new MinionHeuristic().getScore(context, player.getId());
         double[] answer = new double[57];
         Arrays.fill(answer, -1.0);
@@ -144,7 +147,7 @@ public class DiplomBehaviour extends Behaviour {
             }
         }
         return answer;
-    }
+    }*/
 
     private HashMap<Integer, GameAction> convertAttackActionReversed(GameContext context, Player player, List<GameAction> validActions) {
         HashMap<Integer, GameAction> answer = new HashMap<>();
@@ -178,37 +181,6 @@ public class DiplomBehaviour extends Behaviour {
 
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
-        network.learnStep(new DataInstance(FeautureExtractor.getFeatures(context, player), getQ(context, player, validActions, true)), BEST_PARAMS);
-        HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
-        if (actionMap.size() != 0) {
-            double[] q = network.classify(FeautureExtractor.getFeatures(context, player));
-            int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
-            if (index > -1 && index < 56) {
-                if (!actionMap.containsKey(index)) {
-                    System.out.println(validActions);
-                    System.out.println(Arrays.toString(FeautureExtractor.getFeatures(context, player).x));
-                    System.out.println(Arrays.toString(q));
-                    System.out.println(index);
-                    return (GameAction) actionMap.values().toArray()[0];
-                }
-                return actionMap.get(index);
-            } else {
-                if (index == 56) {
-                    return new EndTurnAction();
-                } else {
-                    System.out.println(validActions);
-                    System.out.println(context);
-                    System.out.println(Arrays.toString(q));
-                    System.out.println(index);
-                    return null;
-                }
-            }
-        } else {
-            return validActions.get(0);
-        }
-    }
-
-    public GameAction requestAction2(GameContext context, Player player, List<GameAction> validActions) {
         HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
         if (actionMap.size() != 0) {
             double[] q = network.classify(FeautureExtractor.getFeatures(context, player));
@@ -227,6 +199,7 @@ public class DiplomBehaviour extends Behaviour {
                 }
             }
         } else {
+            System.out.println("Some thing wrong there:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString());
             return validActions.get(0);
         }
     }
