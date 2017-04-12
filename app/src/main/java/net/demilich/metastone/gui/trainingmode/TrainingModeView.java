@@ -1,7 +1,5 @@
 package net.demilich.metastone.gui.trainingmode;
 
-import java.io.IOException;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -13,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import net.demilich.metastone.GameNotification;
 import net.demilich.metastone.NotificationProxy;
+
+import java.io.IOException;
 
 public class TrainingModeView extends BorderPane implements EventHandler<ActionEvent> {
 
@@ -75,8 +75,8 @@ public class TrainingModeView extends BorderPane implements EventHandler<ActionE
 		backButton.setDisable(true);
 		resultChart.setVisible(true);
 		series = new XYChart.Series<>();
-		series.setName("Win rate");
-		resultChart.getData().add(series);
+        series.setName("Win step");
+        resultChart.getData().add(series);
 		series.getData().add(new XYChart.Data<Number, Number>(0, 0));
 	}
 

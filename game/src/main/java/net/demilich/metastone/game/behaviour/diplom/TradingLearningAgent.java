@@ -57,8 +57,8 @@ public class TradingLearningAgent extends Behaviour {
                     diplomBehaviour.learn();
                     return randomAction;
                 } else {
-                    ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, new EndTurnAction()));
-                    diplomBehaviour.learn();
+                    //ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, new EndTurnAction()));
+                    //diplomBehaviour.learn();
                     return new EndTurnAction();
                 }
             }

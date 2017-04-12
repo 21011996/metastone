@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -12,12 +13,17 @@ import java.util.Random;
  */
 public class ReplayBank {
     public static ArrayList<TrainUnit> trainUnits = new ArrayList<>();
+    public static int[] counter;
     private static boolean storeOnDisk = false;
     private static int count = 0;
     private static Random random = new Random();
 
     public static void addTrainUnit(TrainUnit trainUnit) {
+        if (counter == null) {
+            counter = new int[57];
+        }
         trainUnits.add(trainUnit);
+        counter[trainUnit.getAction()]++;
         count++;
         if (storeOnDisk) {
             try {
@@ -31,11 +37,22 @@ public class ReplayBank {
         }
     }
 
+    public static void printProfile() {
+        System.out.println(Arrays.toString(counter));
+    }
+
     public static ArrayList<TrainUnit> getBatch(int size) {
         ArrayList<TrainUnit> answer = new ArrayList<>();
+        int counter = 0;
         if (size < getSize()) {
-            for (int i = 0; i < size; i++) {
-                answer.add(trainUnits.get(random.nextInt(trainUnits.size())));
+            while (answer.size() < size) {
+                TrainUnit trainUnit = trainUnits.get(random.nextInt(trainUnits.size()));
+                if (trainUnit.getAction() == 56 && counter < 4) {
+                    counter++;
+                    answer.add(trainUnit);
+                } else if (trainUnit.getAction() != 56) {
+                    answer.add(trainUnit);
+                }
             }
         }
         return answer;

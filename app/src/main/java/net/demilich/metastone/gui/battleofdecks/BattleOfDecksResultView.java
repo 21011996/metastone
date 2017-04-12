@@ -1,18 +1,10 @@
 package net.demilich.metastone.gui.battleofdecks;
 
-import java.io.IOException;
-import java.util.HashMap;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.TableColumn.SortType;
-import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -21,18 +13,18 @@ import javafx.util.Callback;
 import net.demilich.metastone.GameNotification;
 import net.demilich.metastone.NotificationProxy;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 public class BattleOfDecksResultView extends BorderPane {
 
-	@FXML
+    private final HashMap<BattleBatchResult, BattleBatchResultToken> tokenMap = new HashMap<>();
+    @FXML
 	private FlowPane batchResultPane;
-
 	@FXML
 	private TableView<BattleDeckResult> rankingTable;
-
 	@FXML
 	private Button backButton;
-
-	private final HashMap<BattleBatchResult, BattleBatchResultToken> tokenMap = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public BattleOfDecksResultView() {
@@ -48,8 +40,8 @@ public class BattleOfDecksResultView extends BorderPane {
 
 		TableColumn<BattleDeckResult, String> nameColumn = new TableColumn<>("Deck name");
 		nameColumn.setPrefWidth(200);
-		TableColumn<BattleDeckResult, Double> winRateColumn = new TableColumn<>("Win rate");
-		winRateColumn.setPrefWidth(150);
+        TableColumn<BattleDeckResult, Double> winRateColumn = new TableColumn<>("Win step");
+        winRateColumn.setPrefWidth(150);
 
 		nameColumn.setCellValueFactory(new PropertyValueFactory<BattleDeckResult, String>("deckName"));
 		winRateColumn.setCellValueFactory(new PropertyValueFactory<BattleDeckResult, Double>("winRate"));

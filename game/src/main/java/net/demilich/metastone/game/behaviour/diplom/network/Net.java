@@ -122,7 +122,7 @@ public class Net {
             }
             for (int h = 0; h < ui[i].length; h++) {
                 for (int m = 0; m < sizes[i + 1] + 1; m++) {
-                    weights[i].set(h, m, weights[i].get(h, m) * (1 - params.rate * params.reg) - params.rate * errors[i + 1][m] * sm[m] * ui[i][h]);
+                    weights[i].set(h, m, weights[i].get(h, m) * (1 - params.step * params.reg) - params.step * errors[i + 1][m] * sm[m] * ui[i][h]);
                 }
             }
 

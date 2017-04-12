@@ -42,7 +42,7 @@
                         <TableView fx:id="rankingTable" prefHeight="602.0" prefWidth="400.0">
                             <columns>
                                 <TableColumn prefWidth="111.0" text="Deck"/>
-                                <TableColumn minWidth="0.0" prefWidth="134.0" text="Win rate"/>
+                                <TableColumn minWidth="0.0" prefWidth="134.0" text="Win step"/>
                             </columns>
                         </TableView>
                     </children>

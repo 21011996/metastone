@@ -61,6 +61,7 @@ public class PlayRandomBehaviour2 extends Behaviour implements Serializable {
                 }
                 context1.dispose();
             }
+            //ReplayBank.printProfile();
         }
         return randomAction;
     }

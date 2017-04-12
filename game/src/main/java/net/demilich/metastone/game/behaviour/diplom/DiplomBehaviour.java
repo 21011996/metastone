@@ -20,9 +20,10 @@ import java.util.stream.IntStream;
  *         created on 08.04.2017
  */
 public class DiplomBehaviour extends Behaviour {
-    private static final Params BEST_PARAMS = new Params(0.07, 0, 1, 0);
+    private static final Params BEST_PARAMS = new Params(0.01, 0, 1, 0);
     private static final double LEARNING_RATE = 1.0;
     private static final double DICOUNT_REWARD = 0.99;
+    private static final double PUNISHMENT = -0.99;
     public boolean finished = false;
     public int beforeSave = 500;
     int total = 0;
@@ -65,6 +66,7 @@ public class DiplomBehaviour extends Behaviour {
             }
             System.out.println("Saved Net");
             System.out.println("Bank size = " + ReplayBank.getSize());
+            ReplayBank.printProfile();
         }
     }
 
@@ -82,6 +84,7 @@ public class DiplomBehaviour extends Behaviour {
             Feature sa = trainUnit.getSAFeatures();
             double[] qs = network.classify(s);
             double maxqsa = Arrays.stream(network.classify(sa)).max().getAsDouble();
+            double actionQ = qs[actionIndex + 1];
             qs[actionIndex+1] = r + DICOUNT_REWARD * maxqsa;
 
             int[] validActions = trainUnit.getValidActions();
@@ -92,10 +95,12 @@ public class DiplomBehaviour extends Behaviour {
             }
             for (int i = 0; i < 57; i++) {
                 if (!invalidActions[i]) {
-                    qs[i+1] = -1.0;
+                    qs[i + 1] = PUNISHMENT;
                 }
             }
-            //qs[57] = -1.0;
+            if (actionIndex != 56) {
+                qs[57] = PUNISHMENT;
+            }
             network.learnStep(new DataInstance(trainUnit.getSFeatures(), qs), BEST_PARAMS);
         }
         saveNet();
@@ -220,7 +225,7 @@ public class DiplomBehaviour extends Behaviour {
                 if (actionMap.containsKey(index)) {
                     return actionMap.get(index);
                 } else {
-                    q[index + 1] = -1.0;
+                    q[index + 1] = PUNISHMENT;
                     network.learnStep(new DataInstance(FeautureExtractor.getFeatures(context, player), q), BEST_PARAMS);
                     error++;
                     //System.out.println("Coudnt get correct action:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString() + "\n" + Arrays.toString(q));

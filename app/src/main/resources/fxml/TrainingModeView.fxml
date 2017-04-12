@@ -39,7 +39,7 @@
                         <NumberAxis label="Games played" side="BOTTOM"/>
                     </xAxis>
                     <yAxis>
-                        <NumberAxis label="Win rate" side="LEFT"/>
+                        <NumberAxis label="Win step" side="LEFT"/>
                     </yAxis>
                 </LineChart>
             </children>

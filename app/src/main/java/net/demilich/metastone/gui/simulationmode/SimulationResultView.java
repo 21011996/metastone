@@ -1,15 +1,5 @@
 package net.demilich.metastone.gui.simulationmode;
 
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import net.demilich.metastone.NotificationProxy;
-import org.apache.commons.lang3.time.DurationFormatUtils;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,14 +10,64 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import net.demilich.metastone.GameNotification;
+import net.demilich.metastone.NotificationProxy;
 import net.demilich.metastone.game.cards.Card;
 import net.demilich.metastone.game.cards.CardCatalogue;
 import net.demilich.metastone.game.cards.CardType;
 import net.demilich.metastone.game.logic.GameLogic;
 import net.demilich.metastone.game.statistics.GameStatistics;
 import net.demilich.metastone.game.statistics.Statistic;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SimulationResultView extends BorderPane {
+
+    private final NumberFormat formatter = DecimalFormat.getInstance();
+    @FXML
+    private BorderPane infoArea;
+
+    @FXML
+    private TableView<StatEntry> absoluteResultTable;
+
+    @FXML
+    private TableView<StatEntry> averageResultTable;
+
+    @FXML
+    private Button doneButton;
+
+    @FXML
+    private Label durationLabel;
+    private PlayerInfoView player1InfoView;
+
+    private PlayerInfoView player2InfoView;
+
+    public SimulationResultView() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SimulationResultView.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        doneButton.setOnAction(event -> NotificationProxy.sendNotification(GameNotification.MAIN_MENU));
+
+        player1InfoView = new PlayerInfoView();
+        infoArea.setLeft(player1InfoView);
+        player2InfoView = new PlayerInfoView();
+        infoArea.setRight(player2InfoView);
+
+        formatter.setMinimumFractionDigits(0);
+        formatter.setMaximumFractionDigits(2);
+    }
 
 	private static String getStatName(Statistic stat) {
 		switch (stat) {
@@ -60,53 +100,11 @@ public class SimulationResultView extends BorderPane {
 		case WEAPONS_EQUIPPED:
 			return "Weapons equipped";
 		case WIN_RATE:
-			return "Win rate";
-		default:
+            return "Win step";
+            default:
 			break;
 		}
 		return stat.toString();
-	}
-
-	@FXML
-	private BorderPane infoArea;
-
-	@FXML
-	private TableView<StatEntry> absoluteResultTable;
-
-	@FXML
-	private TableView<StatEntry> averageResultTable;
-
-	@FXML
-	private Button doneButton;
-
-	@FXML
-	private Label durationLabel;
-	private PlayerInfoView player1InfoView;
-
-	private PlayerInfoView player2InfoView;
-
-	private final NumberFormat formatter = DecimalFormat.getInstance();
-
-	public SimulationResultView() {
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SimulationResultView.fxml"));
-		fxmlLoader.setRoot(this);
-		fxmlLoader.setController(this);
-
-		try {
-			fxmlLoader.load();
-		} catch (IOException exception) {
-			throw new RuntimeException(exception);
-		}
-
-		doneButton.setOnAction(event -> NotificationProxy.sendNotification(GameNotification.MAIN_MENU));
-
-		player1InfoView = new PlayerInfoView();
-		infoArea.setLeft(player1InfoView);
-		player2InfoView = new PlayerInfoView();
-		infoArea.setRight(player2InfoView);
-
-		formatter.setMinimumFractionDigits(0);
-		formatter.setMaximumFractionDigits(2);
 	}
 
 	private String getAverageStatString(Statistic stat, GameStatistics playerStatistics, int numberOfGames) {
