@@ -11,7 +11,7 @@ import java.util.Random;
  *         created on 11.04.2017
  */
 public class ReplayBank {
-    private static ArrayList<TrainUnit> trainUnits = new ArrayList<>();
+    public static ArrayList<TrainUnit> trainUnits = new ArrayList<>();
     private static boolean storeOnDisk = false;
     private static int count = 0;
     private static Random random = new Random();

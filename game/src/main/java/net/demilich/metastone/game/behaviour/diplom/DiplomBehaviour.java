@@ -82,7 +82,8 @@ public class DiplomBehaviour extends Behaviour {
             Feature sa = trainUnit.getSAFeatures();
             double[] qs = network.classify(s);
             double maxqsa = Arrays.stream(network.classify(sa)).max().getAsDouble();
-            qs[actionIndex] = r + DICOUNT_REWARD * maxqsa;
+            qs[actionIndex+1] = r + DICOUNT_REWARD * maxqsa;
+
             int[] validActions = trainUnit.getValidActions();
             boolean[] invalidActions = new boolean[57];
             Arrays.fill(invalidActions, false);
@@ -91,9 +92,10 @@ public class DiplomBehaviour extends Behaviour {
             }
             for (int i = 0; i < 57; i++) {
                 if (!invalidActions[i]) {
-                    qs[i + 1] = -0.1;
+                    qs[i+1] = -1.0;
                 }
             }
+            //qs[57] = -1.0;
             network.learnStep(new DataInstance(trainUnit.getSFeatures(), qs), BEST_PARAMS);
         }
         saveNet();
@@ -218,7 +220,7 @@ public class DiplomBehaviour extends Behaviour {
                 if (actionMap.containsKey(index)) {
                     return actionMap.get(index);
                 } else {
-                    q[index + 1] = -0.1;
+                    q[index + 1] = -1.0;
                     network.learnStep(new DataInstance(FeautureExtractor.getFeatures(context, player), q), BEST_PARAMS);
                     error++;
                     //System.out.println("Coudnt get correct action:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString() + "\n" + Arrays.toString(q));

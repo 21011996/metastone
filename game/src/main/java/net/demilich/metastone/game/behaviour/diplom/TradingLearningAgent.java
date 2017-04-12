@@ -39,7 +39,7 @@ public class TradingLearningAgent extends Behaviour {
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
         List<GameAction> tradingActions = validActions.stream().filter(gameAction -> gameAction instanceof PhysicalAttackAction || gameAction instanceof EndTurnAction).collect(Collectors.toList());
         //eps = 10000/ReplayBank.getSize();
-        if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() == 0) {
+        if (player.getMinions().size() == 0 || context.getOpponent(player).getMinions().size() == 0) {
             int randomIndex = random.nextInt(tradingActions.size());
             GameAction randomAction = tradingActions.get(randomIndex);
             return randomAction;
