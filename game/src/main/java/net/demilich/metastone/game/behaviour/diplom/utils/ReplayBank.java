@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * @author ilya2
@@ -13,6 +14,7 @@ public class ReplayBank {
     private static ArrayList<TrainUnit> trainUnits = new ArrayList<>();
     private static boolean storeOnDisk = false;
     private static int count = 0;
+    private static Random random = new Random();
 
     public static void addTrainUnit(TrainUnit trainUnit) {
         trainUnits.add(trainUnit);
@@ -29,12 +31,17 @@ public class ReplayBank {
         }
     }
 
-    public static ArrayList<TrainUnit> getBatch(int from, int size) {
+    public static ArrayList<TrainUnit> getBatch(int size) {
         ArrayList<TrainUnit> answer = new ArrayList<>();
-        for (int i = from; i < trainUnits.size() && i < from + size; i++) {
-            answer.add(trainUnits.get(0));
-            trainUnits.remove(0);
+        if (size < getSize()) {
+            for (int i = 0; i < size; i++) {
+                answer.add(trainUnits.get(random.nextInt(trainUnits.size())));
+            }
         }
         return answer;
+    }
+
+    public static int getSize() {
+        return trainUnits.size();
     }
 }

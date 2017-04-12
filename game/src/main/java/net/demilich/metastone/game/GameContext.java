@@ -492,9 +492,9 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
         endGame();
         dp.finished = true;
         if (winner != null) {
-            System.out.println(String.format("Winner is %s - %s", winner.getName(), winner.getBehaviour().getName()));
+            //System.out.println(String.format("Winner is %s - %s", winner.getName(), winner.getBehaviour().getName()));
         } else {
-            System.out.println(this.toString());
+            //System.out.println(this.toString());
         }
     }
 

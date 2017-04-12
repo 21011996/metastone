@@ -11,18 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class PlayRandomBehaviour extends Behaviour implements Serializable {
+public class PlayRandomBehaviour2 extends Behaviour implements Serializable {
     LearningStation learningStation;
     private int i = 0;
     private Random random = new Random();
 
-    public PlayRandomBehaviour() {
+    public PlayRandomBehaviour2() {
         learningStation = new LearningStation();
     }
 
     @Override
     public String getName() {
-        return "Play Random";
+        return "Learn by Play Random";
     }
 
     @Override
@@ -52,7 +52,7 @@ public class PlayRandomBehaviour extends Behaviour implements Serializable {
                 e.printStackTrace();
             }
         }*/
-        if (false) {
+        if (true) {
             if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() != 0) {
                 GameContext context1 = context.clone();
                 learningStation.preRun();

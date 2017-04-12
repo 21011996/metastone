@@ -20,7 +20,12 @@ public class FeautureExtractor {
         int playerId = us.getId();
         Player player = gameContext.getPlayer(playerId);
         Player opponent = gameContext.getOpponent(player);
-        int i = 0;
+        for (int i = 0; i < 7; i++) {
+            features[i * 6 + 6] = 1.0;
+        }
+        for (int i = 0; i < 7; i++) {
+            features[i * 6 + 49] = 1.0;
+        }
         getPlayerFeatures(player, features, 0);
         getPlayerFeatures(opponent, features, 43);
         return new Feature(features);
@@ -41,7 +46,7 @@ public class FeautureExtractor {
             i++;
             features[i] = minion.hasAttribute(Attribute.DIVINE_SHIELD) ? 1.0 : 0.0;
             i++;
-            features[i] = 1.0;
+            features[i] = 0.0;
             i++;
         }
     }

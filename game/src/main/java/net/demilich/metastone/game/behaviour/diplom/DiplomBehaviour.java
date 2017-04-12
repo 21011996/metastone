@@ -22,14 +22,16 @@ import java.util.stream.IntStream;
 public class DiplomBehaviour extends Behaviour {
     private static final Params BEST_PARAMS = new Params(0.07, 0, 1, 0);
     private static final double LEARNING_RATE = 1.0;
-    private static final double DICOUNT_REWARD = 0.8;
+    private static final double DICOUNT_REWARD = 0.99;
     public boolean finished = false;
+    public int beforeSave = 500;
+    int total = 0;
+    int error = 0;
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
     private Net network = new Net(new int[]{86, 60, 60, 57}, Activation.SIGMOID);
     private GameContext start = null;
-
     public DiplomBehaviour(GameContext start) {
         if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
             network.initWeights();
@@ -55,13 +57,24 @@ public class DiplomBehaviour extends Behaviour {
     }
 
     public void saveNet() {
-        for (int i = 0; i < network.weights.length; i++) {
-            network.weights[i].writeFile("neunet\\w" + i + ".txt");
+        beforeSave--;
+        if (beforeSave < 0) {
+            beforeSave = 500;
+            for (int i = 0; i < network.weights.length; i++) {
+                network.weights[i].writeFile("neunet\\w" + i + ".txt");
+            }
+            System.out.println("Saved Net");
+            System.out.println("Bank size = " + ReplayBank.getSize());
         }
     }
 
+    public void forceSave() {
+        beforeSave = -1;
+        saveNet();
+    }
+
     public void learn() {
-        ArrayList<TrainUnit> trainSet = ReplayBank.getBatch(0, 128);
+        ArrayList<TrainUnit> trainSet = ReplayBank.getBatch(64);
         for (TrainUnit trainUnit : trainSet) {
             Feature s = trainUnit.getSFeatures();
             int actionIndex = trainUnit.getAction();
@@ -70,24 +83,20 @@ public class DiplomBehaviour extends Behaviour {
             double[] qs = network.classify(s);
             double maxqsa = Arrays.stream(network.classify(sa)).max().getAsDouble();
             qs[actionIndex] = r + DICOUNT_REWARD * maxqsa;
+            int[] validActions = trainUnit.getValidActions();
+            boolean[] invalidActions = new boolean[57];
+            Arrays.fill(invalidActions, false);
+            for (int i : validActions) {
+                invalidActions[i] = true;
+            }
+            for (int i = 0; i < 57; i++) {
+                if (!invalidActions[i]) {
+                    qs[i + 1] = -0.1;
+                }
+            }
             network.learnStep(new DataInstance(trainUnit.getSFeatures(), qs), BEST_PARAMS);
         }
-    }
-
-    @Override
-    public String getName() {
-        return "Diplom Behaviour";
-    }
-
-    @Override
-    public List<Card> mulligan(GameContext context, Player player, List<Card> cards) {
-        List<Card> discardedCards = new ArrayList<Card>();
-        for (Card card : cards) {
-            if (card.getBaseManaCost() >= 4) {
-                discardedCards.add(card);
-            }
-        }
-        return discardedCards;
+        saveNet();
     }
 
     /*private double[] getQ(GameContext context, Player player, List<GameAction> validActions, boolean first) {
@@ -107,7 +116,7 @@ public class DiplomBehaviour extends Behaviour {
             simulation.dispose();
             answer[56] = DICOUNT_REWARD * (newScore - baseScore) / 2000;
         }
-        HashMap<GameAction, Integer> actionMap = convertAttackAction(context, player, validActions);
+        HashMap<GameAction, Integer> actionMap = getValidActions(context, player, validActions);
         for (Map.Entry<GameAction, Integer> entry : actionMap.entrySet()) {
             GameAction action = entry.getKey();
             int slot = entry.getValue();
@@ -124,10 +133,10 @@ public class DiplomBehaviour extends Behaviour {
             simulation.dispose();
         }
         return answer;
-    }
+    }*/
 
-    private HashMap<GameAction, Integer> convertAttackAction(GameContext context, Player player, List<GameAction> validActions) {
-        HashMap<GameAction, Integer> answer = new HashMap<>();
+    /*private ArrayList<Integer> getValidActions(GameContext context, Player player, List<GameAction> validActions) {
+        ArrayList<Integer> answer = new ArrayList<>();
         ArrayList<Minion> ourMinions = (ArrayList<Minion>) player.getMinions();
         ArrayList<Minion> oppMinions = (ArrayList<Minion>) context.getOpponent(player).getMinions();
         for (GameAction action : validActions) {
@@ -143,11 +152,27 @@ public class DiplomBehaviour extends Behaviour {
                     j = 7;
                 }
 
-                answer.put(action, i * 8 + j);
+                answer.add(i * 8 + j);
             }
         }
         return answer;
     }*/
+
+    @Override
+    public String getName() {
+        return "Diplom Behaviour";
+    }
+
+    @Override
+    public List<Card> mulligan(GameContext context, Player player, List<Card> cards) {
+        List<Card> discardedCards = new ArrayList<Card>();
+        for (Card card : cards) {
+            if (card.getBaseManaCost() >= 4) {
+                discardedCards.add(card);
+            }
+        }
+        return discardedCards;
+    }
 
     private HashMap<Integer, GameAction> convertAttackActionReversed(GameContext context, Player player, List<GameAction> validActions) {
         HashMap<Integer, GameAction> answer = new HashMap<>();
@@ -165,6 +190,8 @@ public class DiplomBehaviour extends Behaviour {
                 j = j == -1 ? 7 : j;
 
                 answer.put(i * 8 + j, action);
+            } else if (action instanceof EndTurnAction) {
+                answer.put(56, action);
             }
         }
         return answer;
@@ -183,20 +210,24 @@ public class DiplomBehaviour extends Behaviour {
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
         HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
         if (actionMap.size() != 0) {
+            total++;
             double[] q = network.classify(FeautureExtractor.getFeatures(context, player));
             int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
-            if (index > -1 && index < 56) {
-                return actionMap.get(index);
-            } else {
-                if (index == 56) {
-                    return new EndTurnAction();
+            HashMap<GameAction, Double> answers = new HashMap<>();
+            if (index >= 0 && index <= 56) {
+                if (actionMap.containsKey(index)) {
+                    return actionMap.get(index);
                 } else {
-                    System.out.println(validActions);
-                    System.out.println(context);
-                    System.out.println(Arrays.toString(q));
-                    System.out.println(index);
-                    return null;
+                    q[index + 1] = -0.1;
+                    network.learnStep(new DataInstance(FeautureExtractor.getFeatures(context, player), q), BEST_PARAMS);
+                    error++;
+                    //System.out.println("Coudnt get correct action:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString() + "\n" + Arrays.toString(q));
+                    //System.out.println(1.0*error/total);
+                    return validActions.get(new Random().nextInt(validActions.size()));
                 }
+            } else {
+                System.out.println("Some thing wrong REALLY there:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString());
+                return validActions.get(0);
             }
         } else {
             System.out.println("Some thing wrong there:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString());

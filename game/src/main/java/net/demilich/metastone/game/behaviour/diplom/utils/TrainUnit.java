@@ -22,6 +22,7 @@ public class TrainUnit implements Serializable {
     private int action;
     private double reward;
     private Feature sAFeatures;
+    private int[] validActions;
 
     public TrainUnit(GameContext context, Player player, List<GameAction> validActions, GameAction taken) {
         this.sFeatures = FeautureExtractor.getFeatures(context, player);
@@ -31,20 +32,23 @@ public class TrainUnit implements Serializable {
             this.action = convertAttackAction(context, player, validActions).get(taken);
         }
         this.reward = simulateGetReward(context, player, taken) - new MinionHeuristic().getScore(context, player.getId());
+        this.reward = reward / 100.0;
+        this.validActions = getValidActions(context, player, validActions).stream().mapToInt(Integer::intValue).toArray();
     }
 
-    public TrainUnit(Feature sFeatures, int action, double reward, Feature sAFeatures) {
+    public TrainUnit(Feature sFeatures, int action, double reward, Feature sAFeatures, int[] validActions) {
         this.sFeatures = sFeatures;
         this.action = action;
         this.reward = reward;
         this.sAFeatures = sAFeatures;
+        this.validActions = validActions;
     }
 
     private double simulateGetReward(GameContext context, Player player, GameAction taken) {
         if (taken instanceof EndTurnAction) {
             GameContext simulation = context.clone();
             simulation.performAction(player.getId(), new EndTurnAction());
-            simulation.playTurn();
+            simulation.playOneTurn();
             this.sAFeatures = FeautureExtractor.getFeatures(simulation, player);
             double score = new MinionHeuristic().getScore(simulation, player.getId());
             simulation.dispose();
@@ -58,6 +62,31 @@ public class TrainUnit implements Serializable {
             simulation.dispose();
             return score;
         }
+    }
+
+    private ArrayList<Integer> getValidActions(GameContext context, Player player, List<GameAction> validActions) {
+        ArrayList<Integer> answer = new ArrayList<>();
+        ArrayList<Minion> ourMinions = (ArrayList<Minion>) player.getMinions();
+        ArrayList<Minion> oppMinions = (ArrayList<Minion>) context.getOpponent(player).getMinions();
+        for (GameAction action : validActions) {
+            if (action instanceof PhysicalAttackAction) {
+                PhysicalAttackAction physicalAttackAction = (PhysicalAttackAction) action;
+                int attackerId;
+                attackerId = physicalAttackAction.getAttackerReference().getId();
+                int defenderId = physicalAttackAction.getTargetKey().getId();
+
+                int i = getById(ourMinions, attackerId);
+                int j = getById(oppMinions, defenderId);
+                if (j == -1) {
+                    j = 7;
+                }
+
+                answer.add(i * 8 + j);
+            } else if (action instanceof EndTurnAction) {
+                answer.add(56);
+            }
+        }
+        return answer;
     }
 
     private HashMap<GameAction, Integer> convertAttackAction(GameContext context, Player player, List<GameAction> validActions) {
@@ -90,6 +119,10 @@ public class TrainUnit implements Serializable {
             }
         }
         return -1;
+    }
+
+    public int[] getValidActions() {
+        return validActions;
     }
 
     public Feature getSFeatures() {

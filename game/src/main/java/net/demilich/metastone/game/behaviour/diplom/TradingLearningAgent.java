@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class TradingLearningAgent extends Behaviour {
 
-    public double eps = 1;
+    public double eps = 0.2;
     public DiplomBehaviour diplomBehaviour = new DiplomBehaviour();
     private Random random = new Random();
 
@@ -38,19 +38,29 @@ public class TradingLearningAgent extends Behaviour {
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
         List<GameAction> tradingActions = validActions.stream().filter(gameAction -> gameAction instanceof PhysicalAttackAction || gameAction instanceof EndTurnAction).collect(Collectors.toList());
-        if (eps < random.nextDouble()) {
-            GameAction action = diplomBehaviour.requestAction(context, player, tradingActions);
-            ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action));
-            return action;
+        //eps = 10000/ReplayBank.getSize();
+        if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() == 0) {
+            int randomIndex = random.nextInt(tradingActions.size());
+            GameAction randomAction = tradingActions.get(randomIndex);
+            return randomAction;
         } else {
-            if (tradingActions.size() != 0) {
-                int randomIndex = random.nextInt(tradingActions.size());
-                GameAction randomAction = tradingActions.get(randomIndex);
-                ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, randomAction));
-                return randomAction;
+            if (eps < random.nextDouble()) {
+                GameAction action = diplomBehaviour.requestAction(context, player, tradingActions);
+                ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action));
+                diplomBehaviour.learn();
+                return action;
             } else {
-                ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, new EndTurnAction()));
-                return new EndTurnAction();
+                if (tradingActions.size() != 0) {
+                    int randomIndex = random.nextInt(tradingActions.size());
+                    GameAction randomAction = tradingActions.get(randomIndex);
+                    ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, randomAction));
+                    diplomBehaviour.learn();
+                    return randomAction;
+                } else {
+                    ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, new EndTurnAction()));
+                    diplomBehaviour.learn();
+                    return new EndTurnAction();
+                }
             }
         }
     }

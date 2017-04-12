@@ -86,9 +86,9 @@ public class Net {
 
         double qi = 0d;
         errors[errors.length - 1] = new double[ui[ui.length - 1].length];
-        for (int m = 1; m < ui[ui.length - 1].length; m++) {
+        for (int m = 0; m < ui[ui.length - 1].length; m++) {
             //TODO ensure this works
-            errors[errors.length - 1][m] = ui[ui.length - 1][m] - data.qValue[m - 1];
+            errors[errors.length - 1][m] = ui[ui.length - 1][m] - data.qValue[m];
             qi += errors[errors.length - 1][m] * errors[errors.length - 1][m];
         }
 
