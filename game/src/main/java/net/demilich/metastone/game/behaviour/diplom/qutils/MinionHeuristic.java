@@ -30,10 +30,10 @@ public class MinionHeuristic implements IGameStateHeuristic {
         Player player = context.getPlayer(playerId);
         Player opponent = context.getOpponent(player);
         if (player.getHero().isDestroyed()) {
-            return -100.0;
+            return -1000.0;
         }
         if (opponent.getHero().isDestroyed()) {
-            return 100.0;
+            return 1000.0;
         }
         int ownHp = player.getHero().getHp() + player.getHero().getArmor();
         int opponentHp = opponent.getHero().getHp() + opponent.getHero().getArmor();

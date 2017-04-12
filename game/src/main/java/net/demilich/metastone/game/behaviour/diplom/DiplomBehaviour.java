@@ -20,10 +20,10 @@ import java.util.stream.IntStream;
  *         created on 08.04.2017
  */
 public class DiplomBehaviour extends Behaviour {
-    private static final Params BEST_PARAMS = new Params(0.01, 0, 1, 0);
+    private static final Params BEST_PARAMS = new Params(0.001, 0, 1, 0);
     private static final double LEARNING_RATE = 1.0;
     private static final double DICOUNT_REWARD = 0.99;
-    private static final double PUNISHMENT = -0.99;
+    private static final double PUNISHMENT = 0.3;
     public boolean finished = false;
     public int beforeSave = 500;
     int total = 0;
@@ -85,7 +85,12 @@ public class DiplomBehaviour extends Behaviour {
             double[] qs = network.classify(s);
             double maxqsa = Arrays.stream(network.classify(sa)).max().getAsDouble();
             double actionQ = qs[actionIndex + 1];
-            qs[actionIndex+1] = r + DICOUNT_REWARD * maxqsa;
+            qs[actionIndex + 1] = r + DICOUNT_REWARD * (maxqsa - 0.5);
+            if (qs[actionIndex + 1] < 0 || qs[actionIndex + 1] > 1) {
+                System.out.println(qs[actionIndex + 1]);
+                System.out.println(r);
+                System.out.println(DICOUNT_REWARD * maxqsa);
+            }
 
             int[] validActions = trainUnit.getValidActions();
             boolean[] invalidActions = new boolean[57];
@@ -95,11 +100,11 @@ public class DiplomBehaviour extends Behaviour {
             }
             for (int i = 0; i < 57; i++) {
                 if (!invalidActions[i]) {
-                    qs[i + 1] = PUNISHMENT;
+                    //qs[i + 1] = PUNISHMENT;
                 }
             }
             if (actionIndex != 56) {
-                qs[57] = PUNISHMENT;
+                //qs[57] = PUNISHMENT;
             }
             network.learnStep(new DataInstance(trainUnit.getSFeatures(), qs), BEST_PARAMS);
         }
@@ -221,7 +226,12 @@ public class DiplomBehaviour extends Behaviour {
             double[] q = network.classify(FeautureExtractor.getFeatures(context, player));
             int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
             HashMap<GameAction, Double> answers = new HashMap<>();
-            if (index >= 0 && index <= 56) {
+            for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
+                answers.put(entry.getValue(), q[entry.getKey() + 1]);
+            }
+            GameAction answer = answers.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
+            return answer;
+            /*if (index >= 0 && index <= 56) {
                 if (actionMap.containsKey(index)) {
                     return actionMap.get(index);
                 } else {
@@ -235,7 +245,7 @@ public class DiplomBehaviour extends Behaviour {
             } else {
                 System.out.println("Some thing wrong REALLY there:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString());
                 return validActions.get(0);
-            }
+            }*/
         } else {
             System.out.println("Some thing wrong there:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString());
             return validActions.get(0);

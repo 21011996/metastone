@@ -32,7 +32,7 @@ public class TrainUnit implements Serializable {
             this.action = convertAttackAction(context, player, validActions).get(taken);
         }
         this.reward = simulateGetReward(context, player, taken) - new MinionHeuristic().getScore(context, player.getId());
-        this.reward = reward / 100.0;
+        this.reward = (reward + 4000) / 8000.0;
         this.validActions = getValidActions(context, player, validActions).stream().mapToInt(Integer::intValue).toArray();
     }
 
