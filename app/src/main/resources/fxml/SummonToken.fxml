@@ -52,7 +52,7 @@
                             </image>
                         </ImageView>
                         <ImageView fitHeight="100.0" fitWidth="32.0" mouseTransparent="true" pickOnBounds="true"
-                                   preserveRatio="true" translateX="-2.0" translateY="3.0" y="0.0"
+                                   preserveRatio="true" translateX="-2.0" translateY="3.0" right="0.0"
                                    StackPane.alignment="BOTTOM_LEFT">
                             <image>
                                 <Image url="/img/common/attack_value_icon.png"/>

@@ -87,7 +87,7 @@ public class HiddenUnit implements Unit {
      * Implements the sigmoid function to provide the non-linearity to this
      * function. Simply returns
      * <p>
-     * 1 / (1 + e^-x)
+     * 1 / (1 + e^-left)
      *
      * @param x The value to apply the function to
      * @return The result

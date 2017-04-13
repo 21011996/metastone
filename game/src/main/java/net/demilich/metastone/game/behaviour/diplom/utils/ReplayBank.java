@@ -14,6 +14,7 @@ import java.util.Random;
 public class ReplayBank {
     public static ArrayList<TrainUnit> trainUnits = new ArrayList<>();
     public static int[] counter;
+    public static double maxValue = 0.0;
     private static boolean storeOnDisk = false;
     private static int count = 0;
     private static Random random = new Random();

@@ -82,7 +82,7 @@
                         <StackPane fx:id="heroPowerPane" prefHeight="-1.0" prefWidth="-1.0">
                             <children>
                                 <ImageView id="heropower" fx:id="heroPowerIcon" fitHeight="150.0" fitWidth="64.0"
-                                           pickOnBounds="true" preserveRatio="true" translateY="0.0" y="0.0">
+                                           pickOnBounds="true" preserveRatio="true" translateY="0.0" right="0.0">
                                     <image>
                                         <Image url="/img/powers/armor_up.png"/>
                                     </image>

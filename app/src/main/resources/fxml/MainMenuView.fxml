@@ -49,7 +49,7 @@
     <bottom>
         <AnchorPane>
             <children>
-                <Label fx:id="versionLabel" styleClass="info-small" text="x.x.x" AnchorPane.bottomAnchor="8.0"
+                <Label fx:id="versionLabel" styleClass="info-small" text="left.left.left" AnchorPane.bottomAnchor="8.0"
                        AnchorPane.leftAnchor="8.0">
                     <opaqueInsets>
                         <Insets/>

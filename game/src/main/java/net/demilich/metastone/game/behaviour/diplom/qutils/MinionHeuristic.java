@@ -3,6 +3,7 @@ package net.demilich.metastone.game.behaviour.diplom.qutils;
 import net.demilich.metastone.game.Attribute;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
+import net.demilich.metastone.game.behaviour.diplom.utils.ReplayBank;
 import net.demilich.metastone.game.behaviour.heuristic.IGameStateHeuristic;
 import net.demilich.metastone.game.entities.minions.Minion;
 
@@ -30,10 +31,10 @@ public class MinionHeuristic implements IGameStateHeuristic {
         Player player = context.getPlayer(playerId);
         Player opponent = context.getOpponent(player);
         if (player.getHero().isDestroyed()) {
-            return -1000.0;
+            return -200.0;
         }
         if (opponent.getHero().isDestroyed()) {
-            return 1000.0;
+            return 200.0;
         }
         int ownHp = player.getHero().getHp() + player.getHero().getArmor();
         int opponentHp = opponent.getHero().getHp() + opponent.getHero().getArmor();
@@ -47,7 +48,10 @@ public class MinionHeuristic implements IGameStateHeuristic {
         for (Minion minion : opponent.getMinions()) {
             score -= calculateMinionScore(minion);
         }
-
+        if (Math.abs(score) > ReplayBank.maxValue) {
+            ReplayBank.maxValue = score;
+            System.out.println(score);
+        }
         return score;
     }
 

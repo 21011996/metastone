@@ -89,7 +89,7 @@ public class DiplomBehaviour extends Behaviour {
             if (qs[actionIndex + 1] < 0 || qs[actionIndex + 1] > 1) {
                 System.out.println(qs[actionIndex + 1]);
                 System.out.println(r);
-                System.out.println(DICOUNT_REWARD * maxqsa);
+                System.out.println(DICOUNT_REWARD * maxqsa - 0.5);
             }
 
             int[] validActions = trainUnit.getValidActions();
@@ -223,7 +223,7 @@ public class DiplomBehaviour extends Behaviour {
         HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
         if (actionMap.size() != 0) {
             total++;
-            double[] q = network.classify(FeautureExtractor.getFeatures(context, player));
+            double[] q = network.classify(FeautureExtractor.getFeatures3(context, player));
             int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
             HashMap<GameAction, Double> answers = new HashMap<>();
             for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
