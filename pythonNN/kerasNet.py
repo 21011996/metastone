@@ -36,7 +36,7 @@ class KerasNN:
             self.model.add(Activation("sigmoid"))
 
             self.model.compile(loss='mean_squared_error',
-                               optimizer='sgd',
+                               optimizer='rmsprop',
                                metrics=["accuracy"])
 
     def add(self, s, a, r, sa):

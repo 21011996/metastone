@@ -10,20 +10,14 @@ class NNInterface(object):
         self.kerasNN = KerasNN()
 
     def learn(self):
-        print("l")
         self.kerasNN.learn()
-        print("ld")
 
     def add(self, s, a, r, sa):
-        print("a")
         self.kerasNN.add(list(s), a, r, list(sa))
-        print("ad")
 
     def classify(self, f):
-        print("c")
         s = list(f)
         answer = self.kerasNN.classify(s)
-        print("cd")
         return ListConverter().convert(answer, gateway._gateway_client)
 
     class Java:
