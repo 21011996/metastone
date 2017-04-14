@@ -35,5 +35,4 @@ if __name__ == "__main__":
         callback_server_parameters=CallbackServerParameters(), gateway_parameters=GatewayParameters(port=1234))
     interface = NNInterface(gateway)
     gateway.entry_point.registerPython(interface)
-    gateway.entry_point.
-    print()
+    gateway.entry_point.print()
