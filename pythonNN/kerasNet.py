@@ -19,7 +19,7 @@ class TrainUnit:
 class KerasNN:
     kerasPath = "NN.keras"
     LEARNING_FACTOR = 0.99
-    before_save = 10
+    before_save = 1000
 
     def __init__(self):
         self.dataSet = []
@@ -35,7 +35,7 @@ class KerasNN:
             self.model.add(Dense(57, kernel_initializer="uniform"))
             self.model.add(Activation("sigmoid"))
 
-            self.model.compile(loss='categorical_crossentropy',
+            self.model.compile(loss='mean_squared_error',
                                optimizer='sgd',
                                metrics=["accuracy"])
 
