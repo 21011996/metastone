@@ -10,6 +10,8 @@ r = 0.6
 a = 15
 for i in range(0, 1000):
     nn.add(s, a, r, s)
+print("kuk")
 for j in range(12):
     nn.learn()
+    print("assa")
 print(nn.classify(s))

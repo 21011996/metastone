@@ -19,7 +19,7 @@ class TrainUnit:
 class KerasNN:
     kerasPath = "NN.keras"
     LEARNING_FACTOR = 0.99
-    before_save = 1000
+    before_save = 100
 
     def __init__(self):
         self.dataSet = []
@@ -29,11 +29,10 @@ class KerasNN:
         else:
             self.model = Sequential()
             self.model.add(Dense(64, kernel_initializer="uniform", input_dim=86))
-            self.model.add(Activation('sigmoid'))
+            self.model.add(Activation('relu'))
             self.model.add(Dense(64, kernel_initializer="uniform"))
-            self.model.add(Activation('sigmoid'))
+            self.model.add(Activation('relu'))
             self.model.add(Dense(57, kernel_initializer="uniform"))
-            self.model.add(Activation("sigmoid"))
 
             self.model.compile(loss='mean_squared_error',
                                optimizer='rmsprop',
@@ -64,11 +63,12 @@ class KerasNN:
         self.before_save -= 1
         if self.before_save < 0:
             self.model.save(self.kerasPath)
-            self.before_save = 1000
+            self.before_save = 100
+            print("Saved with %d" % len(self.dataSet))
 
         batch = self.get_batch(64)
         for unit in batch:
             s, a, r, sa = unit.disolve()
             qs = self.model.predict(numpy.array([s])).tolist()[0]
             qs[a] = r + self.LEARNING_FACTOR * (max(self.model.predict(numpy.array([sa])).tolist()[0]) - 0.5)
-            self.model.fit(numpy.array([s]), numpy.array([qs]), epochs=1)
+            self.model.fit(numpy.array([s]), numpy.array([qs]), epochs=1, verbose=0)
