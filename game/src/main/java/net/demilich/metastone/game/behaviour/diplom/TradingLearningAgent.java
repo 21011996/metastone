@@ -1,12 +1,13 @@
 package net.demilich.metastone.game.behaviour.diplom;
 
+import net.demilich.metastone.MetaStone;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.actions.EndTurnAction;
 import net.demilich.metastone.game.actions.GameAction;
 import net.demilich.metastone.game.actions.PhysicalAttackAction;
 import net.demilich.metastone.game.behaviour.Behaviour;
-import net.demilich.metastone.game.behaviour.diplom.utils.ReplayBank;
+import net.demilich.metastone.game.behaviour.diplom.pythonBridge.EntryPoint;
 import net.demilich.metastone.game.behaviour.diplom.utils.TrainUnit;
 import net.demilich.metastone.game.cards.Card;
 
@@ -22,7 +23,9 @@ import java.util.stream.Collectors;
 public class TradingLearningAgent extends Behaviour {
 
     public double eps = 0.2;
-    public DiplomBehaviour diplomBehaviour = new DiplomBehaviour();
+
+    public EntryPoint entryPoint = MetaStone.getEntryPoint();
+    public DiplomBehaviour diplomBehaviour = new DiplomBehaviour(entryPoint);
     private Random random = new Random();
 
     @Override
@@ -46,15 +49,19 @@ public class TradingLearningAgent extends Behaviour {
         } else {
             if (eps < random.nextDouble()) {
                 GameAction action = diplomBehaviour.requestAction(context, player, tradingActions);
-                ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action));
-                diplomBehaviour.learn();
+                //ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action));
+                entryPoint.sendTrainUnit(new TrainUnit(context, player, tradingActions, action));
+                entryPoint.nnInterface.learn();
+                //diplomBehaviour.learn();
                 return action;
             } else {
                 if (tradingActions.size() != 0) {
                     int randomIndex = random.nextInt(tradingActions.size());
                     GameAction randomAction = tradingActions.get(randomIndex);
-                    ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, randomAction));
-                    diplomBehaviour.learn();
+                    //ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, randomAction));
+                    entryPoint.sendTrainUnit(new TrainUnit(context, player, tradingActions, randomAction));
+                    entryPoint.nnInterface.learn();
+                    //diplomBehaviour.learn();
                     return randomAction;
                 } else {
                     //ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, new EndTurnAction()));

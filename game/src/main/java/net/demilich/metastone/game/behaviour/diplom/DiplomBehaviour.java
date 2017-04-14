@@ -7,13 +7,13 @@ import net.demilich.metastone.game.actions.GameAction;
 import net.demilich.metastone.game.actions.PhysicalAttackAction;
 import net.demilich.metastone.game.behaviour.Behaviour;
 import net.demilich.metastone.game.behaviour.diplom.network.Net;
+import net.demilich.metastone.game.behaviour.diplom.pythonBridge.EntryPoint;
 import net.demilich.metastone.game.behaviour.diplom.utils.*;
 import net.demilich.metastone.game.cards.Card;
 import net.demilich.metastone.game.entities.minions.Minion;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * @author ilya2
@@ -33,6 +33,9 @@ public class DiplomBehaviour extends Behaviour {
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
     private Net network = new Net(new int[]{86, 60, 60, 57}, Activation.SIGMOID);
     private GameContext start = null;
+
+    private EntryPoint entryPoint;
+
     public DiplomBehaviour(GameContext start) {
         if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
             network.initWeights();
@@ -43,6 +46,10 @@ public class DiplomBehaviour extends Behaviour {
                     new File("neunet", "w2.txt")
             });
         }
+    }
+
+    public DiplomBehaviour(EntryPoint entryPoint) {
+        this.entryPoint = entryPoint;
     }
 
     public DiplomBehaviour() {
@@ -223,11 +230,12 @@ public class DiplomBehaviour extends Behaviour {
         HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
         if (actionMap.size() != 0) {
             total++;
-            double[] q = network.classify(FeautureExtractor.getFeatures3(context, player));
-            int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
+            //double[] q = network.classify(FeautureExtractor.getFeatures3(context, player));
+            ArrayList<Double> q = entryPoint.nnInterface.classify(FeautureExtractor.getFeatures3(context, player).x);
+            //int index = IntStream.range(0, 58).reduce((i, j) -> q.get(i) < q.get(j) ? j : i).getAsInt();
             HashMap<GameAction, Double> answers = new HashMap<>();
             for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
-                answers.put(entry.getValue(), q[entry.getKey() + 1]);
+                answers.put(entry.getValue(), q.get(entry.getKey()));
             }
             GameAction answer = answers.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
             return answer;

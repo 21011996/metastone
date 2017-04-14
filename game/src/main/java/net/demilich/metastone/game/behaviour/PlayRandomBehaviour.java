@@ -16,9 +16,9 @@ public class PlayRandomBehaviour extends Behaviour implements Serializable {
     private int i = 0;
     private Random random = new Random();
 
-    public PlayRandomBehaviour() {
+    /*public PlayRandomBehaviour() {
         learningStation = new LearningStation();
-    }
+    }*/
 
     @Override
     public String getName() {
@@ -52,16 +52,6 @@ public class PlayRandomBehaviour extends Behaviour implements Serializable {
                 e.printStackTrace();
             }
         }*/
-        if (false) {
-            if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() != 0) {
-                GameContext context1 = context.clone();
-                learningStation.preRun();
-                learningStation.runLearning(context1);
-                while (!learningStation.finished2) {
-                }
-                context1.dispose();
-            }
-        }
         return randomAction;
     }
 

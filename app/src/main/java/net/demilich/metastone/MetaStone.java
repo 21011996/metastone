@@ -7,6 +7,8 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.demilich.metastone.game.behaviour.diplom.pythonBridge.EntryPoint;
+import net.demilich.metastone.game.behaviour.diplom.pythonBridge.PythonBridge;
 import net.demilich.metastone.gui.IconFactory;
 import net.demilich.metastone.utils.UserHomeMetastone;
 import org.slf4j.Logger;
@@ -17,10 +19,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class MetaStone extends Application {
+    public static PythonBridge pythonBridge;
 
 	private static Logger logger = LoggerFactory.getLogger(MetaStone.class);
 
+    public static EntryPoint getEntryPoint() {
+        return PythonBridge.entryPoint;
+    }
+
 	public static void main(String[] args) {
+        PythonBridge pythonBridge = new PythonBridge();
+        PythonBridge.main(1);
+        MetaStone.pythonBridge = pythonBridge;
+
 		//DevCardTools.formatJsons();
 
 		try {
