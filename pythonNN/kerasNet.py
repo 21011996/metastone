@@ -44,7 +44,9 @@ class KerasNN:
     def classify(self, s):
         s2 = numpy.array([s])
         q = self.model.predict(s2)
-        return q.tolist()[0]
+        answer = q.tolist()[0]
+        print(answer[5])
+        return answer
 
     def get_batch(self, size):
         answer = []

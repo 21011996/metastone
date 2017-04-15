@@ -5,6 +5,7 @@ package net.demilich.metastone.game.behaviour.diplom;
  * created on 11.04.2017
  */
 
+import net.demilich.metastone.MetaStone;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.actions.EndTurnAction;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class SubRandomBehaviour extends Behaviour implements Serializable {
 
     private Random random = new Random();
-    private DiplomBehaviour diplomBehaviour = new DiplomBehaviour();
+    private DiplomBehaviour diplomBehaviour = new DiplomBehaviour(MetaStone.getEntryPoint());
 
     public SubRandomBehaviour() {
     }

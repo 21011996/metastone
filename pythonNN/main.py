@@ -11,7 +11,6 @@ a = 15
 for i in range(0, 1000):
     nn.add(s, a, r, s)
 print("kuk")
-for j in range(12):
-    nn.learn()
-    print("assa")
+nn.learn()
 print(nn.classify(s))
+nn.model.save_weights('my_model_weights.h5')
