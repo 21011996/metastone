@@ -1,3 +1,5 @@
+import os
+
 import keras
 import numpy
 import pickle
@@ -5,6 +7,8 @@ from keras.layers import Dense, Activation
 from keras.models import Sequential, load_model
 from pathlib import Path
 from random import randint
+
+from math import fabs
 
 
 class TrainUnit:
@@ -25,19 +29,20 @@ class KerasNN:
     save_name = "weights"
 
     def __init__(self):
-        self.dataSet = []
-        self.model = Sequential()
-        self.model.add(Dense(64, kernel_initializer="uniform", input_dim=86))
-        self.model.add(Activation('relu'))
-        self.model.add(Dense(64, kernel_initializer="uniform"))
-        self.model.add(Activation('relu'))
-        self.model.add(Dense(57, kernel_initializer="uniform"))
-        self.model.add(Activation('linear'))
 
-        optimizer = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0)
-        self.model.compile(loss='mean_squared_error',
-                           optimizer=optimizer,
-                           metrics=["accuracy"])
+        self.dataSet = []
+        if os.path.isfile('dataset.pkl'):
+            with open('dataset.pkl', 'rb') as input:
+                self.dataSet = pickle.load(input)
+
+        self.model = Sequential()
+        self.model.add(Dense(64, kernel_initializer="uniform", activation='relu', input_dim=86))
+        self.model.add(Dense(64, kernel_initializer="uniform", activation='relu'))
+        self.model.add(Dense(57, kernel_initializer="uniform", activation='linear'))
+
+        optimizer = keras.optimizers.RMSprop()
+        self.model.compile(loss='mse',
+                           optimizer=optimizer)
         try:
             self.model.load_weights('{}.h5'.format(self.save_name))
             print(
@@ -48,13 +53,14 @@ class KerasNN:
 
     def add(self, s, a, r, sa):
         self.dataSet.append(TrainUnit(s, a, r, sa))
+
         if len(self.dataSet) % 10000 == 0:
             with open('dataset.pkl', 'wb') as output:
                 pickle.dump(self.dataSet, output, pickle.HIGHEST_PROTOCOL)
 
     def classify(self, s):
         s2 = numpy.array([s])
-        q = self.model.predict(s2)
+        q = self.model.predict(s2, batch_size=1)
         answer = q.tolist()[0]
         return answer
 
@@ -84,5 +90,13 @@ class KerasNN:
             s, a, r, sa = unit.disolve()
             qs = self.model.predict(numpy.array([s])).tolist()[0]
             maxQsa = max(self.model.predict(numpy.array([sa])).tolist()[0])
-            qs[a] = r + self.LEARNING_FACTOR * (maxQsa)
-            self.model.fit(numpy.array([s]), numpy.array([qs]), epochs=1, verbose=0)
+            if fabs(r) >= 200.0:
+                qs[a] = r
+            else:
+                qs[a] = r + self.LEARNING_FACTOR * (maxQsa)
+                if fabs(qs[a]) > 200:
+                    if qs[a] > 0.0:
+                        qs[a] = 200.0
+                    else:
+                        qs[a] = -200.0
+            self.model.fit(numpy.array([s]), numpy.array([qs]), epochs=1, verbose=0, batch_size=1)
