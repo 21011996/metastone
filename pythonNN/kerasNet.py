@@ -1,3 +1,4 @@
+import keras
 import numpy
 import pickle
 from keras.layers import Dense, Activation
@@ -20,21 +21,22 @@ class TrainUnit:
 class KerasNN:
     kerasPath = "NN.h5"
     LEARNING_FACTOR = 0.99
-    before_save = 100
+    before_save = 1000
     save_name = "weights"
 
     def __init__(self):
         self.dataSet = []
         self.model = Sequential()
         self.model.add(Dense(64, kernel_initializer="uniform", input_dim=86))
-        self.model.add(Activation('sigmoid'))
+        self.model.add(Activation('relu'))
         self.model.add(Dense(64, kernel_initializer="uniform"))
-        self.model.add(Activation('sigmoid'))
+        self.model.add(Activation('relu'))
         self.model.add(Dense(57, kernel_initializer="uniform"))
-        self.model.add(Activation('sigmoid'))
+        self.model.add(Activation('linear'))
 
+        optimizer = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0)
         self.model.compile(loss='mean_squared_error',
-                           optimizer='SGD',
+                           optimizer=optimizer,
                            metrics=["accuracy"])
         try:
             self.model.load_weights('{}.h5'.format(self.save_name))
@@ -54,7 +56,6 @@ class KerasNN:
         s2 = numpy.array([s])
         q = self.model.predict(s2)
         answer = q.tolist()[0]
-        # print(answer[5])
         return answer
 
     def get_batch(self, size):
@@ -71,18 +72,17 @@ class KerasNN:
         return answer
 
     def learn(self):
-        """self.before_save -= 1
+        self.before_save -= 1
         if self.before_save < 0:
             self.model.save(self.kerasPath)
             self.model.save_weights("weights.h5")
-            self.before_save = 100
+            self.before_save = 1000
             print("Saved with %d" % len(self.dataSet))
 
         batch = self.get_batch(64)
         for unit in batch:
             s, a, r, sa = unit.disolve()
             qs = self.model.predict(numpy.array([s])).tolist()[0]
-            maxQsa = max(self.model.predict(numpy.array([sa])).tolist()[0]) - 0.5
+            maxQsa = max(self.model.predict(numpy.array([sa])).tolist()[0])
             qs[a] = r + self.LEARNING_FACTOR * (maxQsa)
             self.model.fit(numpy.array([s]), numpy.array([qs]), epochs=1, verbose=0)
-        """

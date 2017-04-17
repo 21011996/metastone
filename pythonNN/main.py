@@ -8,5 +8,8 @@ s = [0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 
      0.16666666666666666, 0.0, 0.0, 0.0, 0.0]
 r = 0.6
 a = 15
+# for i in range(1000):
+#     nn.add(s,a,r,s)
+# for i in range(12):
+#     nn.learn()
 print(nn.classify(s))
-nn.model.save_weights('my_model_weights.h5')
