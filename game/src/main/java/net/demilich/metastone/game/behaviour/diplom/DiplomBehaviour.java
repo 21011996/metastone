@@ -31,7 +31,7 @@ public class DiplomBehaviour extends Behaviour {
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{86, 60, 60, 57}, Activation.SIGMOID);
+    private Net network = new Net(new int[]{86, 1000, 1000, 500, 57}, new Activation[]{Activation.ReLU, Activation.ReLU, Activation.ReLU, Activation.ReLU, Activation.LINEAR});
     private GameContext start = null;
     public DiplomBehaviour(GameContext start) {
         if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
@@ -52,7 +52,8 @@ public class DiplomBehaviour extends Behaviour {
             this.network.initWeights(new File[]{
                     new File("neunet", "w0.txt"),
                     new File("neunet", "w1.txt"),
-                    new File("neunet", "w2.txt")
+                    new File("neunet", "w2.txt"),
+                    new File("neunet", "w3.txt")
             });
         }
     }
@@ -108,7 +109,6 @@ public class DiplomBehaviour extends Behaviour {
             }
             network.learnStep(new DataInstance(trainUnit.getSFeatures(), qs), BEST_PARAMS);
         }
-        saveNet();
     }
 
     /*private double[] getQ(GameContext context, Player player, List<GameAction> validActions, boolean first) {
