@@ -1,14 +1,11 @@
-import os
-
 import keras
 import numpy
+import os
 import pickle
-from keras.layers import Dense, Activation
-from keras.models import Sequential, load_model
-from pathlib import Path
-from random import randint
-
+from keras.layers import Dense, regularizers
+from keras.models import Sequential
 from math import fabs
+from random import randint
 
 
 class TrainUnit:
@@ -36,11 +33,15 @@ class KerasNN:
                 self.dataSet = pickle.load(input)
 
         self.model = Sequential()
-        self.model.add(Dense(64, kernel_initializer="uniform", activation='relu', input_dim=86))
-        self.model.add(Dense(64, kernel_initializer="uniform", activation='relu'))
+        self.model.add(Dense(1000, kernel_initializer="uniform", activation='relu', input_dim=86,
+                             kernel_regularizer=regularizers.l2(0.1), activity_regularizer=regularizers.l1(0.1)))
+        self.model.add(Dense(1000, kernel_initializer="uniform", activation='relu',
+                             kernel_regularizer=regularizers.l2(0.1), activity_regularizer=regularizers.l1(0.1)))
+        self.model.add(Dense(500, kernel_initializer="uniform", activation='relu',
+                             kernel_regularizer=regularizers.l2(0.1), activity_regularizer=regularizers.l1(0.1)))
         self.model.add(Dense(57, kernel_initializer="uniform", activation='linear'))
 
-        optimizer = keras.optimizers.RMSprop()
+        optimizer = keras.optimizers.RMSprop(lr=0.0001)
         self.model.compile(loss='mse',
                            optimizer=optimizer)
         try:
@@ -54,7 +55,7 @@ class KerasNN:
     def add(self, s, a, r, sa):
         self.dataSet.append(TrainUnit(s, a, r, sa))
 
-        if len(self.dataSet) % 10000 == 0:
+        if len(self.dataSet) % 1000 == 0:
             with open('dataset.pkl', 'wb') as output:
                 pickle.dump(self.dataSet, output, pickle.HIGHEST_PROTOCOL)
 
@@ -62,6 +63,8 @@ class KerasNN:
         s2 = numpy.array([s])
         q = self.model.predict(s2, batch_size=1)
         answer = q.tolist()[0]
+        if fabs(answer[5]) > 1000.0:
+            print("dang it {}".format(answer[5]))
         return answer
 
     def get_batch(self, size):
@@ -88,15 +91,10 @@ class KerasNN:
         batch = self.get_batch(64)
         for unit in batch:
             s, a, r, sa = unit.disolve()
-            qs = self.model.predict(numpy.array([s])).tolist()[0]
+            qs = self.model.predict(numpy.array([s]), batch_size=1).tolist()[0]
             maxQsa = max(self.model.predict(numpy.array([sa])).tolist()[0])
-            if fabs(r) >= 200.0:
-                qs[a] = r
-            else:
-                qs[a] = r + self.LEARNING_FACTOR * (maxQsa)
-                if fabs(qs[a]) > 200:
-                    if qs[a] > 0.0:
-                        qs[a] = 200.0
-                    else:
-                        qs[a] = -200.0
+            # if fabs(r) >= 200.0:
+            #     qs[a] = r
+            # else:
+            qs[a] = r + self.LEARNING_FACTOR * (maxQsa)
             self.model.fit(numpy.array([s]), numpy.array([qs]), epochs=1, verbose=0, batch_size=1)

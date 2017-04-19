@@ -3,7 +3,6 @@ package net.demilich.metastone.game.behaviour.diplom.qutils;
 import net.demilich.metastone.game.Attribute;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
-import net.demilich.metastone.game.behaviour.diplom.utils.ReplayBank;
 import net.demilich.metastone.game.behaviour.heuristic.IGameStateHeuristic;
 import net.demilich.metastone.game.entities.minions.Minion;
 
@@ -47,10 +46,6 @@ public class MinionHeuristic implements IGameStateHeuristic {
         }
         for (Minion minion : opponent.getMinions()) {
             score -= calculateMinionScore(minion);
-        }
-        if (Math.abs(score) > ReplayBank.maxValue) {
-            ReplayBank.maxValue = score;
-            System.out.println(score);
         }
         return score;
     }

@@ -1,12 +1,13 @@
 from kerasNet import KerasNN
-import time
-
 
 nn = KerasNN()
-t0 = time.time()
-for i in range(10000):
-    nn.learn()
-t1 = time.time()
 
-total = t1-t0
-print(total)
+# for i in range(1000):
+#     nn.learn()
+
+for i in range(0, 10):
+    s, a, r, sa = nn.dataSet[i].disolve()
+    print(s)
+    print(a)
+    print(r)
+    print(nn.classify(s))
