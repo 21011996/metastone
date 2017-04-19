@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import net.demilich.metastone.game.behaviour.*;
 import net.demilich.metastone.game.behaviour.diplom.SubRandomBehaviour;
+import net.demilich.metastone.game.behaviour.diplom.SubRandomBehaviour2;
 import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
 import net.demilich.metastone.game.behaviour.human.HumanBehaviour;
 import net.demilich.metastone.game.behaviour.threat.GameStateValueBehaviour;
@@ -147,7 +148,8 @@ public class PlayerConfigView extends VBox {
 		ObservableList<IBehaviour> behaviourList = FXCollections.observableArrayList();
         behaviourList.add(new PlayRandomBehaviour2());
         behaviourList.add(new SubRandomBehaviour());
-        behaviourList.add(new PlayRandomBehaviour());
+		behaviourList.add(new SubRandomBehaviour2());
+		behaviourList.add(new PlayRandomBehaviour());
         if (selectionHint == PlayerConfigType.HUMAN || selectionHint == PlayerConfigType.SANDBOX) {
 			behaviourList.add(new HumanBehaviour());
 		}
