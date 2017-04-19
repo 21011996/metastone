@@ -32,10 +32,6 @@ public class LearningStation {
 
         }
         i++;
-        if (i % 50 == 0) {
-            tla.diplomBehaviour.forceSave();
-            System.out.println(tla.diplomBehaviour.error * 1.0 / tla.diplomBehaviour.total);
-        }
         finished2 = true;
     }
 }

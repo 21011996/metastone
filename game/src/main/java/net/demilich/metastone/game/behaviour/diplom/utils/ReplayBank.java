@@ -19,7 +19,11 @@ public class ReplayBank {
     private static int count = 0;
     private static Random random = new Random();
 
-    public static void addTrainUnit(TrainUnit trainUnit) {
+    public static boolean addTrainUnit(TrainUnit trainUnit) {
+        boolean save = false;
+        if (trainUnits.size() % 10000 == 0) {
+            save = true;
+        }
         if (counter == null) {
             counter = new int[57];
         }
@@ -36,6 +40,7 @@ public class ReplayBank {
                 System.out.println("Couldn't store file " + "dataset\\" + count + ".ser");
             }
         }
+        return save;
     }
 
     public static void printProfile() {

@@ -46,14 +46,18 @@ public class TradingLearningAgent extends Behaviour {
         } else {
             if (eps < random.nextDouble()) {
                 GameAction action = diplomBehaviour.requestAction(context, player, tradingActions);
-                ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action));
+                if (ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action))) {
+                    diplomBehaviour.forceSave();
+                }
                 diplomBehaviour.learn();
                 return action;
             } else {
                 if (tradingActions.size() != 0) {
                     int randomIndex = random.nextInt(tradingActions.size());
                     GameAction randomAction = tradingActions.get(randomIndex);
-                    ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, randomAction));
+                    if (ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, randomAction))) {
+                        diplomBehaviour.forceSave();
+                    }
                     diplomBehaviour.learn();
                     return randomAction;
                 } else {

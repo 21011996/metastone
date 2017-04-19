@@ -5,7 +5,8 @@ import java.util.function.Function;
 public enum Activation {
     SIGMOID,
     TANH,
-    ReLU;
+    ReLU,
+    LINEAR;
 
     public Function<Double, Double> get() {
         switch (this) {
@@ -15,6 +16,8 @@ public enum Activation {
                 return Math::tanh;
             case ReLU:
                 return x -> Math.max(0d, x);
+            case LINEAR:
+                return x -> x;
         }
         return null;
     }
@@ -29,6 +32,8 @@ public enum Activation {
                 return x -> 1d - Math.pow(sigma.apply(x), 2);
             case ReLU:
                 return x -> x < 0 ? 0d : 1d;
+            case LINEAR:
+                return x -> 1d;
         }
         return null;
     }
