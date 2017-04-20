@@ -13,7 +13,6 @@ import net.demilich.metastone.game.entities.minions.Minion;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * @author ilya2
@@ -31,7 +30,7 @@ public class DiplomBehaviour extends Behaviour {
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{86, 60, 60, 57}, new Activation[]{Activation.ReLU, Activation.ReLU, Activation.ReLU, Activation.LINEAR});
+    private Net network = new Net(new int[]{86, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID});
     private GameContext start = null;
 
     public DiplomBehaviour() {
@@ -41,8 +40,7 @@ public class DiplomBehaviour extends Behaviour {
             this.network.initWeights(new File[]{
                     new File("neunet", "w0.txt"),
                     new File("neunet", "w1.txt"),
-                    new File("neunet", "w2.txt"),
-                    new File("neunet", "w3.txt")
+                    new File("neunet", "w2.txt")
             });
         }
     }
@@ -89,15 +87,15 @@ public class DiplomBehaviour extends Behaviour {
                 }
             }
             if (sa.x[0] > 0.0 && sa.x[43] > 0.0) {
-                double maxqsa = Arrays.stream(qsa).max().getAsDouble();
+                double maxqsa = Arrays.stream(qsa).max().getAsDouble() - 0.5;
                 qs[actionIndex + 1] = r + DICOUNT_REWARD * (maxqsa);
-                if (maxqsa == Double.NaN) {
+                if (maxqsa < -1000.0) {
                     System.out.println("asdasd " + r + "  " + maxqsa);
                     qs[actionIndex + 1] = r;
                 }
             } else {
                 qs[actionIndex + 1] = r;
-                if (r == Double.NaN) {
+                if (r < -1000.0) {
                     System.out.println("asdasd " + r);
                 }
             }
@@ -224,10 +222,11 @@ public class DiplomBehaviour extends Behaviour {
             total++;
             Feature feature = FeautureExtractor.getFeatures3(context, player);
             double[] q = network.classify(feature);
-            int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
+            double[] newQ = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
+            //int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
             HashMap<GameAction, Double> answers = new HashMap<>();
             for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
-                answers.put(entry.getValue(), q[entry.getKey() + 1]);
+                answers.put(entry.getValue(), newQ[entry.getKey() + 1]);
             }
             GameAction answer = answers.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
             return answer;
