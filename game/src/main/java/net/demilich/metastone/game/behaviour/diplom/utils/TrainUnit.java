@@ -34,7 +34,7 @@ public class TrainUnit implements Serializable {
             this.action = convertAttackAction(context, player, validActions, offset).get(taken);
         }
         this.reward = simulateGetReward(context, player, taken, offset) - new MinionHeuristic().getScore(context, player.getId());
-        this.reward = (reward) / 8000.0;
+        //this.reward = (reward) / 8000.0;
         if (Math.abs(this.reward) > Math.abs(ReplayBank.maxValue)) {
             ReplayBank.maxValue = this.reward;
             System.out.println(this.reward);

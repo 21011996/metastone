@@ -2,7 +2,7 @@ import keras
 import numpy
 import os
 import pickle
-from keras.layers import Dense, regularizers
+from keras.layers import Dense, regularizers, Dropout
 from keras.models import Sequential
 from math import fabs
 from random import randint
@@ -35,10 +35,13 @@ class KerasNN:
         self.model = Sequential()
         self.model.add(Dense(1000, kernel_initializer="uniform", activation='relu', input_dim=86,
                              kernel_regularizer=regularizers.l2(0.1), activity_regularizer=regularizers.l1(0.1)))
+        self.model.add(Dropout(0.1))
         self.model.add(Dense(1000, kernel_initializer="uniform", activation='relu',
                              kernel_regularizer=regularizers.l2(0.1), activity_regularizer=regularizers.l1(0.1)))
+        self.model.add(Dropout(0.1))
         self.model.add(Dense(500, kernel_initializer="uniform", activation='relu',
                              kernel_regularizer=regularizers.l2(0.1), activity_regularizer=regularizers.l1(0.1)))
+        self.model.add(Dropout(0.1))
         self.model.add(Dense(57, kernel_initializer="uniform", activation='linear'))
 
         optimizer = keras.optimizers.RMSprop(lr=0.0001)
@@ -55,7 +58,7 @@ class KerasNN:
     def add(self, s, a, r, sa):
         self.dataSet.append(TrainUnit(s, a, r, sa))
 
-        if len(self.dataSet) % 1000 == 0:
+        if len(self.dataSet) % 10000 == 0:
             with open('dataset.pkl', 'wb') as output:
                 pickle.dump(self.dataSet, output, pickle.HIGHEST_PROTOCOL)
 
@@ -85,7 +88,7 @@ class KerasNN:
         if self.before_save < 0:
             self.model.save(self.kerasPath)
             self.model.save_weights("weights.h5")
-            self.before_save = 1000
+            self.before_save = 10000
             print("Saved with %d" % len(self.dataSet))
 
         batch = self.get_batch(64)
