@@ -35,6 +35,26 @@ public class Feature implements Serializable {
         return x[i];
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        int i = 0;
+        stringBuilder.append(x[i] * 60.0);
+        for (int j = 0; j < 7; j++) {
+            i++;
+            stringBuilder.append(String.format(" (%d/%d)A%dT%dD%d", (int) (x[i + 1] * 12.0), (int) (x[i] * 12.0), x[i + 2] == 0.0 ? 0 : 1, x[i + 3] == 0.0 ? 0 : 1, x[i + 4] == 0.0 ? 0 : 1));
+            i += 5;
+        }
+        i++;
+        stringBuilder.append(x[i] * 60.0);
+        for (int j = 0; j < 7; j++) {
+            i++;
+            stringBuilder.append(String.format(" (%d/%d)A%dT%dD%d", (int) (x[i + 1] * 12.0), (int) (x[i] * 12.0), x[i + 2] == 0.0 ? 0 : 1, x[i + 3] == 0.0 ? 0 : 1, x[i + 4] == 0.0 ? 0 : 1));
+            i += 5;
+        }
+        return stringBuilder.toString();
+    }
+
     public void addHead(double v) {
         double[] newX = new double[size() + 1];
         newX[0] = v;

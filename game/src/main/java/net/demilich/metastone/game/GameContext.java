@@ -478,6 +478,7 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
         startTurn(activePlayer);
         while (playTurn()) {
         }
+        startTurn(activePlayer);
     }
 
     public void resume(LearningStation dp) {

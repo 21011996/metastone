@@ -30,10 +30,10 @@ public class MinionHeuristic implements IGameStateHeuristic {
         float score = 0;
         Player player = context.getPlayer(playerId);
         Player opponent = context.getOpponent(player);
-        if (player.getHero().isDestroyed()) {
+        if (player.getHero().getEffectiveHp() <= 0.0) {
             return -200.0;
         }
-        if (opponent.getHero().isDestroyed()) {
+        if (opponent.getHero().getEffectiveHp() <= 0.0) {
             return 200.0;
         }
         int ownHp = player.getHero().getHp() + player.getHero().getArmor();
@@ -48,7 +48,7 @@ public class MinionHeuristic implements IGameStateHeuristic {
         for (Minion minion : opponent.getMinions()) {
             score -= calculateMinionScore(minion);
         }
-        if (Math.abs(score) > ReplayBank.maxValue) {
+        if (Math.abs(score) > Math.abs(ReplayBank.maxValue)) {
             ReplayBank.maxValue = score;
             System.out.println(score);
         }

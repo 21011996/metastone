@@ -21,7 +21,7 @@ public class ReplayBank {
 
     public static boolean addTrainUnit(TrainUnit trainUnit) {
         boolean save = false;
-        if (trainUnits.size() % 10000 == 0) {
+        if (trainUnits.size() % 10000 == 0 && trainUnits.size() > 10) {
             save = true;
         }
         if (counter == null) {
@@ -49,16 +49,10 @@ public class ReplayBank {
 
     public static ArrayList<TrainUnit> getBatch(int size) {
         ArrayList<TrainUnit> answer = new ArrayList<>();
-        int counter = 0;
         if (size < getSize()) {
             while (answer.size() < size) {
                 TrainUnit trainUnit = trainUnits.get(random.nextInt(trainUnits.size()));
-                if (trainUnit.getAction() == 56 && counter < 4) {
-                    counter++;
-                    answer.add(trainUnit);
-                } else if (trainUnit.getAction() != 56) {
-                    answer.add(trainUnit);
-                }
+                answer.add(trainUnit);
             }
         }
         return answer;

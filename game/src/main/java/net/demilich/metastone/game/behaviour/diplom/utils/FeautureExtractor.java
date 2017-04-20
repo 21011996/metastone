@@ -5,6 +5,7 @@ import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.entities.minions.Minion;
 
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Random;
 public class FeautureExtractor {
     private static Random random = new Random();
 
-    public static Pair<Feature, int[]> getFeatures(GameContext gameContext, Player us) {
+    public static Pair<Feature, HashMap<Integer, Integer>> getFeatures(GameContext gameContext, Player us) {
         // Features Hero: effective health = 1
         // Features minions: health, attack, can_attack, taunt, divine shield, is present = 5
         // Total 1 + 6*7 + 1 + 6*7 = 86
@@ -30,9 +31,10 @@ public class FeautureExtractor {
         for (int i = 0; i < 7; i++) {
             features[i * 6 + 49] = 1.0;
         }
-        getPlayerFeatures(player, features, 0, offset);
-        getPlayerFeatures(opponent, features, 43, offset);
-        return new Pair<>(new Feature(features), offset);
+        HashMap<Integer, Integer> position = new HashMap<>();
+        getPlayerFeatures(player, features, 0, position);
+        getPlayerFeatures(opponent, features, 43, position);
+        return new Pair<>(new Feature(features), position);
     }
 
     public static Feature getFeatures3(GameContext gameContext, Player us) {
@@ -56,7 +58,7 @@ public class FeautureExtractor {
         return new Feature(features);
     }
 
-    public static Feature getFeatures(GameContext gameContext, Player us, int[] offset) {
+    public static Feature getFeatures(GameContext gameContext, Player us, HashMap<Integer, Integer> position) {
         // Features Hero: effective health = 1
         // Features minions: health, attack, can_attack, taunt, divine shield, is present = 5
         // Total 1 + 6*7 + 1 + 6*7 = 86
@@ -71,29 +73,24 @@ public class FeautureExtractor {
         for (int i = 0; i < 7; i++) {
             features[i * 6 + 49] = 1.0;
         }
-        getPlayerFeatures2(player, features, 0, offset);
-        getPlayerFeatures2(opponent, features, 43, offset);
+        getPlayerFeatures2(player, features, 0, position);
+        getPlayerFeatures2(opponent, features, 43, position);
         return new Feature(features);
     }
 
-    private static void getPlayerFeatures(Player player, double[] features, int offset, int[] newOffset) {
+    private static void getPlayerFeatures(Player player, double[] features, int offset, HashMap<Integer, Integer> position) {
         int i = offset;
         features[i] = player.getHero().getEffectiveHp() / 60.0;
         i++;
         int emptyPool = 7 - player.getMinions().size();
 
-        int j = 0;
-        if (offset > 0) {
-            j = 7;
-        }
-
         for (Minion minion : player.getMinions()) {
-            if (emptyPool > 0) {
+            //if (emptyPool > 0) {
                 int skipN = random.nextInt(emptyPool + 1);
                 i += skipN * 6;
                 emptyPool -= skipN;
-                newOffset[j] = 7 - player.getMinions().size() - emptyPool;
-            }
+            position.put(minion.getId(), i);
+            //}
             features[i] = minion.getHp() / 12.0;
             i++;
             features[i] = minion.getAttack() / 12.0;
@@ -106,7 +103,6 @@ public class FeautureExtractor {
             i++;
             features[i] = 0.0;
             i++;
-            j++;
         }
     }
 
@@ -130,18 +126,16 @@ public class FeautureExtractor {
         }
     }
 
-    private static void getPlayerFeatures2(Player player, double[] features, int offset, int[] newOffset) {
+    private static void getPlayerFeatures2(Player player, double[] features, int offset, HashMap<Integer, Integer> position) {
         int i = offset;
         features[i] = player.getHero().getEffectiveHp() / 60.0;
         i++;
-        int j = 0;
-        if (offset > 0) {
-            j = 7;
-        }
-        int skipped = 0;
         for (Minion minion : player.getMinions()) {
-            i += (newOffset[j] - skipped) * 6;
-            skipped = newOffset[j];
+            if (position.containsKey(minion.getId())) {
+                i = position.get(minion.getId());
+            } else {
+                //TODO fix it later when deathrattle will come
+            }
             features[i] = minion.getHp() / 12.0;
             i++;
             features[i] = minion.getAttack() / 12.0;
@@ -154,7 +148,6 @@ public class FeautureExtractor {
             i++;
             features[i] = 0.0;
             i++;
-            j++;
         }
     }
 

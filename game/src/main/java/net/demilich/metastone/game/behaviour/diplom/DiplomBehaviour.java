@@ -31,19 +31,8 @@ public class DiplomBehaviour extends Behaviour {
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{86, 1000, 1000, 500, 57}, new Activation[]{Activation.ReLU, Activation.ReLU, Activation.ReLU, Activation.ReLU, Activation.LINEAR});
+    private Net network = new Net(new int[]{86, 60, 60, 57}, new Activation[]{Activation.ReLU, Activation.ReLU, Activation.ReLU, Activation.LINEAR});
     private GameContext start = null;
-    public DiplomBehaviour(GameContext start) {
-        if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
-            network.initWeights();
-        } else {
-            this.network.initWeights(new File[]{
-                    new File("neunet", "w0.txt"),
-                    new File("neunet", "w1.txt"),
-                    new File("neunet", "w2.txt")
-            });
-        }
-    }
 
     public DiplomBehaviour() {
         if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
@@ -78,35 +67,45 @@ public class DiplomBehaviour extends Behaviour {
 
     public void learn() {
         ArrayList<TrainUnit> trainSet = ReplayBank.getBatch(64);
+        int meh = 0;
         for (TrainUnit trainUnit : trainSet) {
             Feature s = trainUnit.getSFeatures();
             int actionIndex = trainUnit.getAction();
             double r = trainUnit.getReward();
             Feature sa = trainUnit.getSAFeatures();
-            double[] qs = network.classify(s);
-            double maxqsa = Arrays.stream(network.classify(sa)).max().getAsDouble();
-            double actionQ = qs[actionIndex + 1];
-            qs[actionIndex + 1] = r + DICOUNT_REWARD * (maxqsa - 0.5);
-            if (qs[actionIndex + 1] < 0 || qs[actionIndex + 1] > 1) {
-                System.out.println(qs[actionIndex + 1]);
-                System.out.println(r);
-                System.out.println(DICOUNT_REWARD * maxqsa - 0.5);
-            }
 
+            double[] qs = network.classify(s);
+            double[] qs2 = qs.clone();
+
+            double[] qsa = network.classify(sa);
             int[] validActions = trainUnit.getValidActions();
-            boolean[] invalidActions = new boolean[57];
-            Arrays.fill(invalidActions, false);
+            boolean[] invalidActions = new boolean[58];
             for (int i : validActions) {
-                invalidActions[i] = true;
+                invalidActions[i + 1] = true;
             }
-            for (int i = 0; i < 57; i++) {
+            for (int i = 0; i < 58; i++) {
                 if (!invalidActions[i]) {
-                    //qs[i + 1] = PUNISHMENT;
+                    qsa[i] = Float.NEGATIVE_INFINITY;
                 }
             }
-            if (actionIndex != 56) {
-                //qs[57] = PUNISHMENT;
+            if (sa.x[0] > 0.0 && sa.x[43] > 0.0) {
+                double maxqsa = Arrays.stream(qsa).max().getAsDouble();
+                qs[actionIndex + 1] = r + DICOUNT_REWARD * (maxqsa);
+                if (maxqsa == Double.NaN) {
+                    System.out.println("asdasd " + r + "  " + maxqsa);
+                    qs[actionIndex + 1] = r;
+                }
+            } else {
+                qs[actionIndex + 1] = r;
+                if (r == Double.NaN) {
+                    System.out.println("asdasd " + r);
+                }
             }
+            /*if (qs[actionIndex + 1] < 0 || qs[actionIndex + 1] > 1) {
+                System.out.println(qs[actionIndex + 1]);
+                System.out.println(r);
+                System.out.println(DICOUNT_REWARD * maxqsa);
+            }*/
             network.learnStep(new DataInstance(trainUnit.getSFeatures(), qs), BEST_PARAMS);
         }
     }
@@ -223,7 +222,8 @@ public class DiplomBehaviour extends Behaviour {
         HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
         if (actionMap.size() != 0) {
             total++;
-            double[] q = network.classify(FeautureExtractor.getFeatures3(context, player));
+            Feature feature = FeautureExtractor.getFeatures3(context, player);
+            double[] q = network.classify(feature);
             int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
             HashMap<GameAction, Double> answers = new HashMap<>();
             for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
