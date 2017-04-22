@@ -53,7 +53,7 @@ public class PlayRandomBehaviour2 extends Behaviour implements Serializable {
             }
         }*/
         if (true) {
-            if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() != 0) {
+            if (player.getMinions().size() != 0 || context.getOpponent(player).getMinions().size() != 0) {
                 GameContext context1 = context.clone();
                 learningStation.preRun();
                 learningStation.runLearning(context1);

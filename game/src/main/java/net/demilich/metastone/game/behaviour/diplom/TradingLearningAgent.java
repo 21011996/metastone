@@ -38,34 +38,14 @@ public class TradingLearningAgent extends Behaviour {
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
         List<GameAction> tradingActions = validActions.stream().filter(gameAction -> gameAction instanceof PhysicalAttackAction || gameAction instanceof EndTurnAction).collect(Collectors.toList());
-        //eps = 10000/ReplayBank.getSize();
-        if (player.getMinions().size() == 0 || context.getOpponent(player).getMinions().size() == 0) {
-            int randomIndex = random.nextInt(tradingActions.size());
-            GameAction randomAction = tradingActions.get(randomIndex);
-            return randomAction;
-        } else {
-            if (eps < random.nextDouble()) {
-                GameAction action = diplomBehaviour.requestAction(context, player, tradingActions);
-                if (ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action))) {
-                    diplomBehaviour.forceSave();
-                }
-                diplomBehaviour.learn();
-                return action;
-            } else {
-                if (tradingActions.size() != 0) {
-                    int randomIndex = random.nextInt(tradingActions.size());
-                    GameAction randomAction = tradingActions.get(randomIndex);
-                    if (ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, randomAction))) {
-                        diplomBehaviour.forceSave();
-                    }
-                    diplomBehaviour.learn();
-                    return randomAction;
-                } else {
-                    //ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, new EndTurnAction()));
-                    //diplomBehaviour.learn();
-                    return new EndTurnAction();
-                }
-            }
+        if (tradingActions.size() == 0) {
+            return new EndTurnAction();
         }
+        GameAction action = diplomBehaviour.requestAction(context, player, tradingActions);
+        if (ReplayBank.addTrainUnit(new TrainUnit(context, player, tradingActions, action))) {
+            diplomBehaviour.forceSave();
+        }
+        diplomBehaviour.learn();
+        return action;
     }
 }

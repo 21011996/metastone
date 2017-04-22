@@ -25,12 +25,13 @@ public class DiplomBehaviour extends Behaviour {
     private static final double PUNISHMENT = 0.3;
     public boolean finished = false;
     public int beforeSave = 500;
+    Random random = new Random();
     int total = 0;
     int error = 0;
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{86, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
+    private Net network = new Net(new int[]{86, 64, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
     private GameContext start = null;
 
     public DiplomBehaviour() {
@@ -40,7 +41,8 @@ public class DiplomBehaviour extends Behaviour {
             this.network.initWeights(new File[]{
                     new File("neunet", "w0.txt"),
                     new File("neunet", "w1.txt"),
-                    new File("neunet", "w2.txt")
+                    new File("neunet", "w2.txt"),
+                    new File("neunet", "w3.txt")
             });
         }
     }
@@ -215,6 +217,22 @@ public class DiplomBehaviour extends Behaviour {
         return -1;
     }
 
+    public HashMap<GameAction, Double> softMax(Set<Map.Entry<GameAction, Double>> input) {
+        Map.Entry<GameAction, Double>[] answer = new Map.Entry[input.size()];
+        input.toArray(answer);
+        double sum = 0.0;
+        for (int i = 0; i < input.size(); i++) {
+            answer[i].setValue(Math.exp(answer[i].getValue() / 0.5));
+            sum += answer[i].getValue();
+        }
+        HashMap<GameAction, Double> lul = new HashMap<>();
+        for (int i = 0; i < input.size(); i++) {
+            answer[i].setValue(answer[i].getValue() / sum);
+            lul.put(answer[i].getKey(), answer[i].getValue());
+        }
+        return lul;
+    }
+
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
         HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
@@ -222,12 +240,26 @@ public class DiplomBehaviour extends Behaviour {
             total++;
             Feature feature = FeautureExtractor.getFeatures3(context, player);
             double[] q = network.classify(feature);
-            double[] newQ = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
-            //int index = IntStream.range(0, 58).reduce((i, j) -> q[i] < q[j] ? j : i).getAsInt() - 1;
+            //double[] newQ = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
+
             HashMap<GameAction, Double> answers = new HashMap<>();
             for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
-                answers.put(entry.getValue(), newQ[entry.getKey() + 1]);
+                answers.put(entry.getValue(), q[entry.getKey() + 1]);
             }
+
+            //TODO make it more nice
+            if (true) {
+                answers = softMax(answers.entrySet());
+                double summ = 1.0;
+                for (Map.Entry<GameAction, Double> entry : answers.entrySet()) {
+                    if (entry.getValue() >= summ - random.nextDouble()) {
+                        return entry.getKey();
+                    } else {
+                        summ -= entry.getValue();
+                    }
+                }
+            }
+
             GameAction answer = answers.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
             return answer;
             /*if (index >= 0 && index <= 56) {
