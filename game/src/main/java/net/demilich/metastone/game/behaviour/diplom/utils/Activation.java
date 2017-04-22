@@ -6,6 +6,8 @@ public enum Activation {
     SIGMOID,
     TANH,
     ReLU,
+    LReLU,
+    ELU,
     LINEAR;
 
     public Function<Double, Double> get() {
@@ -16,8 +18,12 @@ public enum Activation {
                 return Math::tanh;
             case ReLU:
                 return x -> Math.max(0d, x);
+            case LReLU:
+                return x -> x < 0d ? 0.01d * x : x;
             case LINEAR:
                 return x -> x;
+            case ELU:
+                return x -> x < 0d ? Math.exp(x) - 1d : x;
         }
         return null;
     }
@@ -31,9 +37,13 @@ public enum Activation {
             case TANH:
                 return x -> 1d - Math.pow(sigma.apply(x), 2);
             case ReLU:
-                return x -> x < 0 ? 0d : 1d;
+                return x -> x < 0d ? 0d : 1d;
+            case LReLU:
+                return x -> x < 0d ? 0.01d : 1.0d;
             case LINEAR:
                 return x -> 1d;
+            case ELU:
+                return x -> x < 0d ? sigma.apply(x) + 1d : 1d;
         }
         return null;
     }

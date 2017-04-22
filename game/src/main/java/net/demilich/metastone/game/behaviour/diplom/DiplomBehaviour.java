@@ -30,7 +30,7 @@ public class DiplomBehaviour extends Behaviour {
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{86, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID});
+    private Net network = new Net(new int[]{86, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
     private GameContext start = null;
 
     public DiplomBehaviour() {
@@ -89,7 +89,7 @@ public class DiplomBehaviour extends Behaviour {
             if (sa.x[0] > 0.0 && sa.x[43] > 0.0) {
                 double maxqsa = Arrays.stream(qsa).max().getAsDouble() - 0.5;
                 qs[actionIndex + 1] = r + DICOUNT_REWARD * (maxqsa);
-                if (maxqsa < -1000.0) {
+                if (maxqsa <= -1000.0) {
                     System.out.println("asdasd " + r + "  " + maxqsa);
                     qs[actionIndex + 1] = r;
                 }
