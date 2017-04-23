@@ -222,7 +222,7 @@ public class DiplomBehaviour extends Behaviour {
         input.toArray(answer);
         double sum = 0.0;
         for (int i = 0; i < input.size(); i++) {
-            answer[i].setValue(Math.exp(answer[i].getValue() / 0.5));
+            answer[i].setValue(Math.exp(answer[i].getValue()));
             sum += answer[i].getValue();
         }
         HashMap<GameAction, Double> lul = new HashMap<>();
@@ -240,7 +240,7 @@ public class DiplomBehaviour extends Behaviour {
             total++;
             Feature feature = FeautureExtractor.getFeatures3(context, player);
             double[] q = network.classify(feature);
-            //double[] newQ = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
+            double[] newQ = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
 
             HashMap<GameAction, Double> answers = new HashMap<>();
             for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
@@ -248,7 +248,7 @@ public class DiplomBehaviour extends Behaviour {
             }
 
             //TODO make it more nice
-            if (true) {
+            if (false) {
                 answers = softMax(answers.entrySet());
                 double summ = 1.0;
                 for (Map.Entry<GameAction, Double> entry : answers.entrySet()) {
@@ -257,6 +257,11 @@ public class DiplomBehaviour extends Behaviour {
                     } else {
                         summ -= entry.getValue();
                     }
+                }
+            }
+            if (false) {
+                if (random.nextDouble() <= 0.2) {
+                    return (GameAction) answers.keySet().toArray()[random.nextInt(answers.size())];
                 }
             }
 
