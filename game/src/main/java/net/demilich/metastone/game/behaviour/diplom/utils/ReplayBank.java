@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import static net.demilich.metastone.game.behaviour.diplom.Consts.BUFFER_SIZE;
+import static net.demilich.metastone.game.behaviour.diplom.Consts.LEARNING_START;
+
 /**
  * @author ilya2
  *         created on 11.04.2017
@@ -28,7 +31,7 @@ public class ReplayBank {
             counter = new int[57];
         }
         trainUnits.add(trainUnit);
-        if (trainUnits.size() > 100000) {
+        if (trainUnits.size() > BUFFER_SIZE) {
             trainUnits.remove(0);
         }
         counter[trainUnit.getAction()]++;
@@ -52,7 +55,7 @@ public class ReplayBank {
 
     public static ArrayList<TrainUnit> getBatch(int size) {
         ArrayList<TrainUnit> answer = new ArrayList<>();
-        if (getSize() >= 40000) {
+        if (getSize() >= LEARNING_START) {
             while (answer.size() < size) {
                 TrainUnit trainUnit = trainUnits.get(random.nextInt(trainUnits.size()));
                 answer.add(trainUnit);

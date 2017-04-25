@@ -9,6 +9,7 @@ import net.demilich.metastone.game.cards.CardCollection;
 import net.demilich.metastone.game.cards.costmodifier.CardCostModifier;
 import net.demilich.metastone.game.decks.DeckFormat;
 import net.demilich.metastone.game.entities.Entity;
+import net.demilich.metastone.game.entities.minions.Minion;
 import net.demilich.metastone.game.entities.minions.Summon;
 import net.demilich.metastone.game.events.GameEvent;
 import net.demilich.metastone.game.logic.GameLogic;
@@ -399,6 +400,14 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
             totalMinionCount += getMinionCount(players[i]);
         }
         return totalMinionCount;
+    }
+
+    public int getTotalDamageCount(Player player) {
+        int answer = 0;
+        for (Minion minion : player.getMinions()) {
+            answer += minion.getAttack();
+        }
+        return answer;
     }
 
     public int getTotalSummonCount() {

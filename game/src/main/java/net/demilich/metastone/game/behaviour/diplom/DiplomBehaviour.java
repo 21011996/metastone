@@ -14,6 +14,8 @@ import net.demilich.metastone.game.entities.minions.Minion;
 import java.io.File;
 import java.util.*;
 
+import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
+
 /**
  * @author ilya2
  *         created on 08.04.2017
@@ -31,7 +33,7 @@ public class DiplomBehaviour extends Behaviour {
     //TODO setup trading games and use magic of Q learning
     //Input - 84 features
     //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{86, 64, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
+    private Net network = new Net(new int[]{FEATURE_SIZE, 64, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
     private GameContext start = null;
 
     public DiplomBehaviour() {
@@ -240,7 +242,7 @@ public class DiplomBehaviour extends Behaviour {
             total++;
             Feature feature = FeautureExtractor.getFeatures3(context, player);
             double[] q = network.classify(feature);
-            double[] newQ = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
+            q = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
 
             HashMap<GameAction, Double> answers = new HashMap<>();
             for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
@@ -259,8 +261,8 @@ public class DiplomBehaviour extends Behaviour {
                     }
                 }
             }
-            if (false) {
-                if (random.nextDouble() <= 0.2) {
+            if (true) {
+                if (random.nextDouble() <= 0.3) {
                     return (GameAction) answers.keySet().toArray()[random.nextInt(answers.size())];
                 }
             }

@@ -8,6 +8,8 @@ import net.demilich.metastone.game.entities.minions.Minion;
 import java.util.HashMap;
 import java.util.Random;
 
+import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
+
 /**
  * @author ilya2
  *         created on 09.04.2017
@@ -18,8 +20,8 @@ public class FeautureExtractor {
     public static Pair<Feature, HashMap<Integer, Integer>> getFeatures(GameContext gameContext, Player us) {
         // Features Hero: effective health = 1
         // Features minions: health, attack, can_attack, taunt, divine shield, is present = 5
-        // Total 1 + 6*7 + 1 + 6*7 = 86
-        double[] features = new double[86];
+        // Total 1 + 6*7 + 1 + 6*7 = FEATURE_SIZE
+        double[] features = new double[FEATURE_SIZE];
         int[] offset = new int[2 * 7];
 
         int playerId = us.getId();
@@ -34,14 +36,21 @@ public class FeautureExtractor {
         HashMap<Integer, Integer> position = new HashMap<>();
         getPlayerFeatures(player, features, 0, position);
         getPlayerFeatures(opponent, features, 43, position);
+
+        features[86] = ((double) gameContext.getTotalDamageCount(player)) / 12.0 * 7;
+        features[87] = ((double) gameContext.getTotalDamageCount(gameContext.getOpponent(player))) / 12.0 * 7;
+        features[88] = ((double) gameContext.getTurn()) / 101.0;
+        features[89] = ((double) gameContext.getMinionCount(player)) / 7.0;
+        features[90] = ((double) gameContext.getMinionCount(gameContext.getOpponent(player))) / 7.0;
+
         return new Pair<>(new Feature(features), position);
     }
 
     public static Feature getFeatures3(GameContext gameContext, Player us) {
         // Features Hero: effective health = 1
         // Features minions: health, attack, can_attack, taunt, divine shield, is present = 5
-        // Total 1 + 6*7 + 1 + 6*7 = 86
-        double[] features = new double[86];
+        // Total 1 + 6*7 + 1 + 6*7 = FEATURE_SIZE
+        double[] features = new double[FEATURE_SIZE];
         int[] offset = new int[2 * 7];
 
         int playerId = us.getId();
@@ -55,6 +64,13 @@ public class FeautureExtractor {
         }
         getPlayerFeatures3(player, features, 0);
         getPlayerFeatures3(opponent, features, 43);
+
+        features[86] = ((double) gameContext.getTotalDamageCount(player)) / 12.0 * 7;
+        features[87] = ((double) gameContext.getTotalDamageCount(gameContext.getOpponent(player))) / 12.0 * 7;
+        features[88] = ((double) gameContext.getTurn()) / 101.0;
+        features[89] = ((double) gameContext.getMinionCount(player)) / 7.0;
+        features[90] = ((double) gameContext.getMinionCount(gameContext.getOpponent(player))) / 7.0;
+
         return new Feature(features);
     }
 
@@ -62,7 +78,7 @@ public class FeautureExtractor {
         // Features Hero: effective health = 1
         // Features minions: health, attack, can_attack, taunt, divine shield, is present = 5
         // Total 1 + 6*7 + 1 + 6*7 = 86
-        double[] features = new double[86];
+        double[] features = new double[FEATURE_SIZE];
 
         int playerId = us.getId();
         Player player = gameContext.getPlayer(playerId);
@@ -75,6 +91,13 @@ public class FeautureExtractor {
         }
         getPlayerFeatures2(player, features, 0, position);
         getPlayerFeatures2(opponent, features, 43, position);
+
+        features[86] = ((double) gameContext.getTotalDamageCount(player)) / 12.0 * 7;
+        features[87] = ((double) gameContext.getTotalDamageCount(gameContext.getOpponent(player))) / 12.0 * 7;
+        features[88] = ((double) gameContext.getTurn()) / 101.0;
+        features[89] = ((double) gameContext.getMinionCount(player)) / 7.0;
+        features[90] = ((double) gameContext.getMinionCount(gameContext.getOpponent(player))) / 7.0;
+
         return new Feature(features);
     }
 
@@ -150,18 +173,4 @@ public class FeautureExtractor {
             i++;
         }
     }
-
-    public static void printContext(GameContext gameContext, Player us) {
-        Feature feature = getFeatures(gameContext, us).left;
-        System.out.println(feature.get(0));
-        for (int i = 0; i < 7; i++) {
-            System.out.println(String.format("%f %f %f %f %f %f", feature.get(i * 6 + 1), feature.get(i * 6 + 2), feature.get(i * 6 + 3), feature.get(i * 6 + 4), feature.get(i * 6 + 5), feature.get(i * 6 + 6)));
-        }
-        System.out.println(feature.get(43));
-        for (int i = 0; i < 7; i++) {
-            System.out.println(String.format("%f %f %f %f %f %f", feature.get(i * 6 + 44), feature.get(i * 6 + 45), feature.get(i * 6 + 46), feature.get(i * 6 + 47), feature.get(i * 6 + 48), feature.get(i * 6 + 49)));
-        }
-    }
-
-
 }
