@@ -1,8 +1,6 @@
 package net.demilich.metastone.game.behaviour.diplom;
 
 import net.demilich.metastone.game.GameContext;
-import net.demilich.metastone.game.behaviour.GreedyOptimizeMove;
-import net.demilich.metastone.game.behaviour.diplom.qutils.MinionHeuristic;
 
 /**
  * @author ilya2
@@ -26,7 +24,7 @@ public class LearningStation {
 
     public void runLearning(GameContext context) {
         context.getActivePlayer().setBehaviour(tla);
-        context.getOpponent(context.getActivePlayer()).setBehaviour(new GreedyOptimizeMove(new MinionHeuristic()));
+        context.getOpponent(context.getActivePlayer()).setBehaviour(new SubRandomBehaviour2());
         context.resume(this);
         while (!finished) {
 

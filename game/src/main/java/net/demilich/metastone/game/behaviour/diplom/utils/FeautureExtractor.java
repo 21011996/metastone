@@ -43,6 +43,13 @@ public class FeautureExtractor {
         features[89] = ((double) gameContext.getMinionCount(player)) / 7.0;
         features[90] = ((double) gameContext.getMinionCount(gameContext.getOpponent(player))) / 7.0;
 
+        features[91] = ((double) player.getHand().getCount()) / 10.0;
+        features[92] = ((double) gameContext.getOpponent(player).getHand().getCount()) / 10.0;
+        features[93] = ((double) player.getDeck().getCount()) / 30.0;
+        features[94] = ((double) gameContext.getOpponent(player).getDeck().getCount()) / 30.0;
+
+        features[95] /= 12.0 * 7.0;
+
         return new Pair<>(new Feature(features), position);
     }
 
@@ -71,6 +78,13 @@ public class FeautureExtractor {
         features[89] = ((double) gameContext.getMinionCount(player)) / 7.0;
         features[90] = ((double) gameContext.getMinionCount(gameContext.getOpponent(player))) / 7.0;
 
+        features[91] = ((double) player.getHand().getCount()) / 10.0;
+        features[92] = ((double) gameContext.getOpponent(player).getHand().getCount()) / 10.0;
+        features[93] = ((double) player.getDeck().getCount()) / 30.0;
+        features[94] = ((double) gameContext.getOpponent(player).getDeck().getCount()) / 30.0;
+
+        features[95] /= 12.0 * 7.0;
+
         return new Feature(features);
     }
 
@@ -89,6 +103,10 @@ public class FeautureExtractor {
         for (int i = 0; i < 7; i++) {
             features[i * 6 + 49] = 1.0;
         }
+        Object[] set = position.keySet().toArray();
+        for (Object i : set) {
+            position.remove(i);
+        }
         getPlayerFeatures2(player, features, 0, position);
         getPlayerFeatures2(opponent, features, 43, position);
 
@@ -97,6 +115,13 @@ public class FeautureExtractor {
         features[88] = ((double) gameContext.getTurn()) / 101.0;
         features[89] = ((double) gameContext.getMinionCount(player)) / 7.0;
         features[90] = ((double) gameContext.getMinionCount(gameContext.getOpponent(player))) / 7.0;
+
+        features[91] = ((double) player.getHand().getCount()) / 10.0;
+        features[92] = ((double) gameContext.getOpponent(player).getHand().getCount()) / 10.0;
+        features[93] = ((double) player.getDeck().getCount()) / 30.0;
+        features[94] = ((double) gameContext.getOpponent(player).getDeck().getCount()) / 30.0;
+
+        features[95] /= 12.0 * 7.0;
 
         return new Feature(features);
     }
@@ -109,9 +134,9 @@ public class FeautureExtractor {
 
         for (Minion minion : player.getMinions()) {
             //if (emptyPool > 0) {
-                int skipN = random.nextInt(emptyPool + 1);
-                i += skipN * 6;
-                emptyPool -= skipN;
+            //int skipN = random.nextInt(emptyPool + 1);
+            //i += skipN * 6;
+            //emptyPool -= skipN;
             position.put(minion.getId(), i);
             //}
             features[i] = minion.getHp() / 12.0;
@@ -119,6 +144,9 @@ public class FeautureExtractor {
             features[i] = minion.getAttack() / 12.0;
             i++;
             features[i] = minion.canAttackThisTurn() ? 1.0 : 0.0;
+            if (features[i] == 1.0 && offset == 0) {
+                features[95] += minion.getAttack();
+            }
             i++;
             features[i] = minion.hasAttribute(Attribute.TAUNT) ? 1.0 : 0.0;
             i++;
@@ -139,6 +167,9 @@ public class FeautureExtractor {
             features[i] = minion.getAttack() / 12.0;
             i++;
             features[i] = minion.canAttackThisTurn() ? 1.0 : 0.0;
+            if (features[i] == 1.0 && offset == 0) {
+                features[95] += minion.getAttack();
+            }
             i++;
             features[i] = minion.hasAttribute(Attribute.TAUNT) ? 1.0 : 0.0;
             i++;
@@ -153,17 +184,17 @@ public class FeautureExtractor {
         int i = offset;
         features[i] = player.getHero().getEffectiveHp() / 60.0;
         i++;
+
         for (Minion minion : player.getMinions()) {
-            if (position.containsKey(minion.getId())) {
-                i = position.get(minion.getId());
-            } else {
-                //TODO fix it later when deathrattle will come
-            }
+            position.put(minion.getId(), i);
             features[i] = minion.getHp() / 12.0;
             i++;
             features[i] = minion.getAttack() / 12.0;
             i++;
             features[i] = minion.canAttackThisTurn() ? 1.0 : 0.0;
+            if (features[i] == 1.0 && offset == 0) {
+                features[95] += minion.getAttack();
+            }
             i++;
             features[i] = minion.hasAttribute(Attribute.TAUNT) ? 1.0 : 0.0;
             i++;

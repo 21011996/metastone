@@ -53,16 +53,12 @@ public class PlayRandomBehaviour2 extends Behaviour implements Serializable {
             }
         }*/
         if (true) {
-            int plmin = player.getMinions().size();
-            int oppmin = context.getOpponent(player).getMinions().size();
-            if ((plmin != 0 || oppmin != 0) && !(plmin > 0 && oppmin == 0)) {
-                GameContext context1 = context.clone();
-                learningStation.preRun();
-                learningStation.runLearning(context1);
-                while (!learningStation.finished2) {
-                }
-                context1.dispose();
+            GameContext context1 = context.clone();
+            learningStation.preRun();
+            learningStation.runLearning(context1);
+            while (!learningStation.finished2) {
             }
+            context1.dispose();
             //ReplayBank.printProfile();
         }
         return randomAction;

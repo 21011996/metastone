@@ -37,6 +37,10 @@ public class TradingLearningAgent extends Behaviour {
 
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
+        List<GameAction> validActions2 = validActions.stream().filter(gameAction -> !(gameAction instanceof PhysicalAttackAction) && !(gameAction instanceof EndTurnAction)).collect(Collectors.toList());
+        if (validActions2.size() > 0) {
+            return validActions2.get(random.nextInt(validActions2.size()));
+        }
         List<GameAction> tradingActions = validActions.stream().filter(gameAction -> gameAction instanceof PhysicalAttackAction || gameAction instanceof EndTurnAction).collect(Collectors.toList());
         if (tradingActions.size() == 0) {
             return new EndTurnAction();

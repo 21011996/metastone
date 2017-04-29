@@ -3,7 +3,6 @@ package net.demilich.metastone.game.behaviour;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.actions.GameAction;
-import net.demilich.metastone.game.behaviour.diplom.LearningStation;
 import net.demilich.metastone.game.cards.Card;
 
 import java.io.Serializable;
@@ -12,12 +11,9 @@ import java.util.List;
 import java.util.Random;
 
 public class PlayRandomBehaviour extends Behaviour implements Serializable {
-    LearningStation learningStation;
-    private int i = 0;
     private Random random = new Random();
 
     public PlayRandomBehaviour() {
-        learningStation = new LearningStation();
     }
 
     @Override
@@ -38,30 +34,6 @@ public class PlayRandomBehaviour extends Behaviour implements Serializable {
 
         int randomIndex = random.nextInt(validActions.size());
         GameAction randomAction = validActions.get(randomIndex);
-        /*if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() != 0) {
-            ObjectOutputStream oos = null;
-            try {
-                while (new File("dataset\\" + i + ".ser").isFile()) {
-                    i++;
-                }
-                oos = new ObjectOutputStream(new FileOutputStream("dataset\\" + i + ".ser"));
-                i++;
-                oos.writeObject(context);
-                oos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
-        if (false) {
-            if (player.getMinions().size() != 0 && context.getOpponent(player).getMinions().size() != 0) {
-                GameContext context1 = context.clone();
-                learningStation.preRun();
-                learningStation.runLearning(context1);
-                while (!learningStation.finished2) {
-                }
-                context1.dispose();
-            }
-        }
         return randomAction;
     }
 

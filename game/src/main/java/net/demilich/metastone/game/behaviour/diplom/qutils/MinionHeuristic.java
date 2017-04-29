@@ -39,7 +39,6 @@ public class MinionHeuristic implements IGameStateHeuristic {
         int ownHp = player.getHero().getHp() + player.getHero().getArmor();
         int opponentHp = opponent.getHero().getHp() + opponent.getHero().getArmor();
         score += ownHp - opponentHp;
-        score /= 3;
 
         score += player.getMinions().size() * 2;
         score -= opponent.getMinions().size() * 2;
@@ -53,7 +52,7 @@ public class MinionHeuristic implements IGameStateHeuristic {
             ReplayBank.maxValue = score;
             System.out.println(score);
         }
-        return score;
+        return Math.round(score);
     }
 
     @Override

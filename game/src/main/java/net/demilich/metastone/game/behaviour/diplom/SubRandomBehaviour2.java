@@ -12,7 +12,7 @@ import net.demilich.metastone.game.actions.GameAction;
 import net.demilich.metastone.game.actions.PhysicalAttackAction;
 import net.demilich.metastone.game.behaviour.Behaviour;
 import net.demilich.metastone.game.behaviour.GreedyOptimizeMove;
-import net.demilich.metastone.game.behaviour.diplom.qutils.MinionHeuristic;
+import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
 import net.demilich.metastone.game.cards.Card;
 
 import java.io.Serializable;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class SubRandomBehaviour2 extends Behaviour implements Serializable {
 
     private Random random = new Random();
-    private Behaviour behaviour = new GreedyOptimizeMove(new MinionHeuristic());
+    private Behaviour behaviour = new GreedyOptimizeMove(new WeightedHeuristic());
 
     public SubRandomBehaviour2() {
     }

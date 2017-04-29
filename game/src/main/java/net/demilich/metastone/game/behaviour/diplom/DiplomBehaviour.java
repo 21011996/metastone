@@ -22,9 +22,7 @@ import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
  */
 public class DiplomBehaviour extends Behaviour {
     private static final Params BEST_PARAMS = new Params(0.001, 0, 1, 0);
-    private static final double LEARNING_RATE = 1.0;
-    private static final double DICOUNT_REWARD = 0.99;
-    private static final double PUNISHMENT = 0.3;
+    private static final double DICOUNT_REWARD = 0.8;
     public boolean finished = false;
     public int beforeSave = 500;
     Random random = new Random();
