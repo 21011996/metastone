@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
  */
 public class TradingLearningAgent extends Behaviour {
 
-    public double eps = 0.2;
     public DiplomBehaviour diplomBehaviour = new DiplomBehaviour();
     private Random random = new Random();
 

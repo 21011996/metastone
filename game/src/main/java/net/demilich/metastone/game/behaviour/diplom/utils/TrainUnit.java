@@ -9,10 +9,9 @@ import net.demilich.metastone.game.behaviour.diplom.qutils.MinionHeuristic;
 import net.demilich.metastone.game.entities.minions.Minion;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
+import static net.demilich.metastone.game.behaviour.diplom.Consts.NUMBER_OF_ACTIONS;
 
 /**
  * @author ilya2
@@ -30,7 +29,7 @@ public class TrainUnit implements Serializable {
         this.sFeatures = featurePair.left;
         HashMap<Integer, Integer> offset = featurePair.right;
         if (taken instanceof EndTurnAction) {
-            this.action = 56;
+            this.action = NUMBER_OF_ACTIONS - 1;
         } else {
             this.action = convertAttackAction(context, player, validActions, offset).get(taken);
         }
@@ -54,6 +53,7 @@ public class TrainUnit implements Serializable {
             this.sAFeatures = FeautureExtractor.getFeatures(simulation, player, offset);
             double score = new MinionHeuristic().getScore(simulation, player.getId());
             Collection<Integer> temp = convertAttackAction(simulation, simulation.getActivePlayer(), simulation.getValidActions(), offset).values();
+            temp = new HashSet<>(temp);
             Object[] lul = temp.toArray();
             this.validActions = new int[temp.size()];
             for (int i = 0; i < temp.size(); i++) {
@@ -68,6 +68,7 @@ public class TrainUnit implements Serializable {
             double score = new MinionHeuristic().getScore(simulation, player.getId());
             this.sAFeatures = FeautureExtractor.getFeatures(simulation, player, offset);
             Collection<Integer> temp = convertAttackAction(simulation, simulation.getActivePlayer(), simulation.getValidActions(), offset).values();
+            temp = new HashSet<>(temp);
             Object[] lul = temp.toArray();
             this.validActions = new int[temp.size()];
             for (int i = 0; i < temp.size(); i++) {
@@ -105,7 +106,6 @@ public class TrainUnit implements Serializable {
 
     private HashMap<GameAction, Integer> convertAttackAction(GameContext context, Player player, List<GameAction> validActions, HashMap<Integer, Integer> offset) {
         HashMap<GameAction, Integer> answer = new HashMap<>();
-        ArrayList<Minion> ourMinions = (ArrayList<Minion>) player.getMinions();
         ArrayList<Minion> oppMinions = (ArrayList<Minion>) context.getOpponent(player).getMinions();
         for (GameAction action : validActions) {
             if (action instanceof PhysicalAttackAction) {
@@ -114,7 +114,6 @@ public class TrainUnit implements Serializable {
                 attackerId = physicalAttackAction.getAttackerReference().getId();
                 int defenderId = physicalAttackAction.getTargetKey().getId();
 
-                int i = getById(ourMinions, attackerId);
                 int j = getById(oppMinions, defenderId);
                 if (j == -1) {
                     j = 7;
@@ -122,22 +121,21 @@ public class TrainUnit implements Serializable {
                 if (j == 7) {
                     try {
                         int adddef = (offset.get(attackerId) - 1) / 6;
-                        answer.put(action, (adddef * 8) + j);
+                        answer.put(action, adddef);
                     } catch (Exception e) {
                         System.out.println("lul");
                     }
                 } else {
                     try {
                         int adddef = (offset.get(attackerId) - 1) / 6;
-                        int addatt = (offset.get(defenderId) - 2 - 7 * 6) / 6;
-                        answer.put(action, (adddef * 8) + (addatt));
+                        answer.put(action, adddef);
                     } catch (Exception e) {
                         System.out.println("lul");
                     }
                 }
             } else {
                 if (action instanceof EndTurnAction) {
-                    answer.put(action, 56);
+                    answer.put(action, NUMBER_OF_ACTIONS - 1);
                 }
             }
         }

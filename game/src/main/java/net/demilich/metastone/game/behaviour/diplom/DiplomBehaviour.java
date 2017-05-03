@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.*;
 
 import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
+import static net.demilich.metastone.game.behaviour.diplom.Consts.NUMBER_OF_ACTIONS;
 
 /**
  * @author ilya2
@@ -22,19 +23,35 @@ import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
  */
 public class DiplomBehaviour extends Behaviour {
     private static final Params BEST_PARAMS = new Params(0.001, 0, 1, 0);
-    private static final double DICOUNT_REWARD = 0.8;
+    private static final double DICOUNT_REWARD = 0.99;
     public boolean finished = false;
     public int beforeSave = 500;
     Random random = new Random();
     int total = 0;
     int error = 0;
+    private boolean learning = true;
+    private AttackBackend attackBackend = new AttackBackend();
     //TODO setup trading games and use magic of Q learning
-    //Input - 84 features
-    //Output - 64 actions for trading + 7 to go face + 1 do nothing
-    private Net network = new Net(new int[]{FEATURE_SIZE, 64, 64, 64, 57}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
+    //Input - FEATURE_SIZE features
+    //Output - 7 pick minion + 1 do nothing
+    private Net network = new Net(new int[]{FEATURE_SIZE, 64, 64, 64, NUMBER_OF_ACTIONS}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
     private GameContext start = null;
 
     public DiplomBehaviour() {
+        if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
+            network.initWeights();
+        } else {
+            this.network.initWeights(new File[]{
+                    new File("neunet", "w0.txt"),
+                    new File("neunet", "w1.txt"),
+                    new File("neunet", "w2.txt"),
+                    new File("neunet", "w3.txt")
+            });
+        }
+    }
+
+    public DiplomBehaviour(boolean learning) {
+        this.learning = learning;
         if (!new File("neunet\\w" + "0" + ".txt").isFile()) {
             network.initWeights();
         } else {
@@ -75,15 +92,14 @@ public class DiplomBehaviour extends Behaviour {
             Feature sa = trainUnit.getSAFeatures();
 
             double[] qs = network.classify(s);
-            double[] qs2 = qs.clone();
 
             double[] qsa = network.classify(sa);
             int[] validActions = trainUnit.getValidActions();
-            boolean[] invalidActions = new boolean[58];
+            boolean[] invalidActions = new boolean[NUMBER_OF_ACTIONS + 1];
             for (int i : validActions) {
                 invalidActions[i + 1] = true;
             }
-            for (int i = 0; i < 58; i++) {
+            for (int i = 0; i < NUMBER_OF_ACTIONS + 1; i++) {
                 if (!invalidActions[i]) {
                     qsa[i] = Float.NEGATIVE_INFINITY;
                 }
@@ -185,24 +201,19 @@ public class DiplomBehaviour extends Behaviour {
         return discardedCards;
     }
 
-    private HashMap<Integer, GameAction> convertAttackActionReversed(GameContext context, Player player, List<GameAction> validActions) {
-        HashMap<Integer, GameAction> answer = new HashMap<>();
+    private HashMap<Integer, Integer> convertAttackActionReversed(GameContext context, Player player, List<GameAction> validActions) {
+        HashMap<Integer, Integer> answer = new HashMap<>();
         ArrayList<Minion> ourMinions = (ArrayList<Minion>) player.getMinions();
-        ArrayList<Minion> oppMinions = (ArrayList<Minion>) context.getOpponent(player).getMinions();
         for (GameAction action : validActions) {
             if (action instanceof PhysicalAttackAction) {
                 PhysicalAttackAction physicalAttackAction = (PhysicalAttackAction) action;
                 int attackerId = physicalAttackAction.getAttackerReference().getId();
-                int defenderId;
-                defenderId = physicalAttackAction.getTargetKey().getId();
 
                 int i = getById(ourMinions, attackerId);
-                int j = getById(oppMinions, defenderId);
-                j = j == -1 ? 7 : j;
 
-                answer.put(i * 8 + j, action);
+                answer.put(i, attackerId);
             } else if (action instanceof EndTurnAction) {
-                answer.put(56, action);
+                answer.put(NUMBER_OF_ACTIONS - 1, -666);
             }
         }
         return answer;
@@ -235,38 +246,41 @@ public class DiplomBehaviour extends Behaviour {
 
     @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
-        HashMap<Integer, GameAction> actionMap = convertAttackActionReversed(context, player, validActions);
+        HashMap<Integer, Integer> actionMap = convertAttackActionReversed(context, player, validActions);
         if (actionMap.size() != 0) {
             total++;
             Feature feature = FeautureExtractor.getFeatures3(context, player);
             double[] q = network.classify(feature);
             q = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
 
-            HashMap<GameAction, Double> answers = new HashMap<>();
-            for (Map.Entry<Integer, GameAction> entry : actionMap.entrySet()) {
+            HashMap<Integer, Double> answers = new HashMap<>();
+            for (Map.Entry<Integer, Integer> entry : actionMap.entrySet()) {
                 answers.put(entry.getValue(), q[entry.getKey() + 1]);
             }
 
-            //TODO make it more nice
-            if (false) {
-                answers = softMax(answers.entrySet());
-                double summ = 1.0;
-                for (Map.Entry<GameAction, Double> entry : answers.entrySet()) {
-                    if (entry.getValue() >= summ - random.nextDouble()) {
-                        return entry.getKey();
-                    } else {
-                        summ -= entry.getValue();
-                    }
-                }
-            }
-            if (true) {
+//            //TODO make it more nice
+//            if (false) {
+//                answers = softMax(answers.entrySet());
+//                double summ = 1.0;
+//                for (Map.Entry<GameAction, Double> entry : answers.entrySet()) {
+//                    if (entry.getValue() >= summ - random.nextDouble()) {
+//                        return entry.getKey();
+//                    } else {
+//                        summ -= entry.getValue();
+//                    }
+//                }
+//            }
+            if (learning) {
                 if (random.nextDouble() <= 0.3) {
-                    return (GameAction) answers.keySet().toArray()[random.nextInt(answers.size())];
+                    return validActions.get(random.nextInt(validActions.size()));
                 }
             }
 
-            GameAction answer = answers.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
-            return answer;
+            Integer answerId = answers.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
+            if (answerId == -666) {
+                return new EndTurnAction();
+            }
+            return attackBackend.requestAction(context, player, validActions, answerId);
             /*if (index >= 0 && index <= 56) {
                 if (actionMap.containsKey(index)) {
                     return actionMap.get(index);

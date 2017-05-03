@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class SubRandomBehaviour extends Behaviour implements Serializable {
 
     private Random random = new Random();
-    private DiplomBehaviour diplomBehaviour = new DiplomBehaviour();
+    private DiplomBehaviour diplomBehaviour = new DiplomBehaviour(false);
 
     public SubRandomBehaviour() {
     }

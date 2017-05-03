@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import static net.demilich.metastone.game.behaviour.diplom.Consts.BUFFER_SIZE;
-import static net.demilich.metastone.game.behaviour.diplom.Consts.LEARNING_START;
+import static net.demilich.metastone.game.behaviour.diplom.Consts.*;
 
 /**
  * @author ilya2
@@ -24,11 +23,11 @@ public class ReplayBank {
 
     public static boolean addTrainUnit(TrainUnit trainUnit) {
         boolean save = false;
-        if (count % 10000 == 0 && trainUnits.size() > 10) {
+        if (count % 10000 == 0 && count > LEARNING_START + 1) {
             save = true;
         }
         if (counter == null) {
-            counter = new int[57];
+            counter = new int[NUMBER_OF_ACTIONS];
         }
         trainUnits.add(trainUnit);
         if (trainUnits.size() > BUFFER_SIZE) {
