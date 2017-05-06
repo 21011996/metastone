@@ -19,7 +19,8 @@ public class AttackBackend {
     private Behaviour behaviour = new GreedyOptimizeMove(new WeightedHeuristic());
 
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions, int attackerId) {
-        List<GameAction> pass = validActions.stream().filter(gameAction -> (gameAction instanceof EndTurnAction) || (((PhysicalAttackAction) gameAction).getAttackerReference().getId() == attackerId)).collect(Collectors.toList());
+        List<GameAction> pass1 = validActions.stream().filter(gameAction -> gameAction instanceof EndTurnAction || gameAction instanceof PhysicalAttackAction).collect(Collectors.toList());
+        List<GameAction> pass = pass1.stream().filter(gameAction -> (gameAction instanceof EndTurnAction) || (((PhysicalAttackAction) gameAction).getAttackerReference().getId() == attackerId)).collect(Collectors.toList());
         return behaviour.requestAction(context, player, pass);
     }
 }
