@@ -163,8 +163,7 @@ public class PlayerConfigView extends VBox {
 		}
 
 
-
-		behaviourList.add(new GreedyOptimizeMove(new WeightedHeuristic()));
+		behaviourList.add(new GreedyOptimizeMove2(new WeightedHeuristic()));
 		behaviourList.add(new NoAggressionBehaviour());
 
 		behaviourBox.setItems(behaviourList);
