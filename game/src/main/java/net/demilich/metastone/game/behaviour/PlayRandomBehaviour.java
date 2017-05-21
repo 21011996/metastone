@@ -37,4 +37,8 @@ public class PlayRandomBehaviour extends Behaviour implements Serializable {
         return randomAction;
     }
 
+    @Override
+    public void printGame() {
+
+    }
 }

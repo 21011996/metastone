@@ -51,4 +51,9 @@ public class TradingLearningAgent extends Behaviour {
         diplomBehaviour.learn();
         return action;
     }
+
+    @Override
+    public void printGame() {
+
+    }
 }

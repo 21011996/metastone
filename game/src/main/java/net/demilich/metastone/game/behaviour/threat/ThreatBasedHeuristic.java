@@ -40,7 +40,7 @@ public class ThreatBasedHeuristic implements IGameStateHeuristic {
         this.weights = vector;
     }
 
-    private static ThreatLevel calcuateThreatLevel(GameContext context, int playerId) {
+    public static ThreatLevel calcuateThreatLevel(GameContext context, int playerId) {
         int damageOnBoard = 0;
         Player player = context.getPlayer(playerId);
         Player opponent = context.getOpponent(player);

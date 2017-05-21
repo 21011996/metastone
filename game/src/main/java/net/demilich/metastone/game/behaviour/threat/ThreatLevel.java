@@ -1,5 +1,7 @@
 package net.demilich.metastone.game.behaviour.threat;
 
-enum ThreatLevel {
+import java.io.Serializable;
+
+public enum ThreatLevel implements Serializable {
     GREEN, YELLOW, RED
 }

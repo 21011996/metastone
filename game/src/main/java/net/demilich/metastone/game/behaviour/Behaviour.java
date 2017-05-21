@@ -17,4 +17,6 @@ public abstract class Behaviour implements IBehaviour {
     public void onGameOver(GameContext context, int playerId, int winningPlayerId) {
     }
 
+    public abstract void printGame();
+
 }

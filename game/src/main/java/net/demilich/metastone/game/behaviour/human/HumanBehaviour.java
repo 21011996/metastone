@@ -69,4 +69,8 @@ public class HumanBehaviour extends Behaviour implements IActionSelectionListene
         waitingForInput = false;
     }
 
+    @Override
+    public void printGame() {
+
+    }
 }

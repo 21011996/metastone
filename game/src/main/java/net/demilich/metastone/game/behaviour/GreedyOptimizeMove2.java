@@ -67,4 +67,8 @@ public class GreedyOptimizeMove2 extends Behaviour {
         return simulation;
     }
 
+    @Override
+    public void printGame() {
+
+    }
 }

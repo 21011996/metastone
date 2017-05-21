@@ -38,17 +38,37 @@ public class NotSoRandomBehaviour extends Behaviour {
     private double measureAction(GameContext context, Player player, GameAction action) {
         GameContext clone = context.clone();
         clone.getLogic().performGameAction(player.getId(), action);
-        double answer = behaviour.getAvQ(clone, player, clone.getValidActions());
+        double answer = measureState(clone, player);
         clone.dispose();
         return answer;
     }
 
+    private double measureRecursivelyAction(GameContext context, Player player, GameAction action) {
+        GameContext clone = context.clone();
+        clone.getLogic().performGameAction(player.getId(), action);
+        List<GameAction> actions = clone.getValidActions();
+        double bestScore = measureState(clone, player);
+        List<GameAction> notTradingActions = actions.stream().filter(gameAction -> !(gameAction instanceof PhysicalAttackAction) && !(gameAction instanceof EndTurnAction)).collect(Collectors.toList());
+        for (GameAction action1 : notTradingActions) {
+            double score = measureRecursivelyAction(clone, player, action1);
+            if (score > bestScore) {
+                bestScore = score;
+            }
+        }
+        clone.dispose();
+        return bestScore;
+    }
+
+    private double measureState(GameContext context, Player player) {
+        return behaviour.getAvQ(context, player);
+    }
+
     @Nullable
     private GameAction getBestAction(GameContext context, Player player, List<GameAction> validActions) {
-        double bestScore = behaviour.getAvQ(context, player, context.getValidActions());
+        double bestScore = measureState(context, player);
         GameAction bestAction = null;
         for (GameAction gameAction : validActions) {
-            double score = measureAction(context, player, gameAction);
+            double score = measureRecursivelyAction(context, player, gameAction);
             if (score > bestScore) {
                 bestAction = gameAction;
                 bestScore = score;
@@ -68,5 +88,10 @@ public class NotSoRandomBehaviour extends Behaviour {
             }
         }
         return behaviour.requestAction(context, player, validActions);
+    }
+
+    @Override
+    public void printGame() {
+
     }
 }

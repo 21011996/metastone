@@ -15,6 +15,7 @@ import net.demilich.metastone.game.behaviour.*;
 import net.demilich.metastone.game.behaviour.diplom.NotSoRandomBehaviour;
 import net.demilich.metastone.game.behaviour.diplom.SubRandomBehaviour;
 import net.demilich.metastone.game.behaviour.diplom.SubRandomBehaviour2;
+import net.demilich.metastone.game.behaviour.diplom.datasetPrep.GameStateNNHu;
 import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
 import net.demilich.metastone.game.behaviour.human.HumanBehaviour;
 import net.demilich.metastone.game.behaviour.threat.GameStateValueBehaviour;
@@ -157,6 +158,7 @@ public class PlayerConfigView extends VBox {
 		}
 
 		behaviourList.add(new GameStateValueBehaviour());
+        behaviourList.add(new GameStateNNHu());
 
 		if (selectionHint == PlayerConfigType.OPPONENT) {
 			behaviourList.add(new HumanBehaviour());

@@ -34,4 +34,8 @@ public class NoAggressionBehaviour extends Behaviour {
         return validActions.get(validActions.size() - 1);
     }
 
+    @Override
+    public void printGame() {
+
+    }
 }

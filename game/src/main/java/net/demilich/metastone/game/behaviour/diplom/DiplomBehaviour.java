@@ -13,7 +13,6 @@ import net.demilich.metastone.game.entities.minions.Minion;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
 import static net.demilich.metastone.game.behaviour.diplom.Consts.NUMBER_OF_ACTIONS;
@@ -259,18 +258,10 @@ public class DiplomBehaviour extends Behaviour {
         return answer;
     }
 
-    public double getAvQ(GameContext context, Player player, List<GameAction> validActions) {
-        List<GameAction> tradingActions = validActions.stream().filter(gameAction -> gameAction instanceof EndTurnAction || gameAction instanceof PhysicalAttackAction).collect(Collectors.toList());
-        List<Integer> minions = getValidMinions(player, tradingActions);
+    public double getAvQ(GameContext context, Player player) {
         Feature feature = FeautureExtractor.getFeatures3(context, player);
         double[] q = network.classify(feature);
-        q = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).toArray();
-        double answer = 0.0;
-        for (int i = 1; i < q.length; i++) {
-            if (minions.contains(i - 1)) {
-                answer += q[i];
-            }
-        }
+        double answer = Arrays.stream(q).map(value -> value * 8000.0 - 4000.0).average().getAsDouble();
         return answer;
     }
 
@@ -330,5 +321,10 @@ public class DiplomBehaviour extends Behaviour {
             System.out.println("Some thing wrong there:" + validActions.toString() + "\n" + Collections.singletonList(actionMap).toString());
             return validActions.get(0);
         }
+    }
+
+    @Override
+    public void printGame() {
+
     }
 }

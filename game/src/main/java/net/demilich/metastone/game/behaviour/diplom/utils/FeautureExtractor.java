@@ -133,12 +133,12 @@ public class FeautureExtractor {
         int emptyPool = 7 - player.getMinions().size();
 
         for (Minion minion : player.getMinions()) {
-            //if (emptyPool > 0) {
-            //int skipN = random.nextInt(emptyPool + 1);
-            //i += skipN * 6;
-            //emptyPool -= skipN;
-            position.put(minion.getId(), i);
-            //}
+            if (emptyPool > 0) {
+                int skipN = random.nextInt(emptyPool + 1);
+                i += skipN * 6;
+                emptyPool -= skipN;
+                position.put(minion.getId(), i);
+            }
             features[i] = minion.getHp() / 12.0;
             i++;
             features[i] = minion.getAttack() / 12.0;

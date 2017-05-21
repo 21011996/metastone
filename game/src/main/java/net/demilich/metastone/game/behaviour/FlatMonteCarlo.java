@@ -88,4 +88,8 @@ public class FlatMonteCarlo extends Behaviour {
         return score;
     }
 
+    @Override
+    public void printGame() {
+
+    }
 }

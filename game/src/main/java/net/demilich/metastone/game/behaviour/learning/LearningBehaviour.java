@@ -57,6 +57,11 @@ public class LearningBehaviour extends Behaviour {
     }
 
     @Override
+    public void printGame() {
+
+    }
+
+    @Override
     public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
 
         // for now, do not evaluate battecry actions

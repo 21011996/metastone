@@ -3,6 +3,7 @@ package net.demilich.metastone.game;
 import net.demilich.metastone.game.actions.ActionType;
 import net.demilich.metastone.game.actions.GameAction;
 import net.demilich.metastone.game.behaviour.diplom.LearningStation;
+import net.demilich.metastone.game.behaviour.threat.GameStateValueBehaviour;
 import net.demilich.metastone.game.cards.Card;
 import net.demilich.metastone.game.cards.CardCatalogue;
 import net.demilich.metastone.game.cards.CardCollection;
@@ -63,6 +64,14 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
         this.deckFormat = deckFormat;
         this.logic.setContext(this);
         tempCards.removeAll();
+    }
+
+    public static String nTS(int number) {
+        if (number < 10) {
+            return String.valueOf(number);
+        } else {
+            return String.valueOf((char) ('A' - 10 + number));
+        }
     }
 
     protected boolean acceptAction(GameAction nextAction) {
@@ -133,13 +142,30 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
 
     private void endGame() {
         winner = logic.getWinner(getActivePlayer(), getOpponent(getActivePlayer()));
+        //System.out.println(GameCounter.getStateCount());
+        for (Player player : getPlayers()) {
+            if (player.getBehaviour() instanceof GameStateValueBehaviour) {
+                GameStateValueBehaviour behaviour = (GameStateValueBehaviour) player.getBehaviour();
+                if (winner != null && winner.getId() != player.getId()) {
+                    behaviour.addState(this, player);
+                }
+                if (winner != null) {
+                    behaviour.suffix = winner.getId() == player.getId() ? "_w" : "_l";
+                } else {
+                    behaviour.suffix = "_t";
+                }
+                behaviour.printGame();
+            }
+        }
         for (Player player : getPlayers()) {
             player.getBehaviour().onGameOver(this, player.getId(), winner != null ? winner.getId() : -1);
         }
 
         if (winner != null) {
+            //System.out.println(winner.getBehaviour().getName());
             logger.debug("Game finished after " + turn + " turns, the winner is: " + winner.getName());
             winner.getStatistics().gameWon();
+            System.out.println(winner.getBehaviour().getName());
             Player looser = getOpponent(winner);
             looser.getStatistics().gameLost();
         } else {
@@ -595,6 +621,56 @@ public class GameContext implements Cloneable, IDisposable, Serializable {
         onGameStateChanged();
         actionsThisTurn = 0;
         turnState = TurnState.TURN_IN_PROGRESS;
+    }
+
+    @Override
+    public int hashCode() {
+        StringBuilder answer = new StringBuilder();
+        Player us = getActivePlayer();
+        Player opponent = getOpponent(us);
+        answer.append(playerHash(us));
+        answer.append(minionsHash(us));
+        answer.append("|");
+        answer.append(playerHash(opponent));
+        answer.append(minionsHash(opponent));
+
+        return answer.toString().hashCode();
+    }
+
+    public String playerHash(Player player) {
+        int hp = player.getHero().getEffectiveHp();
+        int mana = player.getMana();
+        int hand = player.getHand().getCount();
+        return nTS(hp) + nTS(mana) + nTS(hand);
+    }
+
+    public String minionsHash(Player player) {
+        List<Minion> minions = player.getMinions();
+        minions.sort((o1, o2) -> {
+            int attDiff = o1.getAttack() - o2.getAttack();
+            if (attDiff != 0) {
+                return attDiff;
+            } else {
+                int hpDiff = o1.getHp() - o2.getHp();
+                if (hpDiff != 0) {
+                    return hpDiff;
+                } else {
+                    return o1.getId() - o2.getId();
+                }
+            }
+        });
+        StringBuilder answer = new StringBuilder();
+        for (Minion minion : minions) {
+            answer.append(nTS(minion.getAttack())).append(nTS(minion.getHp())).append(attributeHash(minion));
+        }
+        return answer.toString();
+    }
+
+    public String attributeHash(Minion minion) {
+        int taunt = minion.hasAttribute(Attribute.TAUNT) ? 1 : 0;
+        int divine = minion.hasAttribute(Attribute.DIVINE_SHIELD) ? 1 : 0;
+        int canAtt = minion.canAttackThisTurn() ? 1 : 0;
+        return String.valueOf(taunt * 4 + divine * 2 + canAtt);
     }
 
     @Override

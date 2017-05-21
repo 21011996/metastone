@@ -71,6 +71,11 @@ public class GreedyOptimizeTurn extends Behaviour {
     }
 
     @Override
+    public void printGame() {
+
+    }
+
+    @Override
     public String getName() {
         return "Min-Max Turn";
     }

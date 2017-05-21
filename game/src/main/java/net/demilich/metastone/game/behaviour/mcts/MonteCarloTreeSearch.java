@@ -48,4 +48,8 @@ public class MonteCarloTreeSearch extends Behaviour {
         return bestAction;
     }
 
+    @Override
+    public void printGame() {
+
+    }
 }

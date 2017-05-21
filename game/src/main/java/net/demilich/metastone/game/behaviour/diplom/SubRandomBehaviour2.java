@@ -60,4 +60,8 @@ public class SubRandomBehaviour2 extends Behaviour implements Serializable {
 
     }
 
+    @Override
+    public void printGame() {
+
+    }
 }
