@@ -11,9 +11,11 @@ import java.io.Serializable;
 public class FeatureAndColor implements Serializable {
     Feature feature;
     ThreatLevel color;
+    double score;
 
-    public FeatureAndColor(Feature feature, ThreatLevel color) {
+    public FeatureAndColor(Feature feature, ThreatLevel color, double score) {
         this.feature = feature;
         this.color = color;
+        this.score = score;
     }
 }

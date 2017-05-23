@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by ilya2 on 20.05.2017.
@@ -15,56 +16,36 @@ public class ConvertDataSet {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         ArrayList<DataPoint> green = new ArrayList<>();
-        ArrayList<DataPoint> yellow = new ArrayList<>();
-        ArrayList<DataPoint> red = new ArrayList<>();
+        double max = Double.NEGATIVE_INFINITY;
+        double min = Double.POSITIVE_INFINITY;
         File folder = new File("dataset\\big");
         File[] listOfFiles = folder.listFiles();
         for (File file : listOfFiles) {
             if (file.isFile()) {
                 FileInputStream fi = new FileInputStream(file);
                 ObjectInputStream oi = new ObjectInputStream(fi);
-                ArrayList<FeatureAndColor> list = (ArrayList<FeatureAndColor>) oi.readObject();
-                List<Feature> temp = new ArrayList<>();
-                ThreatLevel last = ThreatLevel.GREEN;
-                int i = list.size();
-                for (FeatureAndColor fac : list) {
-                    i--;
-                    temp.add(fac.feature);
-                    if (fac.color != last) {
-                        switch (last) {
-                            case GREEN:
-                                green.addAll(markFeatures(temp, compareColor(last, fac.color)));
-                                break;
-                            case YELLOW:
-                                yellow.addAll(markFeatures(temp, compareColor(last, fac.color)));
-                                break;
-                            case RED:
-                                red.addAll(markFeatures(temp, compareColor(last, fac.color)));
-                                break;
-                        }
-                        last = fac.color;
-                        temp = new ArrayList<>();
-                        temp.add(fac.feature);
-                    }
-                    if (i == 0) {
-                        switch (last) {
-                            case GREEN:
-                                green.addAll(markFeatures(temp, file.getName().contains("_l") ? -10.0 : 10.0));
-                                break;
-                            case YELLOW:
-                                yellow.addAll(markFeatures(temp, file.getName().contains("_l") ? -10.0 : 10.0));
-                                break;
-                            case RED:
-                                red.addAll(markFeatures(temp, file.getName().contains("_l") ? -10.0 : 10.0));
-                                break;
+                ArrayList<DataPoint> list = (ArrayList<DataPoint>) oi.readObject();
+                list = list.stream().filter(lul -> lul.label != Double.NEGATIVE_INFINITY && lul.label != Double.POSITIVE_INFINITY).collect(Collectors.toCollection(ArrayList::new));
+                for (DataPoint dataPoint : list) {
+                    double value = dataPoint.label;
+                    if (value != Double.NEGATIVE_INFINITY && value != Double.POSITIVE_INFINITY) {
+                        max = Math.max(max, value);
+                        min = Math.min(min, value);
+                    } else {
+                        if (value == Double.NEGATIVE_INFINITY) {
+                            System.out.println("lle");
+                            dataPoint.label = -250.0;
+                        } else {
+                            System.out.println("lle2");
+                            dataPoint.label = 250.0;
                         }
                     }
                 }
+                green.addAll(list);
             }
         }
-        printSet(green, "green");
-        printSet(yellow, "yellow");
-        printSet(red, "red");
+        System.out.println(max + " " + min);
+        printSet(green, "");
     }
 
     public static void printSet(List<DataPoint> dataPoints, String color) throws IOException {

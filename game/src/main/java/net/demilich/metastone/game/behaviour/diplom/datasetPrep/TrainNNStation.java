@@ -6,7 +6,6 @@ import net.demilich.metastone.game.behaviour.diplom.utils.DataInstance;
 import net.demilich.metastone.game.behaviour.diplom.utils.Feature;
 import net.demilich.metastone.game.behaviour.diplom.utils.Params;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,22 +21,13 @@ import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
  */
 public class TrainNNStation {
     private static final Params BEST_PARAMS = new Params(0.001, 0, 1, 0);
-    String saveName = "green";
-    String dsName = "green263158";
+    String saveName = "1000";
+    String dsName = "97195";
     Random random = new Random();
-    private Net network = new Net(new int[]{FEATURE_SIZE, 100, 100, 100, 1}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
+    private Net network = new Net(new int[]{FEATURE_SIZE, 1000, 1}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
 
     public TrainNNStation() {
-        if (!new File("NN\\" + saveName + "w" + "0" + ".txt").isFile()) {
-            network.initWeights();
-        } else {
-            this.network.initWeights(new File[]{
-                    new File("NN", saveName + "w0.txt"),
-                    new File("NN", saveName + "w1.txt"),
-                    new File("NN", saveName + "w2.txt"),
-                    new File("NN", saveName + "w3.txt")
-            });
-        }
+        network.initWeights();
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -52,7 +42,7 @@ public class TrainNNStation {
 
     public void train(ArrayList<DataPoint> dataPoints) {
         Collections.shuffle(dataPoints);
-        int part = dataPoints.size() / 5;
+        int part = dataPoints.size() / 10;
         List<DataPoint> testList = dataPoints.subList(0, part);
         List<DataPoint> trainList = dataPoints.subList(part + 1, dataPoints.size());
         ArrayList<Integer> indexes = new ArrayList<>();
@@ -62,10 +52,12 @@ public class TrainNNStation {
         int iter = 0;
         while (true) {
             iter++;
-            int i = indexes.get(iter % trainList.size());
+            int i = indexes.get(random.nextInt(indexes.size()));
             DataPoint dataPoint = trainList.get(i);
-            network.learnStep(new DataInstance(dataPoint.feature, new double[]{-1.0, dataPoint.label}), BEST_PARAMS);
-            //indexes.add(i);
+            if (Math.abs(getOutput(dataPoint.feature) - dataPoint.label) > 0.1) {
+                network.learnStep(new DataInstance(dataPoint.feature, new double[]{-1.0, dataPoint.label}), BEST_PARAMS);
+                indexes.add(i);
+            }
 
             if (iter % 100000 == 0) {
                 double test = testNetwork(testList);

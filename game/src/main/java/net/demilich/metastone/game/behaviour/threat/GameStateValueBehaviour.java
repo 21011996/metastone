@@ -8,7 +8,7 @@ import net.demilich.metastone.game.actions.EndTurnAction;
 import net.demilich.metastone.game.actions.GameAction;
 import net.demilich.metastone.game.behaviour.Behaviour;
 import net.demilich.metastone.game.behaviour.IBehaviour;
-import net.demilich.metastone.game.behaviour.diplom.datasetPrep.FeatureAndColor;
+import net.demilich.metastone.game.behaviour.diplom.datasetPrep.DataPoint;
 import net.demilich.metastone.game.behaviour.diplom.utils.FeautureExtractor;
 import net.demilich.metastone.game.behaviour.diplom.utils.GameCounter;
 import net.demilich.metastone.game.cards.Card;
@@ -32,7 +32,7 @@ public class GameStateValueBehaviour extends Behaviour {
     int numberOfStates = 0;
     long lasttime = 0;
     int lastturn = 0;
-    ArrayList<FeatureAndColor> stateChain = new ArrayList<>();
+    ArrayList<DataPoint> stateChain = new ArrayList<>();
     int gameNo = GameCounter.getCount();
     private ThreatBasedHeuristic heuristic;
     private FeatureVector featureVector;
@@ -184,13 +184,13 @@ public class GameStateValueBehaviour extends Behaviour {
         if (!(action instanceof EndTurnAction)) {
             GameContext simulation = context.clone();
             simulation.getLogic().performGameAction(player.getId(), action);
-            stateChain.add(new FeatureAndColor(FeautureExtractor.getFeatures(simulation, player).left, ThreatBasedHeuristic.calcuateThreatLevel(simulation, player.getId())));
+            stateChain.add(new DataPoint(FeautureExtractor.getFeatures(simulation, player).left, heuristic.getScore(simulation, player.getId())));
             simulation.dispose();
         }
     }
 
     public void addState(GameContext context, Player player) {
-        stateChain.add(new FeatureAndColor(FeautureExtractor.getFeatures(context, player).left, ThreatBasedHeuristic.calcuateThreatLevel(context, player.getId())));
+        stateChain.add(new DataPoint(FeautureExtractor.getFeatures(context, player).left, heuristic.getScore(context, player.getId())));
     }
 
     private void requestTrainingData(Player player) {
