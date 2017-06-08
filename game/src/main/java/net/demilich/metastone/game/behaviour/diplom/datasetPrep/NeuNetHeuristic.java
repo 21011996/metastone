@@ -16,9 +16,9 @@ import static net.demilich.metastone.game.behaviour.diplom.Consts.FEATURE_SIZE;
  */
 public class NeuNetHeuristic implements IGameStateHeuristic {
 
-    String prefix = "1000";
+    String prefix = "simple";
 
-    private Net network = new Net(new int[]{FEATURE_SIZE, 1000, 1}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
+    private Net network = new Net(new int[]{FEATURE_SIZE, 300, 1}, new Activation[]{Activation.SIGMOID, Activation.SIGMOID, Activation.LINEAR});
 
     public NeuNetHeuristic() {
         this.network.initWeights(new File[]{

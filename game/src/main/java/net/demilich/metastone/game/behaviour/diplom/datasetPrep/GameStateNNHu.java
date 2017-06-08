@@ -7,9 +7,13 @@ package net.demilich.metastone.game.behaviour.diplom.datasetPrep;
 import net.demilich.metastone.game.GameContext;
 import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.actions.ActionType;
+import net.demilich.metastone.game.actions.EndTurnAction;
 import net.demilich.metastone.game.actions.GameAction;
+import net.demilich.metastone.game.actions.PhysicalAttackAction;
 import net.demilich.metastone.game.behaviour.Behaviour;
 import net.demilich.metastone.game.behaviour.heuristic.IGameStateHeuristic;
+import net.demilich.metastone.game.behaviour.threat.FeatureVector;
+import net.demilich.metastone.game.behaviour.threat.ThreatBasedHeuristic;
 import net.demilich.metastone.game.cards.Card;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,21 +21,68 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GameStateNNHu extends Behaviour {
 
     private final Logger logger = LoggerFactory.getLogger(net.demilich.metastone.game.behaviour.threat.GameStateValueBehaviour.class);
     int lastturn = 0;
-    private IGameStateHeuristic heuristic = new NeuNetHeuristic();
+    private IGameStateHeuristic heuristic = new ThreatBasedHeuristic(FeatureVector.getFittest());
     private HashMap<Integer, Double> visited = new HashMap<>();
 
     public GameStateNNHu() {
     }
 
-    private double alphaBeta(GameContext context, int playerId, GameAction action, int depth) {
+    public double evaluateOppTurn(GameContext context, int playerId) {
+        List<GameAction> lul = context.getValidActions();
+        List<GameAction> validActions = lul.stream().filter(action1 -> action1 instanceof PhysicalAttackAction || action1 instanceof EndTurnAction).collect(Collectors.toList());
+        if (validActions.size() == 0) {
+            return heuristic.getScore(context, playerId);
+        }
+        double worseScore = Float.POSITIVE_INFINITY;
+
+        for (GameAction gameAction : validActions) {
+            double score = beta(context, context.getActivePlayerId(), gameAction, playerId);
+            if (score < worseScore) {
+                worseScore = score;
+            }
+        }
+        return worseScore;
+
+    }
+
+    public double beta(GameContext context, int playerId, GameAction action, int ourPlayerId) {
         GameContext simulation = context.clone();
         simulation.getLogic().performGameAction(playerId, action);
+        if (action instanceof EndTurnAction) {
+            return heuristic.getScore(simulation, ourPlayerId);
+        }
+        if (simulation.getActivePlayerId() != playerId || simulation.gameDecided()) {
+            return heuristic.getScore(simulation, ourPlayerId);
+        }
+
+        List<GameAction> validActions = simulation.getValidActions().stream().filter(action1 -> action1 instanceof PhysicalAttackAction || action1 instanceof EndTurnAction).collect(Collectors.toList());
+
+        double score = Float.POSITIVE_INFINITY;
+
+        for (GameAction gameAction : validActions) {
+            score = Math.min(score, beta(simulation, playerId, gameAction, ourPlayerId));
+            if (score < -10000) {
+                break;
+            }
+        }
+        return score;
+    }
+
+    private double alpha(GameContext context, int playerId, GameAction action, int depth) {
+        GameContext simulation = context.clone();
+        simulation.getLogic().performGameAction(playerId, action);
+        if (action instanceof EndTurnAction) {
+            GameContext lul = context.clone();
+            lul.performAction(playerId, new EndTurnAction());
+            return evaluateOppTurn(lul, playerId);
+        }
         if (depth == 0 || simulation.getActivePlayerId() != playerId || simulation.gameDecided()) {
             return heuristic.getScore(simulation, playerId);
         }
@@ -40,12 +91,16 @@ public class GameStateNNHu extends Behaviour {
 
         double score = Float.NEGATIVE_INFINITY;
 
-        if (visited.containsKey(simulation.hashCode())) {
-            return visited.get(simulation.hashCode());
+        try {
+            if (visited.containsKey(simulation.hashCode())) {
+                return visited.get(simulation.hashCode());
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         for (GameAction gameAction : validActions) {
 
-            score = Math.max(score, alphaBeta(simulation, playerId, gameAction, depth - 1));
+            score = Math.max(score, alpha(simulation, playerId, gameAction, depth - 1));
             if (score >= 100000) {
                 break;
             }
@@ -95,7 +150,7 @@ public class GameStateNNHu extends Behaviour {
         double bestScore = Double.NEGATIVE_INFINITY;
 
         for (GameAction gameAction : validActions) {
-            double score = alphaBeta(context, player.getId(), gameAction, depth);
+            double score = alpha(context, player.getId(), gameAction, depth);
             if (score > bestScore) {
                 bestAction = gameAction;
                 bestScore = score;
